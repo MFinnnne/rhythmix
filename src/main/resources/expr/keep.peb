@@ -1,0 +1,22 @@
+##=======keep function==============
+let  {%var funcName %} = lambda() ->
+    let res = {{ stateCheckCode }};
+    if({% var preTime %} ==nil){
+        {% var preTime %} = ts.ts2Ms(event.ts);
+        return false;
+    }
+    if(res){
+        let diff =  ts.ts2Ms(event.ts)-{% var preTime %};
+        if(diff>={{ keepTime }}){
+            {% var preTime %}  = nil;
+            return true;
+        }
+        return false;
+    }else{
+        {% var preTime %} =  ts.ts2Ms(event.ts);
+        return false;
+    }
+end;
+##=======keep function==============
+
+

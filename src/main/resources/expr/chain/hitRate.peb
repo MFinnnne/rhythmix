@@ -1,0 +1,23 @@
+## ===============  chain hit start ===============
+## 统计集合中符合要求的数据个数
+
+let chain_{{ funcName }} = lambda()->
+   let array ={% var  processedChainQueue %}==nil?{% var rawChainQueue %}:{% var processedChainQueue %};
+   let hit=0;
+
+   for x in array{
+      let res = {{ stateCode }};
+      if(res){
+         hit=hit+1;
+      }
+   }
+    {% var chainResult  %}= hit/count(array);
+    {% debug "chain hit rate 命中率：{}",chainResult %}
+
+    {% if debug is not null and debug == true %}
+        debugChainResult = {% var chainResult %} ;
+    {% endif %}
+    return true;
+end;
+
+## ===============  chain hit  end  ===============

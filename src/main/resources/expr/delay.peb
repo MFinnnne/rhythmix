@@ -1,0 +1,21 @@
+
+##=======delay function==============
+let  {%var funcName %} = lambda() ->
+    if({% var  __preFuncFinishTime__ %}!=nil){
+       {% var delayStartTime%} = {% var  __preFuncFinishTime__%};
+       p('delay func 1: {% var __preFuncFinishTime__ %}：'+{% var  __preFuncFinishTime__ %});
+    }else{
+        if({% var delayStartTime%}==nil){
+          {% var delayStartTime%}  =  ts.ts2Ms(event.ts);
+           p('delay func 1: {% var __preFuncFinishTime__ %}：'+{% var  __preFuncFinishTime__ %});
+        }
+    }
+    let diff =  ts.ts2Ms(event.ts)-{% var delayStartTime%};
+    {% debug "delay func: delayStartTime:{},diff:!{}",delayStartTime,diff %}
+    if(diff>={{  delayTime }}){
+       {% var delayStartTime%} = nil;
+        return true;
+    }
+    return false;
+end;
+##=======delay function==============

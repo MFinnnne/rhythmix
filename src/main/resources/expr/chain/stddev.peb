@@ -1,0 +1,18 @@
+## ===============  chain stddev start ===============
+## 求集合标准差
+
+let chain_{{ funcName }} = lambda()->
+   if({% var processedChainQueue %}!=nil){
+        {% var chainResult  %}= calc.stddev({% var processedChainQueue %});
+        queue.clear({% var processedChainQueue %});
+        {% debug  "chain stddev 标准差结果:{}",chainResult%}
+   }else{
+       {% var chainResult  %}= calc.stddev({% var rawChainQueue %});
+       {% debug  "chain sttdev 标准差结果:{}",chainResult%}
+   }
+   {% if debug is not null and debug == true %}
+        debugChainResult = {% var chainResult  %};
+    {% endif %}
+   return true;
+end;
+## ===============  chain stddev  end  ===============

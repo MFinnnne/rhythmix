@@ -1,0 +1,16 @@
+## ===============  chain filter start ===============
+## 过滤数据 符合条件则放行
+let chain_{{ funcName }} = lambda()->
+    let res = {{ stateCode }};
+    if(res){
+        {{ debug("filter() 接收数据：{}","event.value") }}
+        return true;
+    }
+    {% if strict is not null and  strict == true %}
+    else {
+        {% var chainResult  %} = chains.clear();
+    }
+    {% endif %}
+    return false;
+end;
+## ===============  chain filter  end  ===============

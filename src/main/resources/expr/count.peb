@@ -1,0 +1,25 @@
+##=======count function==============
+let count=0;
+let  {%var funcName %} = lambda() ->
+
+    {% debug "{},当前次数: {}",funcName,countTime %}
+    let res = {{ stateCheckCode }};
+    {% debug "{} func : !{}",funcName,res %}
+    if(res){
+        {%var countTime  %} = {% var countTime %}+1;
+        if({% var countTime %}>={{ targetCountTimes }}){
+             count = {% var countTime %};
+            {% var countTime %}=0;
+            return true;
+        }
+    }
+    {% if strict is not null and  strict == true %}
+    else{
+        {% debug  "{} 严格模式计数归零",funcName%}
+        {% var countTime %} =  0;
+    }
+    count = {% var countTime %};
+    {% endif %}
+    return false;
+end;
+##=======count function==============

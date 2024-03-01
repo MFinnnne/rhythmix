@@ -1,0 +1,19 @@
+## ===============  chain sum start ===============
+## 收集数据存入到数据队列中等待后续操作
+
+let chain_{{ funcName }} = lambda()->
+   if({% var processedChainQueue %}!=nil){
+        {% var chainResult  %}= calc.sum({% var processedChainQueue %});
+        queue.clear({% var processedChainQueue %});
+        {% debug  "chain sum 求和结果:{}",chainResult%}
+   }else{
+       {% var chainResult %} = calc.sum({% var rawChainQueue %});
+       {% debug  "chain sum 求和结果:{}",chainResult%}
+   }
+   {% if debug is not null and debug == true %}
+        debugChainResult = {% var chainResult %} ;
+    {% endif %}
+   return true;
+end;
+
+## ===============  chain sum  end  ===============

@@ -1,0 +1,12 @@
+## ===============  chain meet start ===============
+## 过滤数据 符合条件则放行
+let chain_{{ funcName }} = lambda()->
+    let res = {{ stateCode }};
+    if(res){
+        queue.clear({% var rawChainQueue %});
+        {% var chainResult %}=nil;
+        return true;
+    }
+    return false;
+end;
+## ===============  chain meet  end  ===============

@@ -1,0 +1,32 @@
+## ===============  chain limit start ===============
+##  限制计算流队列的个数,小于指定个数返回true，大于指定个数则删除第一个数据
+
+let chain_{{ funcName }} = lambda()->
+
+    {% if  limitLength is not null%}
+    if(count({% var rawChainQueue %}) <= {{ limitLength }}){
+        return true;
+    }
+    queue.poll({% var rawChainQueue %});
+    {% endif %}
+    {% if limitTime is not null %}
+    while true {
+        if(count({% var rawChainQueue %})<2){
+            {% debug "limit func 当前数据小于2个" %}
+            break;
+        }
+        let first = queue.first({% var rawChainQueue %});
+        let last =  queue.last({% var rawChainQueue %});
+        let diff =  ts.ts2Ms(last.ts)-ts.ts2Ms(first.ts);
+        {% debug "limit 时间限制：{} ms，当前时间差：{}",limitTime,diff %}
+        if(diff>{{ limitTime }}){
+            {% debug "limit: 数据大于限制时间，删除第一个数据" %}
+            queue.poll({% var rawChainQueue %});
+        } else {
+            break;
+        }
+    }
+    {% endif %}
+    return true;
+end;
+## ===============  chain limit  end  ===============

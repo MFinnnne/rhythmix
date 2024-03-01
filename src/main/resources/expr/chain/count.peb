@@ -1,0 +1,19 @@
+## ===============  chain count start ===============
+## 求集合元素个数
+
+let chain_{{ funcName }} = lambda()->
+   if({% var processedChainQueue %}!=nil){
+        {% var chainResult  %} = calc.count({% var processedChainQueue %});
+        queue.clear({% var processedChainQueue %});
+        {% debug  "chain count 剪裁集合个数结果:{}",chainResult%}
+   }else{
+       {% var chainResult  %}= calc.count({% var rawChainQueue%});
+       {% debug  "chain count 原始集合个数结果:{}",chainResult%}
+   }
+   {% if debug is not null and debug == true %}
+        debugChainResult = {% var chainResult  %} ;
+    {% endif %}
+   return true;
+end;
+
+## ===============  chain count  end  ===============

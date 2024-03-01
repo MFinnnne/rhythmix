@@ -1,0 +1,38 @@
+## ===============  chain window start ===============
+##  限制计算流队列的个数,小于指定个数返回true，大于指定个数则删除第一个数据
+
+let chain_{{ funcName }} = lambda()->
+    {% if  windowLength is not null%}
+    if(count({% var rawChainQueue %}) >= {{ windowLength }}){
+        let sIndex = count({% var rawChainQueue %})-{{windowLength}};
+        let eIndex = count({% var rawChainQueue %});
+        {% debug "chain window 起始索引：{},结束索引：{}",sIndex,eIndex%}
+        {% var processedChainQueue  %}=  queue.sub({% var rawChainQueue %},sIndex,eIndex);
+        return true;
+    }
+    return false;
+    {% endif %}
+    {% if windowTime is not null %}
+    if(count({% var rawChainQueue %})<2){
+       {% debug "chain window 当前数据小于2个" %}
+       return false;
+    }
+    let eIndex = count({% var rawChainQueue %})-1;
+    let endEvent = seq.get({% var rawChainQueue %},eIndex);
+    let endTime =ts.ts2Ms(endEvent.ts);
+    for index in range(1,count({% var rawChainQueue %})){
+        let sIndex = count({% var rawChainQueue %})-index-1;
+        let curEvent = seq.get({% var rawChainQueue %},sIndex);
+        let diff =endTime - ts.ts2Ms(curEvent.ts);
+        {% debug "chain window 时间限制：!{} ms，当前时间差：!{}",windowTime,diff %}
+        if(diff>{{ windowTime }}){
+            {% debug "chain window:起始索引：!{}，结束索引：!{}",sIndex,eIndex %}
+             {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %})-1);
+             nextChainData = endEvent;
+             return true;
+        }
+    }
+    return false;
+    {% endif %}
+end;
+## ===============  chain window end  ===============

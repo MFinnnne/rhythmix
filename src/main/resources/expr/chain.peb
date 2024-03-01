@@ -1,0 +1,30 @@
+## ==============chain=============================
+
+{% if funcName is not null %}
+    fn {{ funcName }}{
+{% else %}
+    fn chain{
+{% endif %}
+
+    {{ chainSobelCode }}
+    {% for func in chainFuncs %}
+        {% if loop.first %}
+        let chainUnitFlag = chain_{{ func }}();
+        {% debug "func:{} 结果：!{}",func,chainUnitFlag %}
+        {% elseif loop.last%}
+            if(chainUnitFlag){
+            chainUnitFlag = chain_{{ func }}();
+            {% debug "func:{}结果：!{}",func,chainUnitFlag %}
+            }
+        {% else %}
+        if(chainUnitFlag){
+            chainUnitFlag = chain_{{ func }}();
+            {% debug "func: {} 结果：!{}",func,chainUnitFlag %}
+        }
+        {% endif %}
+    {% endfor %}
+    {% debug "chain最后结果:!{}",chainUnitFlag %}
+    {#{{ debug("chain最后结果:{}","chainUnitFlag") }}#}
+    return chainUnitFlag;
+}
+## ==============chain=============================

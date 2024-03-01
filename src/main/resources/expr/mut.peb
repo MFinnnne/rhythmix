@@ -1,0 +1,13 @@
+## mut 集合 mutationData = []
+index= long(index);
+if(event!=nil){
+   if({% if type=='string' %}event.value{% else %}{{ type }}(event.value){%endif%}==value[index]){
+        index=index+1;
+   }
+   if(index==count(value)){
+       return true;
+   }else{
+        return false;
+   }
+}
+return false;

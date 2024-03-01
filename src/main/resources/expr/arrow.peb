@@ -1,0 +1,38 @@
+## =============箭头表达式================
+{#{% if arrowFunctions is not null%}#}
+{#    {% for arrowFunc in arrowFunctions %}#}
+{#    {{ arrowFunc }}#}
+{#    {% endfor %}#}
+{#{% endif %}#}
+let {% var funcName %} =lambda()->
+{% for codeIndex in range(0,codeSize) %}
+## ========第【{{ codeIndex }}】个函数============
+
+    let arrow_fn_{{ codeIndex }}=lambda() ->
+        return  {{ codes[codeIndex] }};
+    end;
+
+    if({% var index %} == {{ codeIndex }}) {
+        let fName = '{% var funcName %}';
+        let res = arrow_fn_{{ codeIndex }}();
+        {% debug "!{}:第 {} 个函数运行后结果：!{}",fName,index, res %}
+        {% if codeIndex == codeSize %}
+        if(res){
+            {% var  __preFuncFinishTime__ %} = now();
+            {% var index %} = 0;
+            return true;
+        }
+        {% else %}
+        if(res) {
+           {% var  __preFuncFinishTime__ %} = now();
+            {% var index %}= {%var index%} +1;
+            return false;
+        }
+        {% endif %}
+    }
+    {% endfor %}
+    return false;
+end;
+
+## =============箭头表达式================
+

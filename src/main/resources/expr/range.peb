@@ -1,0 +1,14 @@
+{{ type }}
+    {% if eventValue is not null %}
+    ({% var eventValue %})
+        {% else %}
+    (event.value)
+{% endif %}
+
+{{ leftSymbol }}{{ leftValue }}&&{{ type }}
+    {% if eventValue is not null %}
+    ({% var eventValue %})
+{% else %}
+    (event.value)
+{% endif %}
+{{ rightSymbol }}{{ rightValue }}

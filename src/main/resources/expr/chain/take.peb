@@ -1,0 +1,56 @@
+## ===============  chain take start ===============
+{### 取出队列数据，可以接收两个参数#}
+{### startIndex：开始索引, 不写默认0，传负数默认从后往前数#}
+{### endIndex: 结束索引，不写默认最后一个元素,传负数默认从后往前数#}
+
+let chain_{{ funcName }} = lambda()->
+    let s = {{ startIndex }};
+    let e = {{ endIndex }};
+    if(e!=nil&&s*e>0){
+       if(s>e){
+            {% debug "take 起始索引大于结束索引"%}
+            throw new IllegalArgumentException("起始索引大于结束索引");
+        }
+    }
+    if(e==nil){
+        e = count({% var rawChainQueue %});
+    }
+
+    {% debug "take startIndex:!{},endIndex:!{}",s,e %}
+    let length =  count({% var rawChainQueue %});
+    if(s<0){
+        s = length - Math.abs({{ startIndex }});
+        if(s<0){
+            {% debug "take 起始大于原始队列长度：原始队列：!{},起始索引：!{}",length,s %}
+            return false;
+        }
+    }
+    if(e<0) {
+        e = length-Math.abs({{ endIndex }});
+        if(e<0){
+            {% debug "take 结束索引小于0：{}",e %}
+            return false;
+        }
+    }
+   {% debug "chain func take== startIndex:!{},endIndex:!{} ",s,e %}
+
+   if(length<e){
+        {% debug "take 结束索引大于原始队列长度，原始队列：!{},结束索引：!{}",length,e %}
+        return false;
+   }
+
+   if(s+1 > length){
+        {% debug "take 起始索引大于原始队列长度，原始队列：!{},起始索引：!{}",length,s %}
+        return false;
+   }
+
+   if(s>e){
+      {% debug "take 起始索引大于结束索引"%}
+      throw new IllegalArgumentException("起始索引大于结束索引");
+      return false;
+   }
+   {% debug "take: 计算后起始索引：!{},结束索引：!{}",s,e %}
+   {% var processedChainQueue  %}= queue.sub({% var rawChainQueue %},s ,e);
+   return true;
+end;
+## ===============  chain take  end  ===============

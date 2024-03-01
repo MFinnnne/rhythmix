@@ -1,0 +1,26 @@
+##=======slope function==============
+let  {%var funcName %} = lambda() ->
+
+    if({% var preTime %}==nil||{% var preValue %}==nil){
+        {% var preTime  %}= ts.ts2Ms(event.ts);
+        {% var preValue  %}= double(event.value);
+        return false;
+    }else{
+        let diffTime =  ts.ts2Ms(event.ts)-{% var preTime %};
+        let diffValue = double(event.value)-{% var preValue %};
+        let dy = diffTime/{{slopeUnit}};
+        {% var slopeRes  %}= diffValue/dy;
+        {% debug "slope函数 dx:!{},dy:!{} 斜率：{}",diffValue,dy,slopeRes %}
+        let res = {{ stateCheckCode }};
+        if(res){
+            return true;
+        }else{
+            {% var preTime  %}= ts.ts2Ms(event.ts);
+            {% var preValue  %}= double(event.value);
+            return false;
+        }
+    }
+end;
+##=======keep function==============
+
+
