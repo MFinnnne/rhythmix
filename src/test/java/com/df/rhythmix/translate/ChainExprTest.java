@@ -103,4 +103,34 @@ class ChainExprTest {
         boolean execute = executor.execute(p3);
         Assertions.assertFalse(execute);
     }
+
+    @Test
+    void translate5() throws LexicalException, ParseException, TranslatorException, IOException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "filter((-5,5)).limit(500ms).take(-3,-1).sum().meet(>1)";
+        EnvProxy env = new EnvProxy();
+        String transCode = Translator.translate(code, env);
+        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
+        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
+        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        executor.execute(p1);
+        executor.execute(p2);
+        boolean execute = executor.execute(p3);
+    }
+
+    @Test
+    void translate6() throws LexicalException, ParseException, TranslatorException, IOException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "limit(500ms).take(-3,-1).sum().meet(>1)";
+        EnvProxy env = new EnvProxy();
+        String transCode = Translator.translate(code, env);
+        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
+        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
+        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        executor.execute(p1);
+        executor.execute(p2);
+        boolean execute = executor.execute(p3);
+    }
 }

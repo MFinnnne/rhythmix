@@ -14,7 +14,7 @@ public class Expr extends ASTNode {
     static PriorityTable table = new PriorityTable();
 
 
-    protected Expr() {
+    public Expr() {
         super();
     }
 

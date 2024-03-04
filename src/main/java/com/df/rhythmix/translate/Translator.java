@@ -114,6 +114,7 @@ public class Translator {
                 Config.VAR_COUNTER.incrementAndGet();
                 String name = "chain" + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
                 context.put("funcName", name);
+
                 code = ChainExpr.translate(astNode, context, env);
                 ((ArrayList<String>) context.get("baseCodes")).add(code);
                 return name;

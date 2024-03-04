@@ -14,7 +14,7 @@ import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 public class Collect {
 
-    private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/collect.peb");
+    private static final PebbleTemplate COLLECT = ENGINE.getTemplate("expr/chain/collect.peb");
 
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
@@ -22,7 +22,7 @@ public class Collect {
             Map<String, Object> context = new HashMap<>();
             String name = astNode.getLabel();
             context.put("funcName", name);
-            FILTER.evaluate(writer, context);
+            COLLECT.evaluate(writer, context);
             return writer.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);

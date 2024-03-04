@@ -3,7 +3,9 @@ package com.df.rhythmix.translate;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
+import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
+import com.df.rhythmix.lexer.TokenType;
 import com.df.rhythmix.parser.ast.*;
 import com.df.rhythmix.translate.chain.*;
 import com.df.rhythmix.util.ParserUtils;
@@ -40,13 +42,37 @@ public class ChainExpr {
             env.put("chainResult", null);
             env.put("debugChainResult", null);
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
+            if (!allCallStmtLabel.contains("collect")) {
+                Lexer lexer = new Lexer();
+                ArrayList<Token> tokens = lexer.analyse("collect()".chars().mapToObj(x -> (char) x));
+                ASTNode colAST = Expr.parse(new PeekTokenIterator(tokens.stream()));
+                Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
+                if ("filter".equals(allCallStmtLabel.get(0))) {
+                    ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
+                    ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
+                    astNode.getChildren(1).getChildren().set(0, colAST);
+                    astNode.getChildren(1).getChildren().set(1, expr);
+                    expr.addChild(copyVarNode);
+                    expr.addChild(copyOpNode);
+                } else {
+                    ASTNode copyVarNode = astNode.getChildren(0);
+                    ASTNode copyOpNode = astNode.getChildren(1);
+                    astNode.getChildren().set(0, colAST);
+                    astNode.getChildren().set(1, expr);
+                    expr.addChild(copyVarNode);
+                    expr.addChild(copyOpNode);
+                }
+                allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
+            }
             ChainExprSyntaxCheck.check(allCallStmtLabel);
             String code = recursiveTrans(astNode, env);
+
             context.put("chainFuncs", allCallStmtLabel);
             context.put("chainSobelCode", code);
+
             chainTemplate.evaluate(writer, context);
             return writer.toString();
-        } catch (TranslatorException | IOException e) {
+        } catch (TranslatorException | IOException | LexicalException | ParseException e) {
             e.printStackTrace();
             throw new TranslatorException(e.getMessage());
         }
@@ -89,6 +115,5 @@ public class ChainExpr {
         }
         throw new TranslatorException("链式调用翻译错误");
     }
-
 
 }

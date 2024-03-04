@@ -34,7 +34,7 @@ class ChainExprSyntaxCheckTest {
         Lexer lexer = new Lexer();
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
-        Assertions.assertThrows(TranslatorException.class,()->ChainExpr.translate(tokens, env));
+        Assertions.assertDoesNotThrow(()->ChainExpr.translate(tokens, env));
     }
 
     @Test
