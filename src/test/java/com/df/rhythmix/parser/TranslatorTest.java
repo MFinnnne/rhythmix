@@ -1,6 +1,5 @@
 package com.df.rhythmix.parser;
 
-import cii.da.message.codec.model.SensorEvent;
 import cn.hutool.core.util.RandomUtil;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -11,6 +10,7 @@ import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.execute.FerrumCompiler;
 import com.df.rhythmix.translate.Translator;
+import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class TranslatorTest {
         String code1 = "[1,2]";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)>=1&&long(event.value)<=2)", translate);
 
     }
@@ -36,7 +36,7 @@ class TranslatorTest {
         String code1 = "[1.0,2.0)";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(double(event.value)>=1.0&&double(event.value)<2.0)", translate);
     }
 
@@ -45,7 +45,7 @@ class TranslatorTest {
         String code1 = "(1,2]";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)>1&&long(event.value)<=2)", translate);
     }
 
@@ -54,7 +54,7 @@ class TranslatorTest {
         String code1 = "(1,2)";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)>1&&long(event.value)<2)", translate);
     }
 
@@ -63,9 +63,8 @@ class TranslatorTest {
         String code = "<1,2,3>";
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build =new FerrumExecutor(translate,env);
-        SensorEvent point1 = new SensorEvent("point_1", "point_1", "1", "point_1", new Timestamp(System.currentTimeMillis()), "point_3", "float", "1",
-                "s", "fail", RandomUtil.randomInt(10) + "", "nj", "fail", "k1", "k2", "k3", "k4", "k5");
+        FerrumExecutor build = new FerrumExecutor(translate, env);
+        SensorEvent point1 = new SensorEvent("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), "int");
 
 
         env.put("event", point1);
@@ -89,13 +88,10 @@ class TranslatorTest {
         String code = "<1.0,2.0,3.0>";
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate,env);
-        SensorEvent point1 = new SensorEvent("point_1", "point_1", "1", "point_1", new Timestamp(System.currentTimeMillis()), "point_3",
-                "float", "1.0", "s", "fail", RandomUtil.randomInt(10) + "", "nj", "fail", "k1", "k2", "k3", "k4", "k5");
-        SensorEvent point2 = new SensorEvent("point_1", "point_1", "1", "point_1", new Timestamp(System.currentTimeMillis()), "point_3",
-                "float", "2.0", "s", "fail", RandomUtil.randomInt(10) + "", "nj", "fail", "k1", "k2", "k3", "k4", "k5");
-        SensorEvent point3 = new SensorEvent("point_1", "point_1", "1", "point_1", new Timestamp(System.currentTimeMillis()), "point_3",
-                "float", "3.0", "s", "fail", RandomUtil.randomInt(10) + "", "nj", "fail", "k1", "k2", "k3", "k4", "k5");
+        FerrumExecutor build = new FerrumExecutor(translate, env);
+        SensorEvent point1 = new SensorEvent("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()), "float");
+        SensorEvent point2 = new SensorEvent("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()), "float");
+        SensorEvent point3 = new SensorEvent("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()), "float");
         boolean execute = build.execute(point1);
         Assertions.assertFalse(execute);
         boolean execute1 = build.execute(point2);
@@ -111,9 +107,8 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate,env);
-        SensorEvent point1 = new SensorEvent("point_1", "point_1", "1", "point_1", new Timestamp(System.currentTimeMillis()), "point_3",
-                "float", "1", "s", "fail", RandomUtil.randomInt(10) + "", "nj", "fail", "k1", "k2", "k3", "k4", "k5");
+        FerrumExecutor build = new FerrumExecutor(translate, env);
+        SensorEvent point1 =  new SensorEvent("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), "int");
 
 
         env.put("event", point1);
@@ -152,7 +147,7 @@ class TranslatorTest {
         String code = ">3";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)>3)", translate);
     }
 
@@ -161,7 +156,7 @@ class TranslatorTest {
         String code = ">=3.0";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(double(event.value)>=3.0)", translate);
     }
 
@@ -170,7 +165,7 @@ class TranslatorTest {
         String code = "<3.0";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(double(event.value)<3.0)", translate);
     }
 
@@ -179,7 +174,7 @@ class TranslatorTest {
         String code = "<=3";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)<=3)", translate);
     }
 
@@ -189,7 +184,7 @@ class TranslatorTest {
         String code = "==3.0";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(double(event.value)==3.0)", translate);
     }
 
@@ -198,7 +193,7 @@ class TranslatorTest {
         String code = "!=3";
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+","");
+        String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)!=3)", translate);
     }
 
@@ -209,7 +204,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate,env);
+        FerrumExecutor build = new FerrumExecutor(translate, env);
 
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -222,7 +217,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate,env);
+        FerrumExecutor build = new FerrumExecutor(translate, env);
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(build.execute(p1, p2));
@@ -234,7 +229,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate,env);
+        FerrumExecutor build = new FerrumExecutor(translate, env);
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(build.execute(p1, p2));

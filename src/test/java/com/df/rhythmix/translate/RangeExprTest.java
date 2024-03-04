@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate;
 
-import cii.da.message.codec.model.SensorEvent;
+import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.FerrumExecutor;

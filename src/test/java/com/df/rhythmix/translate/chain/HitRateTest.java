@@ -1,6 +1,5 @@
 package com.df.rhythmix.translate.chain;
 
-import cii.da.message.codec.model.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -8,6 +7,7 @@ import com.df.rhythmix.execute.FerrumExecutor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
+import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

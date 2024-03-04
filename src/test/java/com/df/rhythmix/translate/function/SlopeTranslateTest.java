@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.function;
 
-import cii.da.message.codec.model.SensorEvent;
+import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;

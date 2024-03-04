@@ -4,6 +4,8 @@ import com.df.rhythmix.lexer.PeekIterator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class PeekIteratorTest {
     @Test
     void test_peek() {
@@ -39,7 +41,7 @@ class PeekIteratorTest {
         var i = 0;
         while (it.hasNext()) {
             if (i == 7) {
-                Assertions.assertEquals((char) 0, it.next());
+                assertEquals((char) 0, it.next());
             } else {
                 assertEquals(source.charAt(i++), it.next());
             }
@@ -58,7 +60,7 @@ class PeekIteratorTest {
         it.next();
         it.backRecord();
         assertEquals('b', it.next());
-        Assertions.assertEquals('c', it.next());
+        assertEquals('c', it.next());
         it.record();
         assertEquals('d', it.next());
         assertEquals('e', it.next());
