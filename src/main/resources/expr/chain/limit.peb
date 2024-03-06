@@ -18,7 +18,7 @@ let chain_{{ funcName }} = lambda()->
         let first = queue.first({% var rawChainQueue %});
         let last =  queue.last({% var rawChainQueue %});
         let diff =  ts.ts2Ms(last.ts)-ts.ts2Ms(first.ts);
-        {% debug "limit 时间限制：{} ms，当前时间差：{}",limitTime,diff %}
+        {% debug "limit 时间限制：!{} ms，当前时间差：!{}",limitTime,diff %}
         if(diff>{{ limitTime }}){
             {% debug "limit: 数据大于限制时间，删除第一个数据" %}
             queue.poll({% var rawChainQueue %});

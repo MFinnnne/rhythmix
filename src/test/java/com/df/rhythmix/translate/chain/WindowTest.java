@@ -24,7 +24,7 @@ class WindowTest {
     @Test
     void translate1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).window(2).sum().meet(>1)";
+        String code = "filter((-5,5)).collect().window(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code,  env);
         FerrumExecutor executor = new FerrumExecutor(transCode,env);;
@@ -41,7 +41,7 @@ class WindowTest {
     @Test
     void translate2() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).window(0).sum().meet(>1)";
+        String code = "filter((-5,5)).collect().window(0).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         Assertions.assertThrows(TranslatorException.class, () -> {
             String transCode = Translator.translate(code, env);
@@ -51,7 +51,7 @@ class WindowTest {
     @Test
     void translate3() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).window(100ms).sum().meet(>=6)";
+        String code = "filter((-5,5)).window(100ms).sum().meet(>=6)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         FerrumExecutor executor = new FerrumExecutor(transCode,env);;
@@ -67,7 +67,7 @@ class WindowTest {
         boolean execute1 = executor.execute(p3);//2
         Assertions.assertFalse(execute1);
         boolean execute2 = executor.execute(p4);//3
-        Assertions.assertFalse(execute2);
+        Assertions.assertTrue(execute2);
     }
 
     @Test

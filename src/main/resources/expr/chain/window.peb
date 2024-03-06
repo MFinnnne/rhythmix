@@ -25,9 +25,10 @@ let chain_{{ funcName }} = lambda()->
         let curEvent = seq.get({% var rawChainQueue %},sIndex);
         let diff =endTime - ts.ts2Ms(curEvent.ts);
         {% debug "chain window 时间限制：!{} ms，当前时间差：!{}",windowTime,diff %}
-        if(diff>{{ windowTime }}){
+        if(diff>={{ windowTime }}){
             {% debug "chain window:起始索引：!{}，结束索引：!{}",sIndex,eIndex %}
-             {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %})-1);
+             {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %}));
+             p({% var processedChainQueue  %} );
              nextChainData = endEvent;
              return true;
         }

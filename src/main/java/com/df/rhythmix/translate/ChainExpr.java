@@ -11,6 +11,7 @@ import com.df.rhythmix.translate.chain.*;
 import com.df.rhythmix.util.ParserUtils;
 import com.df.rhythmix.util.PeekTokenIterator;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,6 +20,7 @@ import java.util.*;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+@Slf4j
 public class ChainExpr {
 
 
@@ -42,39 +44,76 @@ public class ChainExpr {
             env.put("chainResult", null);
             env.put("debugChainResult", null);
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
-            if (!allCallStmtLabel.contains("collect")) {
-                Lexer lexer = new Lexer();
-                ArrayList<Token> tokens = lexer.analyse("collect()".chars().mapToObj(x -> (char) x));
-                ASTNode colAST = Expr.parse(new PeekTokenIterator(tokens.stream()));
-                Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
-                if ("filter".equals(allCallStmtLabel.get(0))) {
-                    ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
-                    ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
-                    astNode.getChildren(1).getChildren().set(0, colAST);
-                    astNode.getChildren(1).getChildren().set(1, expr);
-                    expr.addChild(copyVarNode);
-                    expr.addChild(copyOpNode);
-                } else {
-                    ASTNode copyVarNode = astNode.getChildren(0);
-                    ASTNode copyOpNode = astNode.getChildren(1);
-                    astNode.getChildren().set(0, colAST);
-                    astNode.getChildren().set(1, expr);
-                    expr.addChild(copyVarNode);
-                    expr.addChild(copyOpNode);
-                }
-                allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
-            }
+            collectAutoComplete(astNode, allCallStmtLabel);
+            checkLimitAndWindow(astNode);
+            allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
             ChainExprSyntaxCheck.check(allCallStmtLabel);
             String code = recursiveTrans(astNode, env);
-
             context.put("chainFuncs", allCallStmtLabel);
             context.put("chainSobelCode", code);
-
             chainTemplate.evaluate(writer, context);
             return writer.toString();
         } catch (TranslatorException | IOException | LexicalException | ParseException e) {
             e.printStackTrace();
             throw new TranslatorException(e.getMessage());
+        }
+    }
+
+    private static void checkLimitAndWindow(ASTNode astNode) throws LexicalException, ParseException {
+        ASTNode limit = ParserUtils.getNodeByLabel(astNode, "limit");
+        ASTNode window = ParserUtils.getNodeByLabel(astNode, "window");
+        if (limit != null && window != null) {
+            List<ASTNode> limitVar = limit.getChildren(0).getChildren();
+            List<ASTNode> windowVar = window.getChildren(0).getChildren();
+            if (limitVar.size() == windowVar.size()) {
+                if (!limitVar.get(0).getLabel().equals(windowVar.get(0).getLabel())) {
+                    throw new ParseException("Both limit and window parameters must be the same");
+                }
+            }
+        }
+        if (limit == null && window != null) {
+            ASTNode parent = ParserUtils.getNodeParentByLabel(astNode, "window");
+            List<ASTNode> windowVar = window.getChildren(0).getChildren();
+            StringBuilder stringBuilder = new StringBuilder();
+            for (ASTNode node : windowVar) {
+                stringBuilder.append(node.getLabel());
+            }
+            assert parent != null;
+            List<ASTNode> copyChild = parent.getChildren();
+            Lexer lexer = new Lexer();
+            String str = "limit(" + stringBuilder + ")";
+            ArrayList<Token> tokens = lexer.analyse(str.chars().mapToObj(x -> (char) x));
+            ASTNode limitNode = Expr.parse(new PeekTokenIterator(tokens.stream()));
+            Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
+            expr.getChildren().addAll(copyChild);
+            ArrayList<ASTNode> newChild = new ArrayList<>();
+            newChild.add(limitNode);
+            newChild.add(expr);
+            parent.setChildren(newChild);
+        }
+    }
+
+    private static void collectAutoComplete(ASTNode astNode, List<String> allCallStmtLabel) throws LexicalException, ParseException {
+        if (!allCallStmtLabel.contains("collect")) {
+            Lexer lexer = new Lexer();
+            ArrayList<Token> tokens = lexer.analyse("collect()".chars().mapToObj(x -> (char) x));
+            ASTNode colAST = Expr.parse(new PeekTokenIterator(tokens.stream()));
+            Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
+            if ("filter".equals(allCallStmtLabel.get(0))) {
+                ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
+                ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
+                astNode.getChildren(1).getChildren().set(0, colAST);
+                astNode.getChildren(1).getChildren().set(1, expr);
+                expr.addChild(copyVarNode);
+                expr.addChild(copyOpNode);
+            } else {
+                ASTNode copyVarNode = astNode.getChildren(0);
+                ASTNode copyOpNode = astNode.getChildren(1);
+                astNode.getChildren().set(0, colAST);
+                astNode.getChildren().set(1, expr);
+                expr.addChild(copyVarNode);
+                expr.addChild(copyOpNode);
+            }
         }
     }
 

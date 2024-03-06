@@ -28,7 +28,8 @@ class ChainExprTest {
         String code = "filter((-5,5)).collect().limit(5).take(0,2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -62,7 +63,8 @@ class ChainExprTest {
         String code = "filter((-5,5)).collect().limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -77,7 +79,8 @@ class ChainExprTest {
         String code = "collect().limit(500ms).take(0,3).stddev().meet(==1.414)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "7", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
@@ -93,7 +96,8 @@ class ChainExprTest {
         String code = "collect().count().meet(==2)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "7", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
@@ -110,7 +114,8 @@ class ChainExprTest {
         String code = "filter((-5,5)).limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -125,7 +130,34 @@ class ChainExprTest {
         String code = "limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
+        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
+        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
+        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        executor.execute(p1);
+        executor.execute(p2);
+        boolean execute = executor.execute(p3);
+    }
+
+    @Test
+    void translate7() throws LexicalException, ParseException, TranslatorException, IOException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "limit(500ms).window(400ms).sum().meet(>1)";
+        EnvProxy env = new EnvProxy();
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            String transCode = Translator.translate(code, env);
+        });
+    }
+
+    @Test
+    void translate8() throws LexicalException, ParseException, TranslatorException, IOException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "window(400ms).sum().meet(>1)";
+        EnvProxy env = new EnvProxy();
+        String transCode = Translator.translate(code, env);
+        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));

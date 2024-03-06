@@ -4,6 +4,7 @@ import com.df.rhythmix.lexer.TokenType;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.parser.ast.ASTNodeTypes;
 import com.df.rhythmix.parser.ast.Factor;
+import com.mitchellbosecke.pebble.error.ParserException;
 import jdk.jshell.spi.ExecutionControl;
 
 import java.util.*;
@@ -175,6 +176,36 @@ public class ParserUtils {
         return list;
     }
 
+
+    public static ASTNode getNodeByLabel(ASTNode root, String label) {
+        var queue = new LinkedList<ASTNode>();
+        queue.add(root);
+        while (queue.size() > 0) {
+            var node = queue.poll();
+            if (label.equals(node.getLabel())) {
+                return node;
+            }else{
+                queue.addAll(node.getChildren());
+            }
+        }
+        return null;
+    }
+
+    public static ASTNode getNodeParentByLabel(ASTNode root, String label) {
+        var queue = new LinkedList<ASTNode>();
+        queue.add(root);
+        while (queue.size() > 0) {
+            var node = queue.poll();
+            for (ASTNode child : node.getChildren()) {
+                if (label.equals(child.getLabel())) {
+                    return node;
+                }else{
+                    queue.addAll(node.getChildren());
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * 检测当前语法数是否含有变量
