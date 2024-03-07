@@ -2,11 +2,8 @@
 ## 收集数据存入到数据队列中等待后续操作
 
 let chain_{{ funcName }} = lambda()->
-    if(nextChainData!=nil){
-        queue.push({% var rawChainQueue %},nextChainData);
-        {% debug "next chain data 被添加" %}
-        nextChainData=nil;
-    }
+
+   nextChainData = nil;
    queue.push({% var rawChainQueue %},event);
 {#   {% debug "collect:{}",rawChainQueue %}#}
    return true;

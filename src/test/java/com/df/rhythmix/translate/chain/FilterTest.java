@@ -4,7 +4,7 @@ import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -22,7 +22,7 @@ class FilterTest {
         String code = "filter(>3).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -43,7 +43,7 @@ class FilterTest {
         String code = "filter(>=3).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
@@ -62,7 +62,7 @@ class FilterTest {
         String code = "filter(<3).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
@@ -86,7 +86,7 @@ class FilterTest {
         String code = "filter(<=3).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
@@ -108,7 +108,7 @@ class FilterTest {
         String code = "filter(==3).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
@@ -125,7 +125,7 @@ class FilterTest {
         String code = "filter(!=3).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         boolean execute = executor.execute(p3);
@@ -141,7 +141,7 @@ class FilterTest {
         String code = "filter((1,4)).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         boolean execute = executor.execute(p4);
@@ -156,7 +156,7 @@ class FilterTest {
         String code = "filter((1,4]).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis()));
         SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -175,7 +175,7 @@ class FilterTest {
         String code = "filter(((1,7]||>10)&&!=5).collect().sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis()));
         SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -196,7 +196,7 @@ class FilterTest {
         String code = "filter((1,6)).collect().sum().meet(>1)||filter(>9).collect().sum().meet((12,30))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis()));
         SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));

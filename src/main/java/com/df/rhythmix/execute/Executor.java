@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 @AllArgsConstructor
 @NoArgsConstructor
-public class FerrumExecutor {
+public class Executor {
 
     @Getter
     private String code;
@@ -27,7 +27,7 @@ public class FerrumExecutor {
         Register.importFunction();
     }
 
-    public FerrumExecutor(String code, EnvProxy env) {
+    public Executor(String code, EnvProxy env) {
         this.code = code;
         this.envpProxy = env;
         this.originalEnv.putAll(this.envpProxy.getEnv());
@@ -54,10 +54,8 @@ public class FerrumExecutor {
     }
 
     public void resetEnv() {
-        Object next = this.envpProxy.rawGet("nextChainData");
         this.envpProxy.getEnv().clear();
         this.envpProxy.getEnv().putAll(this.getOriginalEnv());
-        this.envpProxy.rawPut("nextChainData",next);
     }
 
     public boolean execute(Object... events) {

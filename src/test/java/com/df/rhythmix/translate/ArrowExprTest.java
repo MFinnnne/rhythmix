@@ -3,7 +3,7 @@ package com.df.rhythmix.translate;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.util.Util;
@@ -23,7 +23,7 @@ class ArrowExprTest {
         String code = "{>=1||<-3}->{>10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
 
         SensorEvent p1 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
@@ -38,7 +38,7 @@ class ArrowExprTest {
         String code = "{(-1,5)}->{>10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         SensorEvent p1 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "9", new Timestamp(System.currentTimeMillis()));
@@ -52,7 +52,7 @@ class ArrowExprTest {
         String code = "{(-1,5)||(10,20)}->{>10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         SensorEvent p1 = Util.genPointData("1", "15", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "9", new Timestamp(System.currentTimeMillis()));
@@ -66,7 +66,7 @@ class ArrowExprTest {
         String code = "{==3||==4}->{!=10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
@@ -81,7 +81,7 @@ class ArrowExprTest {
         String code = "{((1,5]||==10)&&!=7}->{!=10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         SensorEvent p1 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "7", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
@@ -100,7 +100,7 @@ class ArrowExprTest {
         String code = "{keep(>3,100ms)}->{!=10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         SensorEvent p1 = Util.genPointData("1", "10", ts);
         SensorEvent p2 = Util.genPointData("1", "7", Util.addMs(ts, 100));
@@ -116,7 +116,7 @@ class ArrowExprTest {
         String code = "{delay(100ms)}->{!=10}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         SensorEvent p1 = Util.genPointData("1", "10", ts);
         SensorEvent p2 = Util.genPointData("1", "7", Util.addMs(ts, 100));
@@ -131,7 +131,7 @@ class ArrowExprTest {
         String code = "{!=10}->{delay(100ms)}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         SensorEvent p1 = Util.genPointData("1", "9", ts);
         SensorEvent p2 = Util.genPointData("1", "7", Util.addMs(ts, 100));
@@ -146,7 +146,7 @@ class ArrowExprTest {
         String code = "{count(>1,3)}->{delay(100ms)}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         SensorEvent p1 = Util.genPointData("1", "9", ts);
         SensorEvent p2 = Util.genPointData("1", "7", Util.addMs(ts, 100));
@@ -165,7 +165,7 @@ class ArrowExprTest {
         String code = "{count(>1,3)}->{delay(100ms)}->{delay(100ms)}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         SensorEvent p1 = Util.genPointData("1", "9", ts);
         SensorEvent p2 = Util.genPointData("1", "7", Util.addMs(ts, 100));
@@ -182,7 +182,7 @@ class ArrowExprTest {
         String code = "{collect().count().meet(==5)||filter(>1).collect().window(3).sum().meet(>10)}->{(-1,5]}->{delay(100ms)}->{keep(>10,100ms)}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         //第一种情况
         SensorEvent p1 = Util.genPointData("1", "9", ts);
@@ -219,7 +219,7 @@ class ArrowExprTest {
         String code = "{(-1,5]}->{keep(>2,100ms)}||{(7,12]}->{keep(>10,100ms)}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         //第一种情况
         SensorEvent p1 = Util.genPointData("1", "3", ts);

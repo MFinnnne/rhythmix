@@ -4,7 +4,7 @@ import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.pebble.TemplateEngine;
@@ -26,8 +26,9 @@ class WindowTest {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().window(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code,  env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        String transCode = Translator.translate(code, env);
+        Executor executor = new Executor(transCode, env);
+        ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -51,15 +52,17 @@ class WindowTest {
     @Test
     void translate3() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).window(100ms).sum().meet(>=6)";
+        String code = "filter((-5,5)).window(100ms).sum().meet(>=7)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis() + 51));
         SensorEvent p21 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis() + 67));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis() + 101));
-        SensorEvent p4 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis() + 151));
+        SensorEvent p4 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis() + 150));
+        SensorEvent p5 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis() + 250));
+//        SensorEvent p5 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis() + 160));
         executor.execute(p1); //0
         boolean execute = executor.execute(p2); //1
         Assertions.assertFalse(execute);
@@ -67,6 +70,8 @@ class WindowTest {
         boolean execute1 = executor.execute(p3);//2
         Assertions.assertFalse(execute1);
         boolean execute2 = executor.execute(p4);//3
+        Assertions.assertFalse(execute2);
+        execute2 = executor.execute(p5);
         Assertions.assertTrue(execute2);
     }
 
@@ -86,10 +91,10 @@ class WindowTest {
     @Test
     void translate5() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).window(1s).avg().meet(<=1.0)";
+        String code = "filter((-5,5)).collect().limit(5).window(1s).avg().meet(<=0.5)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis() + 510));
         SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis() + 1010));

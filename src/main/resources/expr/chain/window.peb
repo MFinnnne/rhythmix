@@ -7,7 +7,7 @@ let chain_{{ funcName }} = lambda()->
         let sIndex = count({% var rawChainQueue %})-{{windowLength}};
         let eIndex = count({% var rawChainQueue %});
         {% debug "chain window 起始索引：{},结束索引：{}",sIndex,eIndex%}
-        {% var processedChainQueue  %}=  queue.sub({% var rawChainQueue %},sIndex,eIndex);
+    {% var processedChainQueue  %}=  queue.sub({% var rawChainQueue %},sIndex,eIndex);
         return true;
     }
     return false;
@@ -27,9 +27,13 @@ let chain_{{ funcName }} = lambda()->
         {% debug "chain window 时间限制：!{} ms，当前时间差：!{}",windowTime,diff %}
         if(diff>={{ windowTime }}){
             {% debug "chain window:起始索引：!{}，结束索引：!{}",sIndex,eIndex %}
-             {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %}));
+            {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %}));
+             if(diff>{{ windowTime }}){
+                 nextChainData = event;
+                   {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %})-1);
+             }
              p({% var processedChainQueue  %} );
-             nextChainData = endEvent;
+
              return true;
         }
     }

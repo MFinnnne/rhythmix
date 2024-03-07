@@ -2,7 +2,7 @@ package com.df.rhythmix.translate.function;
 
 import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -20,7 +20,7 @@ class CountTranslateTest {
         String code = "count!(>4,3)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         SensorEvent p1 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "9", new Timestamp(System.currentTimeMillis()));
@@ -40,7 +40,7 @@ class CountTranslateTest {
         String code = "count!(>4,3)||count(>10,2)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode, env);
+        Executor translate = new Executor(translatedCode, env);
         SensorEvent p1 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "9", new Timestamp(System.currentTimeMillis()));

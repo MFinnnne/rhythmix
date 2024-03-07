@@ -2,8 +2,8 @@ package com.df.rhythmix.parser;
 
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumCompiler;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Compiler;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.pebble.TemplateEngine;
@@ -62,7 +62,7 @@ class TranslatorTest {
         String code = "<1,2,3>";
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate, env);
+        Executor build = new Executor(translate, env);
         SensorEvent point1 = new SensorEvent("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), "int");
 
 
@@ -87,7 +87,7 @@ class TranslatorTest {
         String code = "<1.0,2.0,3.0>";
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate, env);
+        Executor build = new Executor(translate, env);
         SensorEvent point1 = new SensorEvent("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()), "float");
         SensorEvent point2 = new SensorEvent("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()), "float");
         SensorEvent point3 = new SensorEvent("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()), "float");
@@ -106,7 +106,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate, env);
+        Executor build = new Executor(translate, env);
         SensorEvent point1 =  new SensorEvent("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), "int");
 
 
@@ -131,13 +131,13 @@ class TranslatorTest {
             String code = "asd<'1',2,'3'>";
             Lexer lexer = new Lexer();
             ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-            FerrumExecutor translate = FerrumCompiler.compile(code);
+            Executor translate = Compiler.compile(code);
         });
         Assertions.assertThrows(TranslatorException.class, () -> {
             String code = "<,2,'3'>";
             Lexer lexer = new Lexer();
             ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-            FerrumExecutor translate = FerrumCompiler.compile(code);
+            Executor translate = Compiler.compile(code);
         });
     }
 
@@ -203,7 +203,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate, env);
+        Executor build = new Executor(translate, env);
 
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -216,7 +216,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate, env);
+        Executor build = new Executor(translate, env);
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(build.execute(p1, p2));
@@ -228,7 +228,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        FerrumExecutor build = new FerrumExecutor(translate, env);
+        Executor build = new Executor(translate, env);
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(build.execute(p1, p2));

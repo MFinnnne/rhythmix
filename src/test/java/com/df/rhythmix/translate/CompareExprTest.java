@@ -3,7 +3,7 @@ package com.df.rhythmix.translate;
 import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.util.Util;
@@ -22,7 +22,7 @@ class CompareExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = CompareExpr.translate(tokens, env);
-        FerrumExecutor compile = new FerrumExecutor(translatedCode,env);
+        Executor compile = new Executor(translatedCode,env);
         SensorEvent pointData = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         SensorEvent p2 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
@@ -36,7 +36,7 @@ class CompareExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = CompareExpr.translate(tokens, env);
-        FerrumExecutor compile = new FerrumExecutor(translatedCode,env);
+        Executor compile = new Executor(translatedCode,env);
         SensorEvent pointData = Util.genPointData("1", "2.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         SensorEvent p2 = Util.genPointData("1", "0.0", new Timestamp(System.currentTimeMillis()));
@@ -51,7 +51,7 @@ class CompareExprTest {
         Assertions.assertThrows(TranslatorException.class, () -> {
             EnvProxy env = new EnvProxy();
             String translatedCode = CompareExpr.translate(tokens, env);
-            FerrumExecutor compile = new FerrumExecutor(translatedCode,env);
+            Executor compile = new Executor(translatedCode,env);
         });
 
         String code1 = "=='3.0'";
@@ -60,7 +60,7 @@ class CompareExprTest {
         Assertions.assertDoesNotThrow(() -> {
             EnvProxy env = new EnvProxy();
             String translatedCode = CompareExpr.translate(tokens1, env);
-            new FerrumExecutor(code,env);
+            new Executor(code,env);
         });
     }
 }

@@ -4,7 +4,7 @@ import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -24,7 +24,7 @@ class LimitTest {
         String code = "filter(((1,7]||>10)&&!=5).collect().limit(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis()));
         SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -41,7 +41,7 @@ class LimitTest {
         String code = "filter(((1,7]||>10)&&!=5).collect().limit(100ms).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis() + 50));
         SensorEvent p4 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis() + 110));
@@ -81,7 +81,7 @@ class LimitTest {
         String code = "filter((-5,5)).collect().limit(2).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertDoesNotThrow(()->{

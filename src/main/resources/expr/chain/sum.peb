@@ -5,10 +5,10 @@ let chain_{{ funcName }} = lambda()->
    if({% var processedChainQueue %}!=nil){
         {% var chainResult  %}= calc.sum({% var processedChainQueue %});
         queue.clear({% var processedChainQueue %});
-        {% debug  "chain sum 求和结果:{}",chainResult%}
+        {% debug  "chain sum 求和结果1:{}",chainResult%}
    }else{
        {% var chainResult %} = calc.sum({% var rawChainQueue %});
-       {% debug  "chain sum 求和结果:{}",chainResult%}
+       {% debug  "chain sum 求和结果2:{}",chainResult%}
    }
    {% if debug is not null and debug == true %}
         debugChainResult = {% var chainResult %} ;

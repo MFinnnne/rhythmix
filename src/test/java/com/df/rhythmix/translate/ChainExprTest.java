@@ -4,7 +4,7 @@ import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.Util;
@@ -28,7 +28,7 @@ class ChainExprTest {
         String code = "filter((-5,5)).collect().limit(5).take(0,2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
@@ -63,7 +63,7 @@ class ChainExprTest {
         String code = "filter((-5,5)).collect().limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
@@ -79,7 +79,7 @@ class ChainExprTest {
         String code = "collect().limit(500ms).take(0,3).stddev().meet(==1.414)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "7", new Timestamp(System.currentTimeMillis()));
@@ -96,7 +96,7 @@ class ChainExprTest {
         String code = "collect().count().meet(==2)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "7", new Timestamp(System.currentTimeMillis()));
@@ -114,7 +114,7 @@ class ChainExprTest {
         String code = "filter((-5,5)).limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
@@ -130,7 +130,7 @@ class ChainExprTest {
         String code = "limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
@@ -156,7 +156,7 @@ class ChainExprTest {
         String code = "window(400ms).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode, env);
+        Executor executor = new Executor(transCode, env);
         ;
         SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));

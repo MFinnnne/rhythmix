@@ -33,6 +33,7 @@ public class Window {
                 long ms = TranslateUtil.toMs(Long.parseLong(number), unit);
                 context.put("windowTime", ms);
                 env.rawPut("nextChainData",null);
+                env.rawPut("hasNextChainData",false);
             } else {
                 String number = astNode.getChildren(0).getChildren(0).getLabel();
                 if (Long.parseLong(number) <= 0) {

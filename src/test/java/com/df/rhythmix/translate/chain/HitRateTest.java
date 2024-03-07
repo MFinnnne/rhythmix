@@ -3,7 +3,7 @@ package com.df.rhythmix.translate.chain;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -23,7 +23,7 @@ public class HitRateTest {
         String code = "collect().hitRate((1,5)).meet((>=0.5))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        FerrumExecutor executor = new FerrumExecutor(transCode,env);;
+        Executor executor = new Executor(transCode,env);;
         SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "7", new Timestamp(System.currentTimeMillis()));
         SensorEvent p3 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));

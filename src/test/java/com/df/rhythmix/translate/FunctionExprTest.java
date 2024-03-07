@@ -3,7 +3,7 @@ package com.df.rhythmix.translate;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.FerrumExecutor;
+import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.SensorEvent;
 import com.df.rhythmix.util.Util;
@@ -19,7 +19,7 @@ class FunctionExprTest {
         String code = "count(>4,3)||count(<1,3)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode,env);
+        Executor translate = new Executor(translatedCode,env);
 //        System.out.println(translate);
         SensorEvent p1 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
@@ -36,7 +36,7 @@ class FunctionExprTest {
         String code = "keep(>4,100ms)||keep(<1,50ms)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode,env);
+        Executor translate = new Executor(translatedCode,env);
 //        System.out.println(translate);
         SensorEvent p1 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()+110));
@@ -52,7 +52,7 @@ class FunctionExprTest {
         String code = "delay(100ms)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode,env);
+        Executor translate = new Executor(translatedCode,env);
 //        System.out.println(translate);
         SensorEvent p1 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()+110));
@@ -69,7 +69,7 @@ class FunctionExprTest {
         String code = "keep(>4,100ms)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        FerrumExecutor translate = new FerrumExecutor(translatedCode,env);
+        Executor translate = new Executor(translatedCode,env);
 //        System.out.println(translate);
         SensorEvent p1 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
         SensorEvent p2 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()+110));
