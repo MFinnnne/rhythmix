@@ -26,13 +26,14 @@ public class AviatorQueue {
         queue.clear();
     }
 
-    public static Object first(LinkedList<Object> queue){
-       return queue.getFirst();
+    public static Object first(LinkedList<Object> queue) {
+        return queue.getFirst();
     }
 
-    public static Object last(LinkedList<Object> queue){
+    public static Object last(LinkedList<Object> queue) {
         return queue.getLast();
     }
+
     public static LinkedList<Object> sub(LinkedList<Object> queue, int startIndex, int endIndex) throws ComputeException {
         if (queue.size() >= endIndex) {
             List<Object> objects = queue.subList(startIndex, endIndex);

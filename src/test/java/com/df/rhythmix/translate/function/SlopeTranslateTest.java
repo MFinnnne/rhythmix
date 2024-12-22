@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 class SlopeTranslateTest {
 
     @Test
-    void translate() throws LexicalException, ParseException, TranslatorException {
+    void translate() throws  TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "slope(>4)";
         Executor compile = Compiler.compile(code);

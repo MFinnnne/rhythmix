@@ -1,25 +1,27 @@
 package com.df.rhythmix.util;
 
 import lombok.extern.slf4j.Slf4j;
+
 import java.sql.Timestamp;
+
 import com.df.rhythmix.util.SensorEvent;
 
 @Slf4j
 public class Util {
     public static SensorEvent genPointData(String pointId, String value, Timestamp ts) {
-        String dataType = "string";
+        SensorEventValueType dataType = SensorEventValueType.STRING;
         if (value.equals("true") || value.equals("false")) {
-            dataType = "bool";
+            dataType = SensorEventValueType.BOOL;
         }
         try {
             Integer.parseInt(value);
-            dataType = "int";
+            dataType = SensorEventValueType.INT;
         } catch (Exception ignore) {
 
         }
         try {
             Float.parseFloat(value);
-            dataType = "float";
+            dataType = SensorEventValueType.FLOAT;
         } catch (Exception ignore) {
         }
 

@@ -14,6 +14,5 @@ public class SensorEvent {
     private String name;
     private String value;
     private Timestamp ts;
-    private String valueType;
-
+    private SensorEventValueType valueType;
 }

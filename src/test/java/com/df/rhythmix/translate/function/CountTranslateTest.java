@@ -27,6 +27,7 @@ class CountTranslateTest {
         translate.execute(p2);
         translate.execute(p2);
         translate.execute(p1);
+
         boolean execute = translate.execute(p2);
         Assertions.assertFalse(execute);
         translate.execute(p2);
