@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
-import com.df.rhythmix.util.SensorEvent;
+import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -24,9 +24,9 @@ class MeetTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "10", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p4 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        EventData p4 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
         boolean execute = executor.execute(p2);
         Assertions.assertTrue(execute);
         boolean execute1 = executor.execute(p3);

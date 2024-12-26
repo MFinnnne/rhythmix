@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorEvent {
+public class EventData {
     private String id;
     private String name;
     private String value;
     private Timestamp ts;
-    private SensorEventValueType valueType;
+    private EventValueType valueType;
 }

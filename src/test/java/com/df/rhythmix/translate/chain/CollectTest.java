@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
-import com.df.rhythmix.util.SensorEvent;
+import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -23,10 +23,10 @@ class CollectTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         boolean execute3 = executor.execute(p1);
         Assertions.assertFalse(execute3);
         boolean execute = executor.execute(p2);

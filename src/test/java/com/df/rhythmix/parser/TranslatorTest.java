@@ -9,8 +9,8 @@ import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
-import com.df.rhythmix.util.SensorEvent;
-import com.df.rhythmix.util.SensorEventValueType;
+import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.EventValueType;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        SensorEvent point1 = new SensorEvent("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), SensorEventValueType.INT);
+        EventData point1 = new EventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), EventValueType.INT);
 
 
         env.put("event", point1);
@@ -89,9 +89,9 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        SensorEvent point1 = new SensorEvent("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()), SensorEventValueType.FLOAT);
-        SensorEvent point2 = new SensorEvent("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()), SensorEventValueType.FLOAT);
-        SensorEvent point3 = new SensorEvent("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()), SensorEventValueType.FLOAT);
+        EventData point1 = new EventData("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
+        EventData point2 = new EventData("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
+        EventData point3 = new EventData("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
         boolean execute = build.execute(point1);
         Assertions.assertFalse(execute);
         boolean execute1 = build.execute(point2);
@@ -108,7 +108,7 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        SensorEvent point1 =  new SensorEvent("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), SensorEventValueType.INT);
+        EventData point1 =  new EventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), EventValueType.INT);
 
 
         env.put("event", point1);
@@ -206,8 +206,8 @@ class TranslatorTest {
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
 
-        SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(build.execute(p1, p2));
     }
 
@@ -218,8 +218,8 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(build.execute(p1, p2));
     }
 
@@ -230,8 +230,8 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        SensorEvent p1 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(build.execute(p1, p2));
     }
 

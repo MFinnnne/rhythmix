@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
-import com.df.rhythmix.util.SensorEvent;
+import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -25,10 +25,10 @@ class LimitTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p4 = Util.genPointData("1", "5", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p5 = Util.genPointData("1", "8", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
+        EventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
+        EventData p5 = Util.genEventData("1", "8", new Timestamp(System.currentTimeMillis()));
         executor.execute(p5);
         executor.execute(p3);
         executor.execute(p2);
@@ -42,9 +42,9 @@ class LimitTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p2 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis() + 50));
-        SensorEvent p4 = Util.genPointData("1", "11", new Timestamp(System.currentTimeMillis() + 110));
+        EventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis() + 50));
+        EventData p4 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis() + 110));
         boolean execute = executor.execute(p2);
         Assertions.assertTrue(execute);
         boolean execute1 = executor.execute(p3);
@@ -82,8 +82,8 @@ class LimitTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertDoesNotThrow(()->{
             executor.execute(p1);
             executor.execute(p2);

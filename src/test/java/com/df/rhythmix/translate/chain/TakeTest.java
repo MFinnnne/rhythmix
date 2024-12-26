@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
-import com.df.rhythmix.util.SensorEvent;
+import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -23,9 +23,9 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         boolean execute =  executor.execute(p2);
         Assertions.assertFalse(execute);
@@ -46,9 +46,9 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         executor.execute(p2);
@@ -66,9 +66,9 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         executor.execute(p2);
@@ -87,8 +87,8 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             executor.execute(p1);
             executor.execute(p2);
@@ -103,8 +103,8 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             executor.execute(p1);
             executor.execute(p2);
@@ -119,9 +119,9 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         boolean execute = executor.execute(p2);
@@ -139,9 +139,9 @@ class TakeTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         executor.execute(p2);

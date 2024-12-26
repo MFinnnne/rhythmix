@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate;
 
-import com.df.rhythmix.util.SensorEvent;
+import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Executor;
@@ -23,9 +23,9 @@ class CompareExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = CompareExpr.translate(tokens, env);
         Executor compile = new Executor(translatedCode,env);
-        SensorEvent pointData = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        SensorEvent p2 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 
@@ -37,9 +37,9 @@ class CompareExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = CompareExpr.translate(tokens, env);
         Executor compile = new Executor(translatedCode,env);
-        SensorEvent pointData = Util.genPointData("1", "2.0", new Timestamp(System.currentTimeMillis()));
+        EventData pointData = Util.genEventData("1", "2.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        SensorEvent p2 = Util.genPointData("1", "0.0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "0.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 

@@ -4,28 +4,26 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 
-import com.df.rhythmix.util.SensorEvent;
-
 @Slf4j
 public class Util {
-    public static SensorEvent genPointData(String pointId, String value, Timestamp ts) {
-        SensorEventValueType dataType = SensorEventValueType.STRING;
+    public static EventData genEventData(String pointId, String value, Timestamp ts) {
+        EventValueType dataType = EventValueType.STRING;
         if (value.equals("true") || value.equals("false")) {
-            dataType = SensorEventValueType.BOOL;
+            dataType = EventValueType.BOOL;
         }
         try {
             Integer.parseInt(value);
-            dataType = SensorEventValueType.INT;
+            dataType = EventValueType.INT;
         } catch (Exception ignore) {
 
         }
         try {
             Float.parseFloat(value);
-            dataType = SensorEventValueType.FLOAT;
+            dataType = EventValueType.FLOAT;
         } catch (Exception ignore) {
         }
 
-        return new SensorEvent(pointId, "1", value, ts, dataType);
+        return new EventData(pointId, "1", value, ts, dataType);
     }
 
     public static Timestamp addSeconds(Timestamp oriTs, long sec) {

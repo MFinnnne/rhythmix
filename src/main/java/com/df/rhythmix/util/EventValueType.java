@@ -5,7 +5,7 @@ package com.df.rhythmix.util;
  * @version 1.0
  * @date 2024/12/22 18:29
  **/
-public enum SensorEventValueType {
+public enum EventValueType {
     STRING("string", "STRING"),
     BOOL("bool", "BOOL"),
     INT("int", "INT"),
@@ -15,7 +15,7 @@ public enum SensorEventValueType {
     private final String title;
     private final String code;
 
-    SensorEventValueType(String title, String code) {
+    EventValueType(String title, String code) {
         this.title = title;
         this.code = code;
     }

@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
-import com.df.rhythmix.util.SensorEvent;
+import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -29,9 +29,9 @@ class WindowTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
         ;
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis()));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         boolean execute = executor.execute(p2);
         Assertions.assertFalse(execute);
@@ -56,12 +56,12 @@ class WindowTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis() + 51));
-        SensorEvent p21 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis() + 67));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis() + 101));
-        SensorEvent p4 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis() + 150));
-        SensorEvent p5 = Util.genPointData("1", "4", new Timestamp(System.currentTimeMillis() + 250));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 51));
+        EventData p21 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 67));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis() + 101));
+        EventData p4 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis() + 150));
+        EventData p5 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis() + 250));
 //        SensorEvent p5 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis() + 160));
         executor.execute(p1); //0
         boolean execute = executor.execute(p2); //1
@@ -95,10 +95,10 @@ class WindowTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
-        SensorEvent p1 = Util.genPointData("1", "0", new Timestamp(System.currentTimeMillis()));
-        SensorEvent p2 = Util.genPointData("1", "1", new Timestamp(System.currentTimeMillis() + 510));
-        SensorEvent p3 = Util.genPointData("1", "2", new Timestamp(System.currentTimeMillis() + 1010));
-        SensorEvent p4 = Util.genPointData("1", "3", new Timestamp(System.currentTimeMillis() + 1510));
+        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 510));
+        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis() + 1010));
+        EventData p4 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis() + 1510));
         executor.execute(p1);//0
         boolean execute = executor.execute(p2);//1
         Assertions.assertFalse(execute);
