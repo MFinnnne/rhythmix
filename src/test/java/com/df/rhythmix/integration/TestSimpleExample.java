@@ -46,8 +46,8 @@ public class TestSimpleExample {
     }
 
     @Test
-    void testLogicOp() throws TranslatorException {
-        String code = "{==0||!=2}->{==1}";
+    void testAndOp() throws TranslatorException {
+        String code = "{!=0&&!=2}->{==1}";
         Executor executor = Compiler.compile(code);
 
         EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
