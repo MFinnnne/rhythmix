@@ -27,7 +27,6 @@ public class CallStmt extends Stmt {
                 continue;
             }
             if (it.hasNext() && it.peek().isValue()) {
-
                 continue;
             }
             break;
