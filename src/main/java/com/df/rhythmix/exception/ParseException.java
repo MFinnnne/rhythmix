@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class ParseException extends Exception {
-    private String msg;
+    private final String msg;
 
     public ParseException(String msg) {
         this.msg = msg;

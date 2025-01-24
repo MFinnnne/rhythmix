@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 
 class TakeTest {
     @Test
-    void translate1() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate1() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().limit(5).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
@@ -41,7 +41,7 @@ class TakeTest {
 
 
     @Test
-    void translate2() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate2() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().limit(5).take(0,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
@@ -84,7 +84,7 @@ class TakeTest {
 
 
     @Test
-    void translate4() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate4() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).limit(5).take(5,3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
@@ -101,7 +101,7 @@ class TakeTest {
     }
 
     @Test
-    void translate5() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate5() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).limit(5).take(-1,-2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
@@ -118,7 +118,7 @@ class TakeTest {
     }
 
     @Test
-    void translate6() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate6() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().limit(5).take(-3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
@@ -139,7 +139,7 @@ class TakeTest {
     }
 
     @Test
-    void translate7() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate7() throws TranslatorException{
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().limit(5).take(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
