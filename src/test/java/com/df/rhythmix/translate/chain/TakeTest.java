@@ -160,9 +160,7 @@ class TakeTest {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5).limit(5).take(5,3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
-        Assertions.assertThrows(TranslatorException.class, () -> {
-            Translator.translate(code, env);
-        });
+        Assertions.assertThrows(TranslatorException.class, () -> Translator.translate(code, env));
     }
 
 }
