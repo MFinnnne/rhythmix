@@ -62,7 +62,7 @@ class TakeTest {
     }
 
     @Test
-    void translate3() throws LexicalException, ParseException, TranslatorException, IOException {
+    void translate3() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().limit(5).take(-3,5).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
