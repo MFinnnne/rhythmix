@@ -9,7 +9,7 @@ public class CallStmt extends Stmt {
         super(ASTNodeTypes.CALL_STMT, "call");
     }
 
-    public static ASTNode parse( PeekTokenIterator it) throws ParseException {
+    public static ASTNode parse(PeekTokenIterator it) throws ParseException {
         CallStmt callStmt = new CallStmt();
         it.nextMatch("(");
         while (it.hasNext()) {
@@ -24,7 +24,13 @@ public class CallStmt extends Stmt {
             }
             if (it.hasNext() && ",".equals(it.peek().getValue())) {
                 it.next();
+                continue;
             }
+            if (it.hasNext() && it.peek().isValue()) {
+
+                continue;
+            }
+            break;
         }
         it.nextMatch(")");
         return callStmt;

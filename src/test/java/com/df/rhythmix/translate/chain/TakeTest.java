@@ -22,12 +22,13 @@ class TakeTest {
         String code = "filter((-5,5)).collect().limit(5).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
-        boolean execute =  executor.execute(p2);
+        boolean execute = executor.execute(p2);
         Assertions.assertFalse(execute);
         boolean execute2 = executor.execute(p2);
         Assertions.assertFalse(execute2);
@@ -45,7 +46,8 @@ class TakeTest {
         String code = "filter((-5,5)).collect().limit(5).take(0,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -65,7 +67,8 @@ class TakeTest {
         String code = "filter((-5,5)).collect().limit(5).take(-3,5).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -83,10 +86,11 @@ class TakeTest {
     @Test
     void translate4() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5).limit(5).take(5,3).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(5,3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -99,10 +103,11 @@ class TakeTest {
     @Test
     void translate5() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).take(-1,-2).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(-1,-2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -118,7 +123,8 @@ class TakeTest {
         String code = "filter((-5,5)).collect().limit(5).take(-3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -138,7 +144,8 @@ class TakeTest {
         String code = "filter((-5,5)).collect().limit(5).take(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        Executor executor = new Executor(transCode, env);
+
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -149,6 +156,16 @@ class TakeTest {
         Assertions.assertTrue(execute);
         executor.execute(p2);
         executor.execute(p3);
+    }
+
+    @Test
+    void translate8() {
+        TemplateEngine.enableDebugModel(true);
+        String code = "filter((-5,5).limit(5).take(5,3).sum().meet(>1)";
+        EnvProxy env = new EnvProxy();
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Translator.translate(code, env);
+        });
     }
 
 }

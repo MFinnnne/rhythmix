@@ -23,7 +23,7 @@ public class PeekTokenIterator extends PeekIterator<Token> {
     public Token nextMatch(String value) throws ParseException {
         Token token = this.next();
         if (!token.getValue().equals(value)) {
-            throw new ParseException(token);
+            throw new ParseException(value,token);
 
         }
         return token;
