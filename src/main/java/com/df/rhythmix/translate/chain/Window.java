@@ -27,7 +27,7 @@ public class Window {
             if (astNode.getChildren(0).getChildren().size() == 2) {
                 String number = astNode.getChildren(0).getChildren(0).getLabel();
                 if (Long.parseLong(number) <= 0) {
-                    throw  new TranslatorException("window算子参数必须大于0");
+                    throw  new TranslatorException("window operator parameter must be greater than 0");
                 }
                 String unit = astNode.getChildren(0).getChildren(1).getLabel();
                 long ms = TranslateUtil.toMs(Long.parseLong(number), unit);
@@ -37,7 +37,7 @@ public class Window {
             } else {
                 String number = astNode.getChildren(0).getChildren(0).getLabel();
                 if (Long.parseLong(number) <= 0) {
-                    throw  new TranslatorException("window算子参数必须大于0");
+                    throw  new TranslatorException("window operator parameter must be greater than 0");
                 }
                 context.put("windowLength", Integer.parseInt(number));
             }

@@ -1,3 +1,17 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-06 22:29:15
+ * @LastEditors: MFine
+ * @Description: 
+ */
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-06 22:29:10
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate;
 
 import com.df.rhythmix.exception.TranslatorException;
@@ -45,7 +59,7 @@ public class MutExpr {
                     break;
                 case 1:
                     if (!",".equals(next.getValue())) {
-                        throw new TranslatorException("{} 后期望得到','但是现在是 {}", next.getValue(), lookahead.getValue());
+                        throw new TranslatorException("Illegal expression, unable to understand this syntax or it may not be supported yet");
                     }
                     newTokens.add(new Token(TokenType.OPERATOR, "->"));
                     state = 0;

@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-06 22:28:48
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate;
 
 import com.df.rhythmix.exception.LexicalException;
@@ -42,7 +49,7 @@ public class ArrowExpr {
                 context.put("preFuncFinishTime","preFuncFinishTime"+Config.SPLIT_SYMBOL+ Config.VAR_COUNTER.get());
                 for (ASTNode arg : children) {
                     if (arg.getType() == ASTNodeTypes.ARROW_EXPR) {
-                        throw new TranslatorException("箭头表达式不允许嵌套箭头表达式");
+                        throw new TranslatorException("Arrow expressions cannot be nested");
                     }
                     String code = Translator.translate(arg, context, env);
                     translatedCodes.add(code);

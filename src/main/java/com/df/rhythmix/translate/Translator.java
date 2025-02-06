@@ -25,9 +25,9 @@ public class Translator {
 
 
     /**
-     * 将lexer解析得到的token转换为aviator代码
+     * Convert tokens parsed by lexer into aviator code
      *
-     * @return aviator代码
+     * @return aviator code
      */
     public static String translate(String code, EnvProxy env) throws TranslatorException {
 
@@ -36,15 +36,15 @@ public class Translator {
             return translate(code, context, env);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new TranslatorException("非法表达式,这语法我是真看不懂或许我还不支持", e);
+            throw new TranslatorException("Illegal expression, I really can't understand this syntax or maybe I don't support it yet", e);
         }
     }
 
 
     /**
-     * 将lexer解析得到的token转换为aviator代码
+     * Convert tokens parsed by lexer into aviator code
      *
-     * @return aviator代码
+     * @return aviator code
      */
     public static String translate(String code, Map<String, Object> context, EnvProxy env) throws TranslatorException {
 
@@ -55,7 +55,7 @@ public class Translator {
             if (tokens.isEmpty()) {
                 return null;
             }
-            // 突变表达式token集合转换为箭头表达式token集合
+            // Convert mutation expression token set to arrow expression token set
             if ("<".equals(tokens.get(0).getValue()) && ">".equals(tokens.get(tokens.size() - 1).getValue())) {
                 tokens = MutExpr.translateMutExpr(tokens);
             }
@@ -68,18 +68,18 @@ public class Translator {
             return writer.toString();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new TranslatorException("非法表达式,这语法我是真看不懂或许我还不支持", e);
+            throw new TranslatorException("Illegal expression, I really can't understand this syntax or maybe I don't support it yet", e);
         }
     }
 
 
 
     /**
-     * @param astNode 抽象语法树
-     * @param context 代码翻译的上下文
-     * @param env     代码运行环境上下文
-     * @return 翻译后的代码
-     * @throws TranslatorException 翻译异常
+     * @param astNode Abstract syntax tree
+     * @param context Code translation context
+     * @param env     Code execution environment context
+     * @return Translated code
+     * @throws TranslatorException Translation exception
      */
     public static String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         String code;
@@ -106,7 +106,7 @@ public class Translator {
                     return astNode.getLabel() + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
                 } else {
                     if (!env.containsKey(astNode.getLabel())) {
-                        throw new TranslatorException("未定义的变量:'{}'", astNode.getLabel());
+                        throw new TranslatorException("Undefined variable:'{}'", astNode.getLabel());
                     }
                     return env.rawGet(astNode.getLabel()).toString();
                 }

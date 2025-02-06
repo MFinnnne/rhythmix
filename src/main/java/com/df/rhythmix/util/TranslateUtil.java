@@ -17,7 +17,7 @@ public class TranslateUtil {
             case "d":
                 return time * 1000 * 3600 * 24;
             default:
-                throw new TranslatorException("不支持此种时间格式类型");
+                throw new TranslatorException("This time format type is not supported");
         }
     }
 

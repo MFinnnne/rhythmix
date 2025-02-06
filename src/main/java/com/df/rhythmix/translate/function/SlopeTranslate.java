@@ -61,7 +61,7 @@ public class SlopeTranslate implements FunctionTranslate {
                 }
                 slopeUnit = number;
             } else {
-                throw new TranslatorException("slope 函数最多只能有两个参数");
+                throw new TranslatorException("slope function can have at most 2 parameters");
             }
             Map<String, Object> context = new HashMap<>();
             context.put("funcName", funcName);

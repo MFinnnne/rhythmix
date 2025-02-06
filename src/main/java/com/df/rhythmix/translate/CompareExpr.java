@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-06 22:28:34
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate;
 
 import com.df.rhythmix.exception.TranslatorException;
@@ -50,15 +57,15 @@ public class CompareExpr {
             context.put("symbol", symbol);
             ASTNode arg = astNode.getChildren(0);
             if (!arg.getChildren().isEmpty()) {
-                throw new TranslatorException("目前不允许比较表达式参数为一个表达式");
+                throw new TranslatorException("Comparison expression parameter cannot be an expression");
             }
             if (!Arrays.asList("!=", "==").contains(symbol)) {
                 if (!arg.getLexeme().isNumber()) {
-                    throw new TranslatorException("{} 后不允许跟非数值类型", symbol);
+                    throw new TranslatorException("{} cannot be followed by non-numeric type", symbol);
                 }
             }
             if (arg.getLexeme().isVariable()) {
-                throw new TranslatorException("目前不允许比较表达式参数为一个变量");
+                throw new TranslatorException("Comparison expression parameter cannot be a variable");
             }
             context.put("comparedValue", arg.getLexeme().getValue());
             if (arg.getLexeme().getType() == TokenType.INTEGER) {

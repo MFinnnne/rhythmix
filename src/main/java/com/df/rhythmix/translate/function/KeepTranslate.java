@@ -38,14 +38,14 @@ public class KeepTranslate implements FunctionTranslate {
             String funcName = astNode.getLabel();
             List<ASTNode> args = astNode.getChildren(0).getChildren();
             if (args.size() != 3) {
-                throw new TranslatorException("keep函数需要两个必须为2个");
+                throw new TranslatorException("keep function requires exactly 2 parameters");
             }
             if (!args.get(1).getLexeme().isNumber()) {
-                throw new TranslatorException("参数错误，第二个参必须为整数加时间单位的格式");
+                throw new TranslatorException("Parameter error, second parameter must be integer with time unit");
             }
             long keepTime = Long.parseLong(args.get(1).getLabel());
             if (keepTime <= 0) {
-                throw new TranslatorException("limit算子参数必须大于0");
+                throw new TranslatorException("limit operator parameter must be greater than 0");
             }
             String unit = args.get(2).getLabel();
             long ms = TranslateUtil.toMs(keepTime, unit);
@@ -54,7 +54,7 @@ public class KeepTranslate implements FunctionTranslate {
             ASTNode state = args.get(0);
             String code = Translator.translate(state, context, env);
             if (!argsCheck(state)) {
-                throw new TranslatorException("{} 函数第一个参数必须为状态参数", funcName);
+                throw new TranslatorException("{} function first parameter must be a state parameter", funcName);
             }
             context.put("funcName", funcName);
             context.put("stateCheckCode", code);

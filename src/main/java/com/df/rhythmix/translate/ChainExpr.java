@@ -145,14 +145,14 @@ public class ChainExpr {
                     case "hitRate":
                         return Calculator.HitRate.translate(astNode, env);
                     default:
-                        throw new TranslatorException("chain表达式暂不支持 {} 算子", name);
+                        throw new TranslatorException("Chain expression does not support {} operator", name);
                 }
             }
             String left = recursiveTrans(astNode.getChildren(0), env);
             String right = recursiveTrans(astNode.getChildren(1), env);
             return left + "\n" + right;
         }
-        throw new TranslatorException("链式调用翻译错误");
+        throw new TranslatorException("Chain call translation error");
     }
 
 }

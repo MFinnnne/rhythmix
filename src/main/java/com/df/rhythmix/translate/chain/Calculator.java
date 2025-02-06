@@ -68,7 +68,7 @@ public class Calculator {
                 Map<String, Object> context = new HashMap<>();
                 String name = astNode.getLabel();
                 if (!astNode.getChildren(0).getChildren().isEmpty()) {
-                    throw new TranslatorException("stddev函数不需要参数");
+                    throw new TranslatorException("stddev function does not require parameters");
                 }
                 context.put("funcName", name);
                 FILTER.evaluate(writer, context);

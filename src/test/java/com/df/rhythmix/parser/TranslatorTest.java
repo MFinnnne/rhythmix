@@ -28,7 +28,6 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
         Assertions.assertEquals("usejava.util.*;(long(event.value)>=1&&long(event.value)<=2)", translate);
-
     }
 
     @Test

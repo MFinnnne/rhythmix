@@ -54,11 +54,11 @@ public class RangeExpr {
             TokenType arg1Type = TypeInfer.infer(arg1, env);
             TokenType arg2Type = TypeInfer.infer(arg2, env);
             if (!TypeInfer.isNumber(arg1Type) || !TypeInfer.isNumber(arg2Type)) {
-                throw new TranslatorException("区间表达式参数必须为数值类型");
+                throw new TranslatorException("Range expression parameters must be numeric");
             }
 
             if (arg1Type != arg2Type) {
-                throw new TranslatorException("区间表达式参数类型必须相同");
+                throw new TranslatorException("Range expression parameters must be of the same type");
             }
 
             context.put("leftValue", Translator.translate(arg1, context, env));

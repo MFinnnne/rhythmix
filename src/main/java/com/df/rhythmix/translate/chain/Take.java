@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-06 22:28:02
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate.chain;
 
 import com.df.rhythmix.exception.TranslatorException;
@@ -31,7 +38,7 @@ public class Take {
                 arg1 = arg1Node.getLabel();
                 arg2 = arg2Node.getLabel();
             } else {
-                throw new TranslatorException("链式表达式take函数参数个数最多一到两个");
+                throw new TranslatorException("take function in chain expression can have 1-2 parameters");
             }
             context.put("startIndex", arg1);
             context.put("endIndex", arg2 == null ? "nil" : arg2);
@@ -39,7 +46,7 @@ public class Take {
             FILTER.evaluate(writer, context);
             return writer.toString();
         } catch (Exception e) {
-            throw new TranslatorException("take函数应用存在错误，请检查");
+            throw new TranslatorException("Error in take function application, please check");
         }
     }
 }
