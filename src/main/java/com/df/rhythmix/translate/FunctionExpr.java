@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-06 22:39:09
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate;
 
 import cn.hutool.core.util.ClassUtil;
