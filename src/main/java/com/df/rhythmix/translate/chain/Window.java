@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-11 20:52:39
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate.chain;
 
 import com.df.rhythmix.exception.TranslatorException;

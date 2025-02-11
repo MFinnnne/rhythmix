@@ -32,16 +32,15 @@ public class ChainExprSyntaxCheck {
     }
 
     public static void check(List<String> chainCall) throws TranslatorException {
-//        List<String> chainCall = chainCall.stream().map(label -> label.split("_")[1]).collect(Collectors.toList());
         for (int i = 0; i < chainCall.size(); i++) {
             if (i == 0) {
                 if (!START_FUNC.contains(chainCall.get(0))) {
-                    throw new TranslatorException("{}不能为调用第一个算子", chainCall.get(0));
+                    throw new TranslatorException("{} cannot be the first operator", chainCall.get(0));
                 }
             }
             if (i == chainCall.size() - 1) {
                 if (!END_FUNC.contains(chainCall.get(chainCall.size() - 1))) {
-                    throw new TranslatorException("{}不能为调用的最后一个算子", chainCall.get(chainCall.size() - 1));
+                    throw new TranslatorException("{} cannot be the last operator", chainCall.get(chainCall.size() - 1));
                 }
                 break;
             }
@@ -49,12 +48,11 @@ public class ChainExprSyntaxCheck {
             var nextFunc = chainCall.get(i + 1);
             if (CALL_TREE.containsKey(curFunc)) {
                 if (!CALL_TREE.get(curFunc).contains(nextFunc)) {
-                    throw new TranslatorException("'{}' 算子后不能使用 '{}' 算子", curFunc, nextFunc);
+                    throw new TranslatorException("'{}' operator cannot be followed by '{}' operator", curFunc, nextFunc);
                 }
             } else {
-                throw new TranslatorException("{} 算子未定义", curFunc);
+                throw new TranslatorException("{} operator is not defined", curFunc);
             }
-
         }
     }
 

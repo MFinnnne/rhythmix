@@ -180,11 +180,7 @@ public class Expr extends ASTNode {
         Expr.table = new PriorityTable();
         return E(0, tokenIt);
     }
-
-    public static ASTNode parse(PeekTokenIterator tokenIt, List<ASTNodeTypes> forbidChildExpr) throws ParseException {
-        Expr.table = new PriorityTable();
-        return E(0, tokenIt);
-    }
+    
 
     public static ASTNode parse(PeekTokenIterator tokenIt, PriorityTable table) throws ParseException {
         Expr.table = table;
