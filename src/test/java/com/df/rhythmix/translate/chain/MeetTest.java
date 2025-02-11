@@ -20,7 +20,7 @@ class MeetTest {
     @Test
     void translate() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "collect().limit(100).take(0,1).sum().meet((<5||(8,12])&&!=10)";
+        String code = "collect().take(0,1).limit(100).sum().meet((<5||(8,12])&&!=10)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;

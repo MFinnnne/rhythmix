@@ -21,7 +21,7 @@ class LimitTest {
     @Test
     void test1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(((1,7]||>10)&&!=5).collect().limit(2).sum().meet(>1)";
+        String code = "filter(((1,7]||>10)&&!=5).collect().window(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -38,7 +38,7 @@ class LimitTest {
     @Test
     void test2() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(((1,7]||>10)&&!=5).collect().limit(100ms).sum().meet(>1)";
+        String code = "filter(((1,7]||>10)&&!=5).window(100ms).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -46,9 +46,9 @@ class LimitTest {
         EventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis() + 50));
         EventData p4 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis() + 110));
         boolean execute = executor.execute(p2);
-        Assertions.assertTrue(execute);
+        Assertions.assertFalse(execute);
         boolean execute1 = executor.execute(p3);
-        Assertions.assertTrue(execute1);
+        Assertions.assertFalse(execute1);
         boolean execute2 = executor.execute(p4);
         Assertions.assertTrue(execute2);
     }

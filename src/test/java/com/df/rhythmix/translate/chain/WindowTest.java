@@ -91,7 +91,7 @@ class WindowTest {
     @Test
     void translate5() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).window(1s).avg().meet(<=0.5)";
+        String code = "filter((-5,5)).collect().window(1s).limit(5).avg().meet(<=0.5)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);

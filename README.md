@@ -206,3 +206,5 @@ Executor executor = Compiler.compile(code);
   `take(-3)`即`[3,4,5]`
 
   `take(0)`即`[0,1,2,3,4,5]`
+
+  

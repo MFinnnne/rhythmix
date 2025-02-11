@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class ASTNode {
 
 
-    protected ArrayList<ASTNode> children = new ArrayList<>();
+    protected List<ASTNode> children = new ArrayList<>();
 
     protected Token lexeme;
 

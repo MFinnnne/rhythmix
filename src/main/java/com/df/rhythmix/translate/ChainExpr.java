@@ -89,7 +89,9 @@ public class ChainExpr {
             ArrayList<ASTNode> newChild = new ArrayList<>();
             newChild.add(limitNode);
             newChild.add(expr);
-            parent.setChildren(newChild);
+            List<ASTNode> afterWindowChildren = copyChild.get(1).getChildren();
+            copyChild.get(1).setChildren(newChild);
+            newChild.get(1).setChildren(afterWindowChildren);
         }
     }
 
