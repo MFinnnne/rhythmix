@@ -31,7 +31,7 @@ public class Expr extends ASTNode {
     // E(k) -> E(K+1)E_(k)
     //    var e = new Expr();e.left = E(k+1);e.op = op(K);e.right=E(k+1)E_(k)
     // E_(k)->op(k)E(k+1)E_(k)|ε
-    //最高优先级处理
+    // Highest priority processing
     //  E(t)->F E_(k)|U E_(k)
     //  E_(t)-> op(t) E(t)E_(t) | ε
     //
@@ -116,7 +116,7 @@ public class Expr extends ASTNode {
                     chainExpr.addChild(parse);
                     ASTNode f = F(it);
                     if (f.getChildren().isEmpty()) {
-                        throw new ParseException("链式调用的对象必须是函数，现在是：{}", f.getLexeme());
+                        throw new ParseException("The object of chain call must be a function, current is: {}", f.getLexeme());
                     } else if (f.getChildren(0).getType() == ASTNodeTypes.CALL_STMT
                             || f.getType() == ASTNodeTypes.CHAIN_EXPR) {
                         chainExpr.addChild(f);
@@ -180,7 +180,7 @@ public class Expr extends ASTNode {
         Expr.table = new PriorityTable();
         return E(0, tokenIt);
     }
-    
+
 
     public static ASTNode parse(PeekTokenIterator tokenIt, PriorityTable table) throws ParseException {
         Expr.table = table;
@@ -193,7 +193,7 @@ public class Expr extends ASTNode {
         List<ASTNodeTypes> types = ParserUtils.toBFSASTType(expr);
         List<ASTNodeTypes> collect = types.stream().filter(forbidChildExpr::contains).collect(Collectors.toList());
         if (!collect.isEmpty()) {
-            String log = StrUtil.format("此表达式不支持嵌套 {}", collect);
+            String log = StrUtil.format("This expression does not support nested {}", collect);
             throw new ParseException(log);
         }
         return expr;

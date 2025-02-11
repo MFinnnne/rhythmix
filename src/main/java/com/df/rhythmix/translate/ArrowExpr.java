@@ -43,9 +43,9 @@ public class ArrowExpr {
                 List<String> translatedCodes = new ArrayList<>();
                 List<ASTNode> children = astNode.getChildren();
                 env.put("preFuncFinishTime", null);
-                //preFuncFinishTime变量在作用域为当前表达式
-                //此做法是为了在模板解析的时候 在模板上下文中查到 preFuncFinishTime 后直接应用引用引用已有变量
-                //而不是在重新增加后缀，从而让preFuncFinishTime变成一个全新变量导致delay函数异常
+                // preFuncFinishTime variable scope is current expression
+                // This approach allows the template to find and directly reference the existing preFuncFinishTime variable
+                // Rather than creating a new variable by adding a suffix that would cause the delay function to fail
                 context.put("preFuncFinishTime","preFuncFinishTime"+Config.SPLIT_SYMBOL+ Config.VAR_COUNTER.get());
                 for (ASTNode arg : children) {
                     if (arg.getType() == ASTNodeTypes.ARROW_EXPR) {

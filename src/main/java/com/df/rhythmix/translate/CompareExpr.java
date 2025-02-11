@@ -1,7 +1,7 @@
 /*
  * @Author: MFine
  * @Date: 2024-10-22 19:22:29
- * @LastEditTime: 2025-02-06 22:28:34
+ * @LastEditTime: 2025-02-11 21:04:49
  * @LastEditors: MFine
  * @Description: 
  */
@@ -30,21 +30,19 @@ public class CompareExpr {
     private static final List<String> COMPARE_EXPR_FIRST_TOKENS = List.of("!=", ">", "<", "==", "<=", ">=");
 
     /**
-     * 比较表达式 大于 小于  等于 .....
+     * Comparison expressions: greater than, less than, equals, etc.
      *
-     * @param tokens 符号集合
-     * @return 翻译得到的代码
-     * @throws TranslatorException 翻译错误
+     * @param tokens token collection
+     * @return translated code
+     * @throws TranslatorException translation error
      */
     public static String translate(List<Token> tokens, EnvProxy env) throws TranslatorException {
-
         try {
             ASTNode astNode = CompareStmt.parser(new PeekTokenIterator(tokens.stream()));
             return translate(astNode, env);
         } catch (Exception e) {
             throw new TranslatorException(e.getMessage());
         }
-
     }
 
 

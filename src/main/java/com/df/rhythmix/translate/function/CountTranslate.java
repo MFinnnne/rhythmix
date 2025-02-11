@@ -39,12 +39,12 @@ public class CountTranslate implements FunctionTranslate {
 
             List<ASTNode> args = astNode.getChildren(0).getChildren();
             if (args.size() != 2) {
-                throw new TranslatorException("{} 函数参数必须为两个", funcName);
+                throw new TranslatorException("{} function requires exactly two parameters", funcName);
             }
             context.put("funcName", funcName);
             ASTNode state = args.get(0);
             if (!argsCheck(state)) {
-                throw new TranslatorException("{} 函数第一个参数必须为状态参数", funcName);
+                throw new TranslatorException("{} function's first parameter must be a state parameter", funcName);
             }
             String code = Translator.translate(state, context, env);
             long times = Long.parseLong(args.get(1).getLexeme().getValue());

@@ -1,7 +1,7 @@
 /*
  * @Author: MFine
  * @Date: 2024-10-22 19:22:29
- * @LastEditTime: 2025-02-06 22:28:17
+ * @LastEditTime: 2025-02-11 21:03:40
  * @LastEditors: MFine
  * @Description: 
  */
@@ -25,16 +25,15 @@ public class Limit {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/limit.peb");
 
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
-
         try {
             Writer writer = new StringWriter();
             Map<String, Object> context = new HashMap<>();
             String name = astNode.getLabel();
-            //说明此时是时间限制
+            // Time limit case
             if (astNode.getChildren(0).getChildren().size() == 2) {
                 String number = astNode.getChildren(0).getChildren(0).getLabel();
                 if (Long.parseLong(number) <= 0) {
-                    throw  new TranslatorException("limit operator parameter must be greater than 0");
+                    throw new TranslatorException("Limit operator parameter must be greater than 0");
                 }
                 String unit = astNode.getChildren(0).getChildren(1).getLabel();
                 long ms = TranslateUtil.toMs(Long.parseLong(number), unit);
@@ -42,7 +41,7 @@ public class Limit {
             } else {
                 String number = astNode.getChildren(0).getChildren(0).getLabel();
                 if (Long.parseLong(number) <= 0) {
-                    throw  new TranslatorException("limit operator parameter must be greater than 0");
+                    throw new TranslatorException("Limit operator parameter must be greater than 0");
                 }
                 context.put("limitLength", Integer.parseInt(number));
             }

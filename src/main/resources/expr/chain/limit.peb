@@ -1,5 +1,6 @@
 ## ===============  chain limit start ===============
-##  限制计算流队列的个数,小于指定个数返回true，大于指定个数则删除第一个数据
+## Restrict the number of elements in the calculation stream queue
+## Return true if less than specified number, delete the first data if greater than specified number
 
 let chain_{{ funcName }} = lambda()->
 
@@ -29,4 +30,4 @@ let chain_{{ funcName }} = lambda()->
     {% endif %}
     return true;
 end;
-## ===============  chain limit  end  ===============
+## ===============  chain limit end  ===============

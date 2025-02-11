@@ -13,10 +13,10 @@ public class ChainExprSyntaxCheck {
     private static final Map<String, List<String>> CALL_TREE = new HashMap<>();
 
     static {
-        //第一个函数只能为filter 或者 collect
+        // The first function can only be filter or collect
         START_FUNC.add("filter");
         START_FUNC.add("collect");
-        //最后一个函数只能是meet
+        // The last function can only be meet
         END_FUNC.add("meet");
 
         CALL_TREE.put("filter", List.of("collect"));

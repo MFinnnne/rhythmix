@@ -30,10 +30,11 @@ public class DelayTranslate implements FunctionTranslate {
             Writer writer = new StringWriter();
             List<ASTNode> args = astNode.getChildren(0).getChildren();
             if (args.size() != 2) {
-                throw new TranslatorException("{} 函数参数必须为一个", funcName);
+                throw new TranslatorException("{} function requires exactly one parameter", funcName);
             }
             if (args.get(0).getLexeme().getType() != TokenType.INTEGER) {
-                throw new TranslatorException("{} 参数类型错误，要求整数类型，实际：{}", funcName, args.get(0).getLexeme().getType());
+                throw new TranslatorException("{} parameter type error, requires integer type, actual: {}", 
+                    funcName, args.get(0).getLexeme().getType());
             }
             long delayTime = Long.parseLong(args.get(0).getLexeme().getValue());
 

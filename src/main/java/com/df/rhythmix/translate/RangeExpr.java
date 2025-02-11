@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-11 21:06:16
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.translate;
 
 import com.df.rhythmix.exception.TranslatorException;
@@ -20,19 +27,18 @@ public class RangeExpr {
 
 
     /**
-     * 区间表达式 [1,9] >1&&<9
+     * Range expression [1,9] >1&&<9
      *
      * @param tokens tokens
-     * @return String     转换得到的 aviator代码
-     * @throws TranslatorException 翻译错误
+     * @return String     Translated Aviator code
+     * @throws TranslatorException Translation error
      */
     public static String translate(List<Token> tokens, EnvProxy env) throws TranslatorException {
-
         try {
             PeekTokenIterator it = new PeekTokenIterator(tokens.stream());
             ASTNode stmt = RangeStmt.parser(it);
             if (stmt == null) {
-                throw new TranslatorException("区间表达式解析结果为空");
+                throw new TranslatorException("Range expression parsing result is empty");
             }
             return translate(stmt, env);
         } catch (Exception e) {
