@@ -187,9 +187,6 @@ class ArrowExprTest {
         //第一种情况
         EventData p1 = Util.genEventData("1", "9", ts);
         EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
-        EventData p4 = Util.genEventData("1", "7", Util.addMs(ts, 350));
-        EventData p5 = Util.genEventData("1", "7", Util.addMs(ts, 550));
         EventData p6 = Util.genEventData("1", "3", Util.addMs(ts, 550));
         EventData p7 = Util.genEventData("1", "3", Util.addMs(ts, 750));
         EventData p8 = Util.genEventData("1", "11", Util.addMs(ts, 750));

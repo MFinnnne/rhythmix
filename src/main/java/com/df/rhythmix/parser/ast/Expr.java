@@ -3,6 +3,7 @@ package com.df.rhythmix.parser.ast;
 import cn.hutool.core.util.StrUtil;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.lexer.Token;
+import com.df.rhythmix.lexer.TokenType;
 import com.df.rhythmix.util.*;
 
 import java.util.List;
@@ -113,6 +114,9 @@ public class Expr extends ASTNode {
                 parse.addChild(node);
                 if (it.hasNext() && it.nextMatch1(".")) {
                     Expr chainExpr = new Expr(ASTNodeTypes.CHAIN_EXPR, it.nextMatch("."));
+                    if (TokenType.VARIABLE != it.peek().getType()) {
+                        throw new ParseException(it.peek());
+                    }
                     chainExpr.addChild(parse);
                     ASTNode f = F(it);
                     if (f.getChildren().isEmpty()) {

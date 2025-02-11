@@ -1,8 +1,12 @@
 package com.df.rhythmix.integration;
 
+import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.pebble.TemplateEngine;
+import com.df.rhythmix.translate.EnvProxy;
+import com.df.rhythmix.translate.Translator;
 import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
@@ -53,5 +57,16 @@ public class TestSimpleExample {
         EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(executor.execute(p1, p2));
+    }
+
+    @Test
+    void testDoubleDot() throws TranslatorException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "filter((-5,5)).limit(5)..avg().meet(<=0.5)";
+        EnvProxy env = new EnvProxy();
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Translator.translate(code, env);
+        });
+
     }
 }

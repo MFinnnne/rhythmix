@@ -35,7 +35,7 @@ public class Translator {
             Map<String, Object> context = new HashMap<>();
             return translate(code, context, env);
         } catch (Exception e) {
-            e.printStackTrace();
+
             throw new TranslatorException("Illegal expression, I really can't understand this syntax or maybe I don't support it yet", e);
         }
     }

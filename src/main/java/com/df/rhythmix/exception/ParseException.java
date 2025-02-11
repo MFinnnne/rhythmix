@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-02-12 00:52:45
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.exception;
 
 
@@ -15,11 +22,11 @@ public class ParseException extends Exception {
     }
 
     public ParseException(Token token) {
-        this.msg = String.format("语法错误,预料之外的字符 %s", token.getValue());
+        this.msg = String.format("Syntax error, unexpected character %s", token.getValue());
     }
 
     public ParseException(String ch, Token token) {
-        this.msg = String.format("语法错误,预料之外的字符 \"%s\",期望字符 \"%s\" ", token.getValue(), ch);
+        this.msg = String.format("Syntax error, unexpected character \"%s\", expected \"%s\" ", token.getValue(), ch);
     }
 
 
