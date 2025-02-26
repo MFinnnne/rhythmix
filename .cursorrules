@@ -1,0 +1,85 @@
+<!--
+ * @Author: MFine
+ * @Date: 2025-02-26 20:16:24
+ * @LastEditTime: 2025-02-26 20:16:36
+ * @LastEditors: MFine
+ * @Description: 
+-->
+Before diving into the best practices, please note that you may need to adapt the globs depending on your project's specific structure and file types.
+
+---
+
+name: hutool-best-practices.mdc
+description: Best practices for using Hutool utility library
+globs: **/*.{java}
+
+- Use Hutool's utility classes to simplify common operations
+- Leverage Hutool's date and time utilities for consistent date handling
+- Utilize Hutool's file and IO utilities for efficient file operations
+- Implement proper exception handling with Hutool's exception utilities
+
+---
+
+name: pebble-best-practices.mdc
+description: Best practices for using Pebble templating engine
+globs: **/*.{java,peb}
+
+- Use Pebble's built-in functions and filters for common operations
+- Implement proper escaping to prevent XSS vulnerabilities
+- Use Pebble's inheritance and includes for reusable templates
+- Optimize template rendering by caching compiled templates
+
+---
+
+name: lombok-best-practices.mdc
+description: Best practices for using Lombok annotation library
+globs: **/*.{java}
+
+- Use @Data for simple POJOs to reduce boilerplate code
+- Implement @Builder for complex object construction
+- Use @Slf4j for easy logging setup
+- Be cautious with @AllArgsConstructor to avoid unintended constructor creation
+
+---
+
+name: slf4j-best-practices.mdc
+description: Best practices for using SLF4J logging facade
+globs: **/*.{java}
+
+- Use parameterized logging to improve performance and readability
+- Implement proper log levels for different types of messages
+- Use MDC (Mapped Diagnostic Context) for contextual logging
+- Ensure proper configuration of the underlying logging framework
+
+---
+
+name: logback-best-practices.mdc
+description: Best practices for using Logback logging framework
+globs: **/*.{java,xml}
+
+- Use asynchronous logging for improved performance
+- Implement proper log rotation and archiving strategies
+- Use filters to control log output based on conditions
+- Configure Logback programmatically for dynamic logging control
+
+---
+
+name: aviator-best-practices.mdc
+description: Best practices for using Aviator expression engine
+globs: **/*.{java}
+
+- Use Aviator's built-in functions for common operations
+- Implement proper input validation to prevent injection attacks
+- Optimize performance by caching compiled expressions
+- Use Aviator's security features to restrict access to sensitive operations
+
+---
+
+name: junit5-best-practices.mdc
+description: Best practices for using JUnit 5 testing framework
+globs: **/*.{java}
+
+- Use @DisplayName for clear test method names
+- Implement parameterized tests with @ParameterizedTest
+- Use nested tests with @Nested for better test organization
+- Utilize dynamic tests with DynamicTest for data-driven testing
