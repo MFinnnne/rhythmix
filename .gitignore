@@ -38,3 +38,5 @@ build/
 ### Mac OS ###
 .DS_Store
 /LOG_HOME_IS_UNDEFINED/
+*.log
+.cursor/

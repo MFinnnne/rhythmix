@@ -3,12 +3,22 @@
 
 let chain_{{ funcName }} = lambda()->
    if({% var processedChainQueue %}!=nil){
+        ## 标准差计算至少需要2个数据点
+        if(count({% var processedChainQueue %}) < 2){
+            {% debug "chain stddev 数据点不足，至少需要2个数据点" %}
+            return false;
+        }
         {% var chainResult  %}= calc.stddev({% var processedChainQueue %});
         queue.clear({% var processedChainQueue %});
         {% debug  "chain stddev 标准差结果:{}",chainResult%}
    }else{
-       {% var chainResult  %}= calc.stddev({% var rawChainQueue %});
-       {% debug  "chain sttdev 标准差结果:{}",chainResult%}
+        ## 标准差计算至少需要2个数据点
+        if(count({% var rawChainQueue %}) < 2){
+            {% debug "chain stddev 数据点不足，至少需要2个数据点" %}
+            return false;
+        }
+        {% var chainResult  %}= calc.stddev({% var rawChainQueue %});
+        {% debug  "chain stddev 标准差结果:{}",chainResult%}
    }
    {% if debug is not null and debug == true %}
         debugChainResult = {% var chainResult  %};

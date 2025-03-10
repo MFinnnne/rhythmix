@@ -8,7 +8,11 @@ let chain_{{ funcName }} = lambda()->
     }
     {% if strict is not null and  strict == true %}
     else {
-        {% var chainResult  %} = chains.clear();
+        {% var chainResult  %} = false;
+        queue.clear({% var rawChainQueue %});
+        {% if processedChainQueue != nil %}
+        queue.clear({% var processedChainQueue %});
+        {% endif %}
     }
     {% endif %}
     return false;

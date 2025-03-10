@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 添加LOG_HOME属性定义，提供默认值 -->
+    <property name="LOG_HOME" value="${LOG_HOME:-./logs}"/>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -38,9 +40,7 @@
 
     <root level="info">
         <appender-ref ref="stdout"/>
-        <!--        <appender-ref ref="clexFilter"/>-->
-        <!--        <appender-ref ref="infoFile"/>-->
-        <!--        <appender-ref ref="errorFile"/>-->
-        <!--        <appender-ref ref="logstash"/>-->
+        <appender-ref ref="infoFile"/>
+        <appender-ref ref="errorFile"/>
     </root>
 </configuration>
