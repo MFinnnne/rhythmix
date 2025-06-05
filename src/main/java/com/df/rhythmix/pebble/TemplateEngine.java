@@ -1,8 +1,9 @@
 package com.df.rhythmix.pebble;
 
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.cache.tag.NoOpTagCache;
-import com.mitchellbosecke.pebble.cache.template.NoOpTemplateCache;
+
+import io.pebbletemplates.pebble.PebbleEngine;
+import io.pebbletemplates.pebble.cache.tag.NoOpTagCache;
+import io.pebbletemplates.pebble.cache.template.NoOpTemplateCache;
 
 public class TemplateEngine {
     public static final PebbleEngine ENGINE = new PebbleEngine.Builder().extension(new CustomExtension()).tagCache(new NoOpTagCache()).templateCache(new NoOpTemplateCache()).autoEscaping(false).cacheActive(false).build();

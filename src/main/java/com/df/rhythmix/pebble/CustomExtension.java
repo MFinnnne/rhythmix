@@ -1,10 +1,10 @@
 package com.df.rhythmix.pebble;
 
-import com.mitchellbosecke.pebble.attributes.AttributeResolver;
-import com.mitchellbosecke.pebble.extension.*;
-import com.mitchellbosecke.pebble.operator.BinaryOperator;
-import com.mitchellbosecke.pebble.operator.UnaryOperator;
-import com.mitchellbosecke.pebble.tokenParser.*;
+import io.pebbletemplates.pebble.attributes.AttributeResolver;
+import io.pebbletemplates.pebble.extension.*;
+import io.pebbletemplates.pebble.operator.BinaryOperator;
+import io.pebbletemplates.pebble.operator.UnaryOperator;
+import io.pebbletemplates.pebble.tokenParser.TokenParser;
 
 import java.util.ArrayList;
 import java.util.HashMap;

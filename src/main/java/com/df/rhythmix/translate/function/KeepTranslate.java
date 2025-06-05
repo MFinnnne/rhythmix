@@ -7,7 +7,7 @@ import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
 import com.df.rhythmix.util.ParserUtils;
 import com.df.rhythmix.util.TranslateUtil;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
 import java.io.Writer;

@@ -110,20 +110,20 @@ public class TestSimpleExample {
     void testSumWithIntegers() throws TranslatorException {
         String code = "filter(>0).limit(5).sum().meet(==27)";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10", new Timestamp(System.currentTimeMillis() + 200)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试sum函数计算浮点数序列的总和
      * 验证对[10.5,7.3,10.2]序列求和等于28.0
@@ -133,20 +133,20 @@ public class TestSimpleExample {
     void testSumWithFloats() throws TranslatorException {
         String code = "filter(>0).limit(5).sum().meet(==28.0)";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7.3", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10.2", new Timestamp(System.currentTimeMillis() + 200)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试avg函数计算整数序列的平均值
      * 验证对[10,7,10]序列求平均值等于9.0
@@ -154,22 +154,23 @@ public class TestSimpleExample {
     @Test
     @DisplayName("测试整数序列平均值")
     void testAvgWithIntegers() throws TranslatorException {
+        TemplateEngine.enableDebugModel(true);
         String code = "filter(>0).limit(5).avg().meet(==9.0)";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10", new Timestamp(System.currentTimeMillis() + 200)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试avg函数计算浮点数序列的平均值
      * 验证对[10.5,7.3,10.2]序列求平均值在9.3到9.4之间
@@ -180,20 +181,20 @@ public class TestSimpleExample {
         // 由于浮点数精度问题，使用近似值比较
         String code = "filter(>0.0).limit(5).avg().meet([9.3,9.4])";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7.3", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10.2", new Timestamp(System.currentTimeMillis() + 200)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试count函数统计数据序列中元素的个数
      * 验证序列[10,7,10]中有3个元素
@@ -204,20 +205,20 @@ public class TestSimpleExample {
         TemplateEngine.enableDebugModel(true);
         String code = "filter(>0,true).limit(5).count().meet(==3)";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10", new Timestamp(System.currentTimeMillis() + 200)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试stddev函数计算整数序列的标准差
      * 验证序列[10,7,10]的标准差在1.4到1.5之间
@@ -230,7 +231,7 @@ public class TestSimpleExample {
 
         String code = "filter(>0).limit(5).stddev().meet([1.4,1.5])";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
@@ -239,10 +240,10 @@ public class TestSimpleExample {
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试stddev函数计算浮点数序列的标准差
      * 验证序列[10.5,7.3,10.2]的标准差在1.4到1.5之间
@@ -260,15 +261,15 @@ public class TestSimpleExample {
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7.3", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10.2", new Timestamp(System.currentTimeMillis() + 200)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
-    
+
     /**
      * 测试stddev函数在数据点不足2个时的行为
      */
@@ -283,11 +284,11 @@ public class TestSimpleExample {
         // 只添加一个数据点，不足以计算标准差
         EventData event = Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis()));
         boolean result = executor.execute(event);
-        
+
         // 由于数据点不足，应该返回false
         Assertions.assertFalse(result);
     }
-    
+
     /**
      * 测试组合使用多个数据计算函数
      * 验证过滤大于5的数据，取前两个数据求和大于15
@@ -297,18 +298,18 @@ public class TestSimpleExample {
     void testCombinedCalculations() throws TranslatorException {
         String code = "filter(>5).limit(5).take(0,3).sum().meet(>15)";
         Executor executor = Compiler.compile(code);
-        
+
         List<EventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "3", new Timestamp(System.currentTimeMillis() + 200)));
         events.add(Util.genEventData("4", "8", new Timestamp(System.currentTimeMillis() + 300)));
-        
+
         boolean result = true;
         for (EventData event : events) {
             result = executor.execute(event);
         }
-        
+
         Assertions.assertTrue(result);
     }
 }

@@ -14,7 +14,7 @@ import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.parser.ast.*;
 import com.df.rhythmix.util.Config;
 import com.df.rhythmix.util.PeekTokenIterator;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.IOException;
 import java.io.StringWriter;

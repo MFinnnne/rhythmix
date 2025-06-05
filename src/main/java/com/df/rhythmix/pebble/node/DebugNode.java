@@ -2,11 +2,11 @@ package com.df.rhythmix.pebble.node;
 
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.Config;
-import com.mitchellbosecke.pebble.extension.NodeVisitor;
-import com.mitchellbosecke.pebble.node.AbstractRenderableNode;
-import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
-import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-import com.mitchellbosecke.pebble.template.ScopeChain;
+import io.pebbletemplates.pebble.extension.NodeVisitor;
+import io.pebbletemplates.pebble.node.AbstractRenderableNode;
+import io.pebbletemplates.pebble.template.EvaluationContextImpl;
+import io.pebbletemplates.pebble.template.PebbleTemplateImpl;
+import io.pebbletemplates.pebble.template.ScopeChain;
 
 import java.io.IOException;
 import java.io.Writer;

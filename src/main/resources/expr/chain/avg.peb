@@ -6,7 +6,7 @@ let chain_{{ funcName }} = lambda()->
         queue.clear({% var processedChainQueue %});
         {% debug  "chain avg结果:{}",chainResult%}
    }else{
-       {% var chainResult %} = calc.sum({% var chainResult %});
+       {% var chainResult %} = calc.avg({% var rawChainQueue %});
        {% debug  "chain avg结果:{}",chainResult%}
    }
    {% if debug is not null and debug == true %}

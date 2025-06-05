@@ -10,7 +10,7 @@ import com.df.rhythmix.parser.ast.*;
 import com.df.rhythmix.translate.chain.*;
 import com.df.rhythmix.util.ParserUtils;
 import com.df.rhythmix.util.PeekTokenIterator;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

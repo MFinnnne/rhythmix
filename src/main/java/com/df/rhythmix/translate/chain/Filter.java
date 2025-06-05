@@ -11,7 +11,7 @@ import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
 import java.io.Writer;

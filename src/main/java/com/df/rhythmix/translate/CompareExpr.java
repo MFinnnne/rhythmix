@@ -13,7 +13,7 @@ import com.df.rhythmix.lexer.TokenType;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.parser.ast.CompareStmt;
 import com.df.rhythmix.util.PeekTokenIterator;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
 import java.io.Writer;

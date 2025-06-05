@@ -10,7 +10,7 @@ import com.df.rhythmix.parser.ast.ASTNodeTypes;
 import com.df.rhythmix.parser.ast.Expr;
 import com.df.rhythmix.util.Config;
 import com.df.rhythmix.util.PeekTokenIterator;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
 import java.util.ArrayList;

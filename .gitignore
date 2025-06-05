@@ -40,3 +40,4 @@ build/
 /LOG_HOME_IS_UNDEFINED/
 *.log
 .cursor/
+!/src/main/java/com/df/rhythmix/util/Config.java
