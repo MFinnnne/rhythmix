@@ -1,11 +1,9 @@
-{{ type }}
-    {% if eventValue is not null %}
+{% if eventValue is not null %}
     ({% var eventValue %})
         {% else %}
     (event.value)
-{% endif %}
-
-{{ leftSymbol }}{{ leftValue }}&&{{ type }}
+    {% endif %}
+{{ leftSymbol }}{{ leftValue }}&&
     {% if eventValue is not null %}
     ({% var eventValue %})
 {% else %}

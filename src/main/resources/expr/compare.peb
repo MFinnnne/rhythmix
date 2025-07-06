@@ -1,15 +1,14 @@
 {% if type == "string" %}
     {% if eventValue is not null %}
         ({% var eventValue  %})
-    {% else %}(event.value)
+    {% else %}event.value
     {% endif %}
 {{ symbol }} {{ comparedValue }}
 {% else %}
-{{ type }}
     {% if eventValue is not null %}
         ({% var eventValue  %})
     {% else %}
-        (event.value)
+       event.value
 {% endif %}
 {{ symbol }}{{ comparedValue }}
 {% endif %}

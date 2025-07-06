@@ -1,5 +1,6 @@
 package com.df.rhythmix.execute;
 
+import com.df.rhythmix.lib.AviatorConfig;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.util.AviatorFunctionUtil;
@@ -31,6 +32,7 @@ public class Executor {
         this.code = code;
         this.envpProxy = env;
         this.originalEnv.putAll(this.envpProxy.getEnv());
+        AviatorConfig.operatorOverloading();
     }
 
     public HashMap<String, Object> getOriginalEnv() {

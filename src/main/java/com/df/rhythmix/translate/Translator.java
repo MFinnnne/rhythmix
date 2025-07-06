@@ -90,7 +90,7 @@ public class Translator {
                 ((ArrayList<String>) context.get("baseCodes")).add(code);
                 return "arrow" + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
             case RANGE_EXPR:
-                return "(" + RangeExpr.translate(astNode, context, env) + ")";
+                return RangeExpr.translate(astNode, context, env);
             case COMPARE_EXPR:
                 return "(" + CompareExpr.translate(astNode, context, env) + ")";
             case VARIABLE:

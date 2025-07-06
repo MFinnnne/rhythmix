@@ -4,13 +4,15 @@ import com.df.rhythmix.lexer.TokenType;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.parser.ast.ASTNodeTypes;
 import com.df.rhythmix.parser.ast.Factor;
-import jdk.jshell.spi.ExecutionControl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class ParserUtils {
 
-    public static String toPostfixExpression(ASTNode node) throws ExecutionControl.NotImplementedException {
+    public static String toPostfixExpression(ASTNode node) {
         if (node instanceof Factor) {
             return node.getLexeme().getValue();
         }

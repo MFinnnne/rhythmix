@@ -66,13 +66,13 @@ public class CompareExpr {
                 throw new TranslatorException("Comparison expression parameter cannot be a variable");
             }
             context.put("comparedValue", arg.getLexeme().getValue());
-            if (arg.getLexeme().getType() == TokenType.INTEGER) {
-                context.put("type", "long");
-            }
-
-            if (arg.getLexeme().getType() == TokenType.FLOAT) {
-                context.put("type", "double");
-            }
+//            if (arg.getLexeme().getType() == TokenType.INTEGER) {
+//                context.put("type", "long");
+//            }
+//
+//            if (arg.getLexeme().getType() == TokenType.FLOAT) {
+//                context.put("type", "double");
+//            }
             template.evaluate(writer, context);
             return writer.toString().replaceAll("\\r|\\n|\\s","");
         } catch (Exception e) {

@@ -7,10 +7,10 @@
  */
 package com.df.rhythmix.integration;
 
-import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.lib.AviatorConfig;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -92,7 +92,7 @@ public class TestSimpleExample {
      */
     @Test
     @DisplayName("测试双点语法错误情况")
-    void testDoubleDot() throws TranslatorException {
+    void testDoubleDot() {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).limit(5)..avg().meet(<=0.5)";
         EnvProxy env = new EnvProxy();
@@ -276,6 +276,7 @@ public class TestSimpleExample {
     @Test
     @DisplayName("测试标准差计算数据点不足情况")
     void testStddevWithInsufficientData() throws TranslatorException {
+        AviatorConfig.operatorOverloading();
         TemplateEngine.enableDebugModel(true);
 
         String code = "filter(>0).limit(5).stddev().meet([1.4,1.5])";
