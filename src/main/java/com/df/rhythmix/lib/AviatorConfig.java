@@ -3,13 +3,12 @@ package com.df.rhythmix.lib;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.lexer.token.OperatorType;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
-import com.googlecode.aviator.runtime.function.system.CompareFunction;
 import com.googlecode.aviator.runtime.type.AviatorBoolean;
-import com.googlecode.aviator.runtime.type.AviatorFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.function.BiFunction;
 
 /**
  * @author MFine
@@ -18,163 +17,104 @@ import java.util.regex.Pattern;
  **/
 public class AviatorConfig {
     
+    // Constants for comparison results
+    private static final int EQUAL = 0;
+    private static final int GREATER = 1;
+    private static final int LESS = -1;
+    
     // Pattern to match numeric strings (including integers and decimals)
     private static final Pattern NUMERIC_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
     
+    // Boolean string constants
+    private static final String TRUE_STR = "true";
+    private static final String FALSE_STR = "false";
+    private static final String ONE_STR = "1";
+    private static final String ZERO_STR = "0";
+    
+    /**
+     * Enum for comparison operations to improve readability
+     */
+    private enum ComparisonOp {
+        GT((left, right) -> compareValues(left, right) > 0),
+        GTE((left, right) -> compareValues(left, right) >= 0),
+        LT((left, right) -> compareValues(left, right) < 0),
+        LTE((left, right) -> compareValues(left, right) <= 0),
+        EQ((left, right) -> compareValues(left, right) == 0),
+        NEQ((left, right) -> compareValues(left, right) != 0);
+        
+        private final BiFunction<Object, Object, Boolean> comparator;
+        
+        ComparisonOp(BiFunction<Object, Object, Boolean> comparator) {
+            this.comparator = comparator;
+        }
+        
+        public boolean compare(Object left, Object right) {
+            return comparator.apply(left, right);
+        }
+    }
+    
     public static void operatorOverloading() {
-        // Override GT (>) operator
-        AviatorEvaluator.getInstance().addOpFunction(OperatorType.GT, new AbstractFunction() {
+        // Register all comparison operators using the unified approach
+        registerOperator(OperatorType.GT, ComparisonOp.GT);
+        registerOperator(OperatorType.GE, ComparisonOp.GTE);
+        registerOperator(OperatorType.LT, ComparisonOp.LT);
+        registerOperator(OperatorType.LE, ComparisonOp.LTE);
+        registerOperator(OperatorType.EQ, ComparisonOp.EQ);
+        registerOperator(OperatorType.NEQ, ComparisonOp.NEQ);
+    }
+    
+    /**
+     * Unified operator registration method to eliminate code duplication
+     */
+    private static void registerOperator(OperatorType operatorType, ComparisonOp operation) {
+        AviatorEvaluator.getInstance().addOpFunction(operatorType, new AbstractFunction() {
             @Override
             public String getName() {
-                return OperatorType.GT.getToken();
+                return operatorType.getToken();
             }
 
             @Override
-            public AviatorObject call(Map<String, Object> map, AviatorObject aviatorObject, AviatorObject aviatorObject1) {
-                final Object leftValue = aviatorObject.getValue(map);
-                final Object rightValue = aviatorObject1.getValue(map);
-                
-                // If same type, use built-in comparison
-                if (aviatorObject.getAviatorType() == aviatorObject1.getAviatorType()) {
-                    return AviatorBoolean.valueOf(aviatorObject.compare(aviatorObject1, map) == 1);
+            public AviatorObject call(Map<String, Object> map, AviatorObject left, AviatorObject right) {
+                // If same type, use built-in comparison for better performance
+                if (left.getAviatorType() == right.getAviatorType()) {
+                    int compareResult = left.compare(right, map);
+                    return AviatorBoolean.valueOf(evaluateBuiltinComparison(compareResult, operation));
                 }
                 
                 // Type-agnostic comparison
-                return AviatorBoolean.valueOf(compareIgnoreType(leftValue, rightValue));
-            }
-        });
-        
-        // Override GTE (>=) operator
-        AviatorEvaluator.getInstance().addOpFunction(OperatorType.GE, new AbstractFunction() {
-            @Override
-            public String getName() {
-                return OperatorType.GE.getToken();
-            }
-
-            @Override
-            public AviatorObject call(Map<String, Object> map, AviatorObject aviatorObject, AviatorObject aviatorObject1) {
-                final Object leftValue = aviatorObject.getValue(map);
-                final Object rightValue = aviatorObject1.getValue(map);
-                
-                // If same type, use built-in comparison
-                if (aviatorObject.getAviatorType() == aviatorObject1.getAviatorType()) {
-                    int compareResult = aviatorObject.compare(aviatorObject1, map);
-                    return AviatorBoolean.valueOf(compareResult >= 0);
-                }
-                
-                // Type-agnostic comparison
-                return AviatorBoolean.valueOf(compareIgnoreTypeGTE(leftValue, rightValue));
-            }
-        });
-        
-        // Override LT (<) operator
-        AviatorEvaluator.getInstance().addOpFunction(OperatorType.LT, new AbstractFunction() {
-            @Override
-            public String getName() {
-                return OperatorType.LT.getToken();
-            }
-
-            @Override
-            public AviatorObject call(Map<String, Object> map, AviatorObject aviatorObject, AviatorObject aviatorObject1) {
-                final Object leftValue = aviatorObject.getValue(map);
-                final Object rightValue = aviatorObject1.getValue(map);
-                
-                // If same type, use built-in comparison
-                if (aviatorObject.getAviatorType() == aviatorObject1.getAviatorType()) {
-                    return AviatorBoolean.valueOf(aviatorObject.compare(aviatorObject1, map) < 0);
-                }
-                
-                // Type-agnostic comparison - opposite of GT
-                return AviatorBoolean.valueOf(!compareIgnoreType(leftValue, rightValue) && !compareIgnoreTypeEQ(leftValue, rightValue));
-            }
-        });
-        
-        // Override LTE (<=) operator
-        AviatorEvaluator.getInstance().addOpFunction(OperatorType.LE, new AbstractFunction() {
-            @Override
-            public String getName() {
-                return OperatorType.LE.getToken();
-            }
-
-            @Override
-            public AviatorObject call(Map<String, Object> map, AviatorObject aviatorObject, AviatorObject aviatorObject1) {
-                final Object leftValue = aviatorObject.getValue(map);
-                final Object rightValue = aviatorObject1.getValue(map);
-                
-                // If same type, use built-in comparison
-                if (aviatorObject.getAviatorType() == aviatorObject1.getAviatorType()) {
-                    int compareResult = aviatorObject.compare(aviatorObject1, map);
-                    return AviatorBoolean.valueOf(compareResult <= 0);
-                }
-                
-                // Type-agnostic comparison - opposite of GT
-                return AviatorBoolean.valueOf(!compareIgnoreType(leftValue, rightValue));
-            }
-        });
-        
-        // Override EQ (==) operator
-        AviatorEvaluator.getInstance().addOpFunction(OperatorType.EQ, new AbstractFunction() {
-            @Override
-            public String getName() {
-                return OperatorType.EQ.getToken();
-            }
-
-            @Override
-            public AviatorObject call(Map<String, Object> map, AviatorObject aviatorObject, AviatorObject aviatorObject1) {
-                final Object leftValue = aviatorObject.getValue(map);
-                final Object rightValue = aviatorObject1.getValue(map);
-                
-                // If same type, use built-in comparison
-                if (aviatorObject.getAviatorType() == aviatorObject1.getAviatorType()) {
-                    int compareResult = aviatorObject.compare(aviatorObject1, map);
-                    return AviatorBoolean.valueOf(compareResult == 0);
-                }
-                
-                // Type-agnostic comparison
-                return AviatorBoolean.valueOf(compareIgnoreTypeEQ(leftValue, rightValue));
-            }
-        });
-        
-        // Override NEQ (!=) operator
-        AviatorEvaluator.getInstance().addOpFunction(OperatorType.NEQ, new AbstractFunction() {
-            @Override
-            public String getName() {
-                return OperatorType.NEQ.getToken();
-            }
-
-            @Override
-            public AviatorObject call(Map<String, Object> map, AviatorObject aviatorObject, AviatorObject aviatorObject1) {
-                final Object leftValue = aviatorObject.getValue(map);
-                final Object rightValue = aviatorObject1.getValue(map);
-                
-                // If same type, use built-in comparison
-                if (aviatorObject.getAviatorType() == aviatorObject1.getAviatorType()) {
-                    int compareResult = aviatorObject.compare(aviatorObject1, map);
-                    return AviatorBoolean.valueOf(compareResult != 0);
-                }
-                
-                // Type-agnostic comparison - opposite of EQ
-                return AviatorBoolean.valueOf(!compareIgnoreTypeEQ(leftValue, rightValue));
+                Object leftValue = left.getValue(map);
+                Object rightValue = right.getValue(map);
+                return AviatorBoolean.valueOf(operation.compare(leftValue, rightValue));
             }
         });
     }
     
     /**
-     * Compare two values ignoring their types by attempting intelligent type conversion
+     * Evaluate built-in comparison result based on operation type
+     */
+    private static boolean evaluateBuiltinComparison(int compareResult, ComparisonOp operation) {
+        switch (operation) {
+            case GT: return compareResult > 0;
+            case GTE: return compareResult >= 0;
+            case LT: return compareResult < 0;
+            case LTE: return compareResult <= 0;
+            case EQ: return compareResult == 0;
+            case NEQ: return compareResult != 0;
+            default: return false;
+        }
+    }
+    
+    /**
+     * Unified comparison method for all types
      * @param leftValue left operand
      * @param rightValue right operand
-     * @return true if leftValue > rightValue, false otherwise
+     * @return comparison result: negative if left < right, 0 if equal, positive if left > right
      */
-    private static boolean compareIgnoreType(Object leftValue, Object rightValue) {
-        if (leftValue == null && rightValue == null) {
-            return false; // null == null, not greater
-        }
-        if (leftValue == null) {
-            return false; // null is not greater than anything
-        }
-        if (rightValue == null) {
-            return true; // anything is greater than null
-        }
+    private static int compareValues(Object leftValue, Object rightValue) {
+        // Handle null values
+        if (leftValue == null && rightValue == null) return EQUAL;
+        if (leftValue == null) return LESS;
+        if (rightValue == null) return GREATER;
         
         String leftStr = String.valueOf(leftValue);
         String rightStr = String.valueOf(rightValue);
@@ -184,57 +124,78 @@ public class AviatorConfig {
             return compareAsNumbers(leftStr, rightStr);
         }
         
-        // Try mixed numeric comparison (one side is numeric)
-        if (isNumeric(leftStr) && !isNumeric(rightStr)) {
-            // Try to parse right as number
-            try {
-                if (rightStr.equalsIgnoreCase("true")) {
-                    return compareAsNumbers(leftStr, "1");
-                } else if (rightStr.equalsIgnoreCase("false")) {
-                    return compareAsNumbers(leftStr, "0");
-                }
-                // If right is not boolean and not numeric, numeric value is considered greater
-                return true;
-            } catch (Exception e) {
-                return true; // numeric > non-numeric string
-            }
+        // Handle mixed numeric/boolean comparisons
+        Integer mixedResult = handleMixedComparison(leftStr, rightStr);
+        if (mixedResult != null) {
+            return mixedResult;
         }
         
-        if (!isNumeric(leftStr) && isNumeric(rightStr)) {
-            // Try to parse left as number
-            try {
-                if (leftStr.equalsIgnoreCase("true")) {
-                    return compareAsNumbers("1", rightStr);
-                } else if (leftStr.equalsIgnoreCase("false")) {
-                    return compareAsNumbers("0", rightStr);
-                }
-                // If left is not boolean and not numeric, numeric value is considered smaller
-                return false;
-            } catch (Exception e) {
-                return false; // non-numeric string < numeric
-            }
-        }
-        
-        // Boolean comparison
+        // Handle boolean comparisons
         if (isBooleanString(leftStr) && isBooleanString(rightStr)) {
-            boolean leftBool = Boolean.parseBoolean(leftStr);
-            boolean rightBool = Boolean.parseBoolean(rightStr);
-            return leftBool && !rightBool; // true > false
+            return compareBooleans(leftStr, rightStr);
         }
         
-        // Mixed boolean comparison
-        if (isBooleanString(leftStr)) {
-            boolean leftBool = Boolean.parseBoolean(leftStr);
-            return leftBool; // true > anything non-boolean, false < anything non-boolean
-        }
-        
-        if (isBooleanString(rightStr)) {
-            boolean rightBool = Boolean.parseBoolean(rightStr);
-            return !rightBool; // anything > false, anything < true
+        // Handle mixed boolean comparisons
+        Integer booleanMixedResult = handleMixedBooleanComparison(leftStr, rightStr);
+        if (booleanMixedResult != null) {
+            return booleanMixedResult;
         }
         
         // String comparison as fallback
-        return leftStr.compareTo(rightStr) > 0;
+        return leftStr.compareTo(rightStr);
+    }
+    
+    /**
+     * Handle mixed numeric/non-numeric comparisons
+     */
+    private static Integer handleMixedComparison(String leftStr, String rightStr) {
+        if (isNumeric(leftStr) && !isNumeric(rightStr)) {
+            if (rightStr.equalsIgnoreCase(TRUE_STR)) {
+                return compareAsNumbers(leftStr, ONE_STR);
+            } else if (rightStr.equalsIgnoreCase(FALSE_STR)) {
+                return compareAsNumbers(leftStr, ZERO_STR);
+            }
+            return GREATER; // numeric > non-numeric string
+        }
+        
+        if (!isNumeric(leftStr) && isNumeric(rightStr)) {
+            if (leftStr.equalsIgnoreCase(TRUE_STR)) {
+                return compareAsNumbers(ONE_STR, rightStr);
+            } else if (leftStr.equalsIgnoreCase(FALSE_STR)) {
+                return compareAsNumbers(ZERO_STR, rightStr);
+            }
+            return LESS; // non-numeric string < numeric
+        }
+        
+        return null; // No mixed comparison applicable
+    }
+    
+    /**
+     * Handle mixed boolean/non-boolean comparisons
+     */
+    private static Integer handleMixedBooleanComparison(String leftStr, String rightStr) {
+        if (isBooleanString(leftStr) && !isBooleanString(rightStr)) {
+            boolean leftBool = Boolean.parseBoolean(leftStr);
+            return leftBool ? GREATER : LESS;
+        }
+        
+        if (!isBooleanString(leftStr) && isBooleanString(rightStr)) {
+            boolean rightBool = Boolean.parseBoolean(rightStr);
+            return rightBool ? LESS : GREATER;
+        }
+        
+        return null; // No mixed boolean comparison applicable
+    }
+    
+    /**
+     * Compare two boolean strings
+     */
+    private static int compareBooleans(String leftStr, String rightStr) {
+        boolean leftBool = Boolean.parseBoolean(leftStr);
+        boolean rightBool = Boolean.parseBoolean(rightStr);
+        
+        if (leftBool == rightBool) return EQUAL;
+        return leftBool ? GREATER : LESS; // true > false
     }
     
     /**
@@ -251,120 +212,29 @@ public class AviatorConfig {
      * Check if a string represents a boolean value
      */
     private static boolean isBooleanString(String str) {
-        return str != null && (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("false"));
+        return str != null && (str.equalsIgnoreCase(TRUE_STR) || str.equalsIgnoreCase(FALSE_STR));
     }
     
     /**
      * Compare two numeric strings
+     * @return comparison result: negative if left < right, 0 if equal, positive if left > right
      */
-    private static boolean compareAsNumbers(String leftStr, String rightStr) {
+    private static int compareAsNumbers(String leftStr, String rightStr) {
         try {
             // Determine if we need floating point comparison
             if (leftStr.contains(".") || rightStr.contains(".")) {
                 double leftDouble = Double.parseDouble(leftStr);
                 double rightDouble = Double.parseDouble(rightStr);
-                return leftDouble > rightDouble;
+                return Double.compare(leftDouble, rightDouble);
             } else {
                 // Both are integers
                 long leftLong = Long.parseLong(leftStr);
                 long rightLong = Long.parseLong(rightStr);
-                return leftLong > rightLong;
+                return Long.compare(leftLong, rightLong);
             }
         } catch (NumberFormatException e) {
             // Fallback to string comparison if parsing fails
-            return leftStr.compareTo(rightStr) > 0;
-        }
-    }
-    
-    /**
-     * Compare two values ignoring their types for >= operation
-     * @param leftValue left operand
-     * @param rightValue right operand
-     * @return true if leftValue >= rightValue, false otherwise
-     */
-    private static boolean compareIgnoreTypeGTE(Object leftValue, Object rightValue) {
-        return compareIgnoreType(leftValue, rightValue) || compareIgnoreTypeEQ(leftValue, rightValue);
-    }
-    
-    /**
-     * Compare two values ignoring their types for equality
-     * @param leftValue left operand
-     * @param rightValue right operand
-     * @return true if leftValue == rightValue, false otherwise
-     */
-    private static boolean compareIgnoreTypeEQ(Object leftValue, Object rightValue) {
-        if (leftValue == null && rightValue == null) {
-            return true;
-        }
-        if (leftValue == null || rightValue == null) {
-            return false;
-        }
-        
-        String leftStr = String.valueOf(leftValue);
-        String rightStr = String.valueOf(rightValue);
-        
-        // Try numeric comparison first
-        if (isNumeric(leftStr) && isNumeric(rightStr)) {
-            return compareAsNumbersEQ(leftStr, rightStr);
-        }
-        
-        // Try mixed numeric comparison (one side is numeric)
-        if (isNumeric(leftStr) && !isNumeric(rightStr)) {
-            try {
-                if (rightStr.equalsIgnoreCase("true")) {
-                    return compareAsNumbersEQ(leftStr, "1");
-                } else if (rightStr.equalsIgnoreCase("false")) {
-                    return compareAsNumbersEQ(leftStr, "0");
-                }
-                return false;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        
-        if (!isNumeric(leftStr) && isNumeric(rightStr)) {
-            try {
-                if (leftStr.equalsIgnoreCase("true")) {
-                    return compareAsNumbersEQ("1", rightStr);
-                } else if (leftStr.equalsIgnoreCase("false")) {
-                    return compareAsNumbersEQ("0", rightStr);
-                }
-                return false;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        
-        // Boolean comparison
-        if (isBooleanString(leftStr) && isBooleanString(rightStr)) {
-            boolean leftBool = Boolean.parseBoolean(leftStr);
-            boolean rightBool = Boolean.parseBoolean(rightStr);
-            return leftBool == rightBool;
-        }
-        
-        // String comparison as fallback
-        return leftStr.equals(rightStr);
-    }
-    
-    /**
-     * Compare two numeric strings for equality
-     */
-    private static boolean compareAsNumbersEQ(String leftStr, String rightStr) {
-        try {
-            // Determine if we need floating point comparison
-            if (leftStr.contains(".") || rightStr.contains(".")) {
-                double leftDouble = Double.parseDouble(leftStr);
-                double rightDouble = Double.parseDouble(rightStr);
-                return Double.compare(leftDouble, rightDouble) == 0;
-            } else {
-                // Both are integers
-                long leftLong = Long.parseLong(leftStr);
-                long rightLong = Long.parseLong(rightStr);
-                return leftLong == rightLong;
-            }
-        } catch (NumberFormatException e) {
-            // Fallback to string comparison if parsing fails
-            return leftStr.equals(rightStr);
+            return leftStr.compareTo(rightStr);
         }
     }
 }
