@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-07-12 13:17:04
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.lib;
 
 import com.googlecode.aviator.AviatorEvaluator;

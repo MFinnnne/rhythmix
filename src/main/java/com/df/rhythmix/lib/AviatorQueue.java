@@ -1,3 +1,10 @@
+/*
+ * @Author: MFine
+ * @Date: 2024-10-22 19:22:29
+ * @LastEditTime: 2025-07-08 21:27:12
+ * @LastEditors: MFine
+ * @Description: 
+ */
 package com.df.rhythmix.lib;
 
 import com.df.rhythmix.exception.ComputeException;
