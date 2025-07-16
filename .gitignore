@@ -1,0 +1,8 @@
+/doc/media/videos/*/partial_movie_files/
+.idea
+.cursor
+target
+.cursorrules
+/doc/media/images
+/doc/media/texts
+.vscode
