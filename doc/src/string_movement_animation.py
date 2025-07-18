@@ -13,23 +13,54 @@ from src.animation_base import DocAnimation
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
-@dataclass
 class StringPair:
     """Represents a pair of strings for the animation."""
-    left: str
-    right: str = 'False'
-    recording_tag: bool = False
-    left_color: Optional[str] = 'blue'
-    right_color: Optional[str] = 'red'
-    delay: float = 0.1
-    movement_duration: float = 0.3
 
-    def __post_init__(self):
-        # Set default colors if not provided
-        if self.left_color is None:
-            self.left_color = "secondary"
-        if self.right_color is None:
-            self.right_color = "accent"
+    def __init__(self, left: str, right: str = 'False', record_text: str = "", recording_tag: bool = False,
+                 delay: float = 0.1, movement_duration: float = 0.3,
+                 left_color: Optional[str] = None, right_color: Optional[str] = None, **kwargs):
+        """
+        Initialize StringPair.
+
+        Args:
+            left: Left string value
+            right: Right string value (default: 'False')
+            recording_tag: Boolean tag for recording (default: False)
+            record_text: Text for record display (default: "")
+            delay: Animation delay (default: 0.1)
+            movement_duration: Duration of movement animation (default: 0.3)
+            left_color: DEPRECATED - ignored, left color is always blue
+            right_color: DEPRECATED - ignored, right color is computed based on right value
+            **kwargs: Additional keyword arguments (ignored for backward compatibility)
+        """
+        self.left = left
+        self.right = right
+        self.recording_tag = recording_tag
+        self.delay = delay
+        self.movement_duration = movement_duration
+
+        # Set default record_text if not provided
+        if not record_text:
+            self.record_text = self.get_combined_text()
+        else:
+            self.record_text = record_text
+
+    @property
+    def left_color(self) -> str:
+        """Left color is always blue."""
+        return 'blue'
+
+    @property
+    def right_color(self) -> str:
+        """Right color is red if right is False/false, otherwise green."""
+        # Check if right is boolean False or string 'false' (case insensitive)
+        if isinstance(self.right, bool):
+            return 'red' if not self.right else 'green'
+        elif isinstance(self.right, str):
+            return 'red' if self.right.lower() == 'false' else 'green'
+        else:
+            # For any other value, treat as truthy/falsy
+            return 'red' if not self.right else 'green'
 
     def get_status_indicator(self) -> str:
         """
@@ -49,7 +80,7 @@ class StringPair:
             "left string √" for recording_tag=True
             "left string ×" for recording_tag=False
         """
-        return f"{self.left} {self.get_status_indicator()}"
+        return f"{self.record_text} {self.get_status_indicator()}"
 
 
 def create_string_pairs(*args, **kwargs) -> List[StringPair]:
@@ -168,13 +199,13 @@ class StringMovementAnimation(DocAnimation):
 
         Args:
             pair: The StringPair object to record.
-            recording_texts: List to store recording text mobjects.
+            recording_texts: List to store recording text objects.
             recording_group: VGroup for recording elements.
             recording_title: The recording title mobject.
         """
         # Add this pair to the recording
         record_text = self.create_subtitle(pair.get_combined_text(),
-                                           scale=0.8)  # Increased scale for better readability
+                                           scale=0.7)  # Increased scale for better readability
         # Set color based on status (green for true, red for false)
         status_color = "secondary" if pair.recording_tag else "accent"
         from config import COLORS
@@ -198,7 +229,6 @@ class StringMovementAnimation(DocAnimation):
             record_text.next_to(recording_texts[-2], DOWN, buff=0.2)
         else:
             # Horizontal layout for additional entries
-            column = (len(recording_texts) - 1) // max_vertical_entries
             row = (len(recording_texts) - 1) % max_vertical_entries
 
             if row == 0:
