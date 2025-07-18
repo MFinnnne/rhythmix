@@ -56,14 +56,14 @@ def create_gif_animation(pairs: List[StringPair] = None, center_text: str = None
 
 def main():
     pair = [
-        StringPair("1", "false", recording_tag=False, left_color="orange", right_color="red"),
-        StringPair("5", "false", recording_tag=True, left_color="orange", right_color="red"),
-        StringPair("2", "false", recording_tag=False, left_color="orange", right_color="red"),
-        StringPair("6", "false", recording_tag=True, left_color="orange", right_color="red"),
-        StringPair("2", "false", recording_tag=False, left_color="orange", right_color="red"),
-        StringPair("6", "true", recording_tag=True, left_color="orange", right_color="green")
+        StringPair("1", "false", "1>4   +0"),
+        StringPair("5", "false", "5>4    +1", True),
+        StringPair("2", "false", "2>4   +1"),
+        StringPair("6", "false", "6>4    +2", True),
+        StringPair("2", "false", "2>4   +2"),
+        StringPair("6", "true", "6>4     +3", True)
     ]
-    create_gif_animation(pair, 'count(>4,1)', 'count1', speed_multiplier=2.0)  # Faster
+    create_gif_animation(pair, 'count(>4,3)', 'count1', speed_multiplier=2.0)  # Faster
 
 
 if __name__ == "__main__":

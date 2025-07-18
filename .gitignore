@@ -6,3 +6,7 @@ target
 /doc/media/images
 /doc/media/texts
 .vscode
+/doc/.venv
+/doc/.idea
+/doc/src/__pycache__/*
+doc/__pycache__

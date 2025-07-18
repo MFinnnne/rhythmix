@@ -69,9 +69,6 @@ SensorEvent p3 = Util.genEventData("13", "9", new Timestamp(System.currentTimeMi
 boolean res = exe.execute(p1, p2);
 ```
 
-
-> ⚠️ **注意**：`count(>4,3)` 和 `count(>4.0,3)` 是不同的表达式。如果 value 的值是浮点数，则需要使用 `count(>4.0,3)`。
-
 ### 状态转换示例
 
 检测事件值从 0 变化到 1 的情况：
