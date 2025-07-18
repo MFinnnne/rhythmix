@@ -105,7 +105,7 @@ public class Translator {
                     ((ArrayList<String>) context.get("baseCodes")).add(code);
                     return astNode.getLabel() + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
                 } else {
-                    if (!env.containsKey(astNode.getLabel())) {
+                    if (env.containsKey(astNode.getLabel())) {
                         throw new TranslatorException("Undefined variable:'{}'", astNode.getLabel());
                     }
                     return env.rawGet(astNode.getLabel()).toString();

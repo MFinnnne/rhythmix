@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Simple focused test for AviatorConfig optimizations
  * Tests the core comparison functionality directly through Aviator
- *
+ * <p>
  * IMPORTANT: These tests follow AviatorScript's native comparison rules:
  * 1. Case-insensitive boolean detection: 'true', 'TRUE', 'True' are all treated as boolean true
  * 2. Numeric strings are compared numerically: '123' > '45' is true (123 > 45)
@@ -40,12 +40,12 @@ public class AviatorConfigSimpleTest {
         Assertions.assertTrue(evaluateExpression("5 > 3"));
         Assertions.assertFalse(evaluateExpression("3 > 5"));
         Assertions.assertTrue(evaluateExpression("'6' >= 5"));
-        
+
         // Mixed integer/double comparisons
         Assertions.assertTrue(evaluateExpression("5 == 5.0"));
         Assertions.assertTrue(evaluateExpression("5.5 > 5.0"));
         Assertions.assertFalse(evaluateExpression("5.0 > 5.5"));
-        
+
         // String numeric comparisons (our optimization should handle these)
         Assertions.assertTrue(evaluateExpression("'5' > '3'"));
         Assertions.assertTrue(evaluateExpression("'5.5' > '5.0'"));

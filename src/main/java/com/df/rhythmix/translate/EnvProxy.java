@@ -22,7 +22,7 @@ public class EnvProxy{
     }
 
     public  void rawPutAll(HashMap<String,Object> env){
-        this.env.putAll(env);;
+        this.env.putAll(env);
     }
 
 
@@ -36,7 +36,7 @@ public class EnvProxy{
     }
 
     public boolean containsKey(String key){
-        return this.env.containsKey(key);
+        return !this.env.containsKey(key);
     }
 
 }

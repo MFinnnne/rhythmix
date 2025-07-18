@@ -8,7 +8,6 @@ import com.googlecode.aviator.runtime.type.AviatorObject;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * Optimized Aviator configuration for type-agnostic comparison operations.
@@ -170,7 +169,7 @@ public class AviatorConfig {
             switch (leftType) {
                 case INTEGER:
                 case DOUBLE:
-                    return compareNumericStrings(leftStr, rightStr, leftType == ValueType.DOUBLE || rightType == ValueType.DOUBLE);
+                    return compareNumericStrings(leftStr, rightStr, leftType == ValueType.DOUBLE);
                 case BOOLEAN_TRUE:
                 case BOOLEAN_FALSE:
                     return EQUAL; // Same boolean values are equal
