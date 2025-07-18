@@ -1,7 +1,13 @@
 ## ===============  chain filter start ===============
 ## 过滤数据 符合条件则放行
 let chain_{{ funcName }} = lambda()->
+    {% if isUDF is not null and isUDF == true %}
+    ## UDF filter logic
+    let res = {{ udfName }}.filter(event);
+    {% else %}
+    ## Traditional comparison expression logic
     let res = {{ stateCode }};
+    {% endif %}
     if(res){
         {{ debug("filter() 接收数据：{}","event.value") }}
         return true;
