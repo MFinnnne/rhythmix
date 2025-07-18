@@ -6,11 +6,11 @@ import lombok.Setter;
 
 import java.util.HashMap;
 
+@Setter
+@Getter
 public class EnvProxy{
 
 
-    @Getter
-    @Setter
     private HashMap<String, Object> env = new HashMap<>();
 
     public void put(String key, Object value) {
