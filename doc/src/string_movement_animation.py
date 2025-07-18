@@ -148,7 +148,7 @@ class StringMovementAnimation(DocAnimation):
         center_string = self._setup_center_string()
         recording_texts, recording_group, recording_title = self._setup_record_title(center_string)
         self._setup_side_strings(center_string, recording_texts, recording_group, recording_title)
-        self.wait(0.5)
+        self.wait(1)
 
     def _setup_center_string(self):
         """
@@ -255,7 +255,7 @@ class StringMovementAnimation(DocAnimation):
         total_columns = (total_entries - 1) // max_vertical_entries + 1
 
         # Calculate the total width needed for all columns
-        column_width = 2.5  # Approximate width per column including spacing
+        column_width = 3.5  # Approximate width per column including spacing
         total_width = total_columns * column_width
 
         # Calculate starting position to center all columns
@@ -268,7 +268,7 @@ class StringMovementAnimation(DocAnimation):
 
             # Calculate position for this text
             x_pos = start_x + column * column_width
-            y_pos = recording_title.get_bottom()[1] - 0.3 - (row * 0.5)  # 0.3 initial offset, 0.5 per row
+            y_pos = recording_title.get_bottom()[1] - 0.3 - (row * 0.7)  # 0.3 initial offset, 0.5 per row
 
             # Move the text to new position
             text.move_to([x_pos, y_pos, 0])
