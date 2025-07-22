@@ -66,7 +66,7 @@ class FilterUDFTest {
         
         // Compile expression with filter UDF
         String code = "filter(tempFilter()).collect().count().meet(==2)";
-        Executor executor = Compiler.compile(code, filterUDFs);
+        Executor executor = Compiler.compile(code);
         
         // Test data - should keep temperatures between 20-80
         EventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
@@ -96,7 +96,7 @@ class FilterUDFTest {
         
         // Compile expression with filter UDF
         String code = "filter(sensorFilter()).collect().count().meet(==1)";
-        Executor executor = Compiler.compile(code, filterUDFs);
+        Executor executor = Compiler.compile(code);
         
         // Test data - should only keep sensors with ID starting with "temp_"
         EventData event1 = new EventData("temp_001", "sensor1", "25.5", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
@@ -151,7 +151,7 @@ class FilterUDFTest {
         
         // Compile expression with both regular UDF and filter UDF
         String code = "filter(tempFilter()).collect().sum().meet(>threshold)";
-        Executor executor = Compiler.compile(code, udfEnv, filterUDFs);
+        Executor executor = Compiler.compile(code, udfEnv);
         
         // Test data
         EventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));

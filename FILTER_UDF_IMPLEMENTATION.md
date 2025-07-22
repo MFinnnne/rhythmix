@@ -1,10 +1,15 @@
-# Filter UDF Implementation
+# Filter UDF Implementation with Auto-Import
 
-This document describes the implementation of Filter UDF (User-Defined Function) functionality in Rhythmix, following the exact specifications provided.
+This document describes the implementation of Filter UDF (User-Defined Function) functionality in Rhythmix, including the advanced auto-import feature that automatically discovers and registers FilterUDF implementations at runtime.
 
 ## Overview
 
-The Filter UDF feature allows users to create custom Java-based filter functions that determine whether to keep or discard EventData objects in Rhythmix expressions. The implementation maintains full backward compatibility with existing comparison expressions while adding powerful custom filtering capabilities.
+The Filter UDF feature allows users to create custom Java-based filter functions that determine whether to keep or discard EventData objects in Rhythmix expressions. The implementation includes:
+
+1. **Manual Registration**: Explicit FilterUDF registration through Compiler methods
+2. **Auto-Import**: Automatic discovery and registration of FilterUDF implementations at startup
+3. **AviatorScript Integration**: Direct integration with AviatorScript's instance function mechanism
+4. **Full Backward Compatibility**: Seamless coexistence with existing comparison expressions
 
 ## Implementation Components
 
@@ -28,7 +33,63 @@ public interface FilterUDF {
 }
 ```
 
-### 2. Enhanced Filter Translator
+### 2. FilterUDFRegistry with Auto-Import
+
+**Location**: `src/main/java/com/df/rhythmix/udf/FilterUDFRegistry.java`
+
+**Key Features**:
+- **Classpath Scanning**: Uses Hutool's `ClassUtil.scanPackageBySuper()` to find all FilterUDF implementations
+- **Automatic Instantiation**: Creates instances of FilterUDF classes with default constructors
+- **AviatorScript Integration**: Registers FilterUDFs using `AviatorEvaluator.addInstanceFunctions()`
+- **Thread Safety**: Ensures auto-import runs only once with proper synchronization
+- **Error Handling**: Gracefully handles instantiation failures and duplicate names
+- **Manual Registration**: Supports additional manual FilterUDF registration
+
+**Auto-Import Process**:
+```java
+public static void autoImportFilterUDFs() {
+    // Thread-safe singleton pattern
+    if (autoImportCompleted) return;
+
+    synchronized (IMPORT_LOCK) {
+        // Scan entire classpath for FilterUDF implementations
+        Set<Class<?>> filterUDFClasses = ClassUtil.scanPackageBySuper("", FilterUDF.class);
+
+        for (Class<?> clazz : filterUDFClasses) {
+            // Skip interfaces and abstract classes
+            // Instantiate FilterUDF
+            FilterUDF filterUDF = (FilterUDF) clazz.getDeclaredConstructor().newInstance();
+
+            // Register with AviatorScript
+            AviatorEvaluator.addInstanceFunctions(filterUDF.getName(), filterUDF);
+        }
+    }
+}
+```
+
+### 3. Enhanced System Registration
+
+**Location**: `src/main/java/com/df/rhythmix/lib/Register.java`
+
+**Integration**:
+```java
+public static void importFunction() {
+    try {
+        // Import existing static function classes
+        AviatorEvaluator.importFunctions(Time.class);
+        AviatorEvaluator.importFunctions(AviatorQueue.class);
+        AviatorEvaluator.importFunctions(AviatorMath.class);
+
+        // Auto-import FilterUDF instances
+        FilterUDFRegistry.autoImportFilterUDFs();
+
+    } catch (IllegalAccessException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+    }
+}
+```
+
+### 4. Enhanced Filter Translator
 
 **Location**: `src/main/java/com/df/rhythmix/translate/chain/Filter.java`
 
@@ -101,7 +162,61 @@ public static Executor compile(String code, HashMap<String,Object> udfEnv, Map<S
 
 ## Usage Examples
 
-### Basic Usage
+### Auto-Import Usage (Recommended)
+
+With auto-import, FilterUDFs are automatically available without manual registration:
+
+```java
+// 1. Create a FilterUDF implementation anywhere in your classpath
+package com.mycompany.filters;
+
+public class TemperatureFilterUDF implements FilterUDF {
+    @Override
+    public String getName() {
+        return "tempFilter";
+    }
+
+    @Override
+    public boolean filter(EventData event) {
+        try {
+            double temp = Double.parseDouble(event.getValue());
+            return temp >= 20.0 && temp <= 80.0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+}
+
+// 2. Initialize the system (triggers auto-import)
+Register.importFunction();
+
+// 3. Use directly in expressions - no manual registration needed!
+String code = "filter(tempFilter()).collect().sum().meet(>100)";
+Executor executor = Compiler.compile(code);
+
+// 4. Execute with EventData
+EventData event = new EventData("sensor1", "temp", "25.5", timestamp, EventValueType.FLOAT);
+boolean result = executor.execute(event);
+```
+
+### Built-in Auto-Imported FilterUDFs
+
+The system includes several built-in FilterUDFs that are automatically available:
+
+- **`tempFilter()`**: Keeps temperatures between -50°C and 100°C
+- **`numericFilter()`**: Keeps only numeric values (filters out non-numeric strings)
+- **`positiveFilter()`**: Keeps only positive numeric values
+
+```java
+// Use built-in filters without any setup
+String code1 = "filter(numericFilter()).collect().count().meet(>5)";
+String code2 = "filter(positiveFilter()).limit(10).avg().meet([20,30])";
+String code3 = "filter(tempFilter()).window(100).stddev().meet(<5.0)";
+```
+
+### Manual Registration (Legacy/Additional)
+
+For additional FilterUDFs or when you need more control:
 
 ```java
 // 1. Create a custom filter UDF

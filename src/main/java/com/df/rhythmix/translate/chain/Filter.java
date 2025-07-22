@@ -13,6 +13,7 @@ import com.df.rhythmix.parser.ast.ASTNodeTypes;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
 import com.df.rhythmix.udf.FilterUDF;
+import com.df.rhythmix.udf.FilterUDFRegistry;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
@@ -76,9 +77,14 @@ public class Filter {
 
             String functionName = state.getLabel();
 
-            // Check if this function name corresponds to a registered FilterUDF
+            // First check if it's manually registered in the environment
             Object udfObject = env.rawGet(functionName);
-            return udfObject instanceof FilterUDF;
+            if (udfObject instanceof FilterUDF) {
+                return true;
+            }
+
+            // Then check if it's auto-imported in the FilterUDFRegistry
+            return FilterUDFRegistry.isRegistered(functionName);
         }
         return false;
     }
