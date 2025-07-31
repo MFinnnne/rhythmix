@@ -36,7 +36,7 @@ public class Translator {
             return translate(code, context, env);
         } catch (Exception e) {
 
-            throw new TranslatorException("Illegal expression, I really can't understand this syntax or maybe I don't support it yet", e);
+            throw new TranslatorException("Illegal expression,{}", e);
         }
     }
 

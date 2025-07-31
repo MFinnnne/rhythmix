@@ -1,6 +1,7 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.util.EventData;
+import lombok.NoArgsConstructor;
 
 /**
  * Filter UDF interface for custom filtering logic in Rhythmix expressions.

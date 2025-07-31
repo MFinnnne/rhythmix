@@ -3,7 +3,9 @@
 let chain_{{ funcName }} = lambda()->
     {% if isUDF is not null and isUDF == true %}
     ## UDF filter logic - call the auto-imported FilterUDF instance function
-    let res = {{ udfName }}.filter(event);
+    let udf = seq.get(filterUDFMap,"{{ udfName }}");
+      {{ debug("udf：{}","udf") }}
+    let res = {{ udfName }}.filter(udf,event);
     {% else %}
     ## Traditional comparison expression logic
     let res = {{ stateCode }};

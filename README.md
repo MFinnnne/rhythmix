@@ -192,7 +192,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   filter(<=3)
   ```
 
-#### 数据限制
+#### 数据窗口
 
 - **limit** ⏱️
 

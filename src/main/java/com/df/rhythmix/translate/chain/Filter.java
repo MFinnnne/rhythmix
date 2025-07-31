@@ -14,6 +14,7 @@ import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
 import com.df.rhythmix.udf.FilterUDF;
 import com.df.rhythmix.udf.FilterUDFRegistry;
+import com.googlecode.aviator.AviatorEvaluator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
@@ -39,7 +40,7 @@ public class Filter {
                 // Handle UDF function call
                 String udfName = extractUDFName(state);
                 boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
-                               Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
+                        Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
 
                 context.put("funcName", name);
                 context.put("isUDF", true);
@@ -51,7 +52,7 @@ public class Filter {
                 // Handle traditional comparison expression
                 String stateCode = Translator.translate(state, context, env);
                 boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
-                               Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
+                        Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
 
                 context.put("funcName", name);
                 context.put("isUDF", false);
@@ -72,19 +73,16 @@ public class Filter {
     private static boolean isFilterUDFCall(ASTNode state, EnvProxy env) {
         // Check if it's a variable with function call syntax (has CALL_STMT child)
         if (state.getType() == ASTNodeTypes.VARIABLE &&
-            !state.getChildren().isEmpty() &&
-            state.getChildren().get(0).getType() == ASTNodeTypes.CALL_STMT) {
+                !state.getChildren().isEmpty() &&
+                state.getChildren().get(0).getType() == ASTNodeTypes.CALL_STMT) {
 
             String functionName = state.getLabel();
 
             // First check if it's manually registered in the environment
-            Object udfObject = env.rawGet(functionName);
-            if (udfObject instanceof FilterUDF) {
+            if (FilterUDFRegistry.isRegistered(functionName)) {
                 return true;
             }
-
-            // Then check if it's auto-imported in the FilterUDFRegistry
-            return FilterUDFRegistry.isRegistered(functionName);
+            return false;
         }
         return false;
     }
