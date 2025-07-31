@@ -55,7 +55,8 @@ def create_gif_animation(pairs: List[StringPair] = None, center_text: str = None
 
 
 def main():
-    pair = [
+    # Original count example
+    count_pairs = [
         StringPair("1", "false", "1>4   +0"),
         StringPair("5", "false", "5>4    +1", True),
         StringPair("2", "false", "2>4   +1"),
@@ -63,8 +64,41 @@ def main():
         StringPair("2", "false", "2>4   +2"),
         StringPair("6", "true", "6>4     +3", True)
     ]
-    create_gif_animation(pair, 'count(>4,3)', 'count1', speed_multiplier=2.0)  # Faster
+    create_gif_animation(count_pairs, 'count(>4,3)', 'count1', speed_multiplier=2.0)  # Faster
 
+def create_state_transition_demo():
+    """
+    Create a GIF demonstrating the {==0}->{==1} state transition expression.
+    This shows how the expression detects a change from value 0 to value 1.
+    """
+    # Demonstrate the {==0}->{==1} expression with various data sequences
+    state_pairs = [
+        # First sequence: 2 -> 0 (first state not satisfied, no transition)
+        StringPair("2", "false", "2==0  ×", False),
+
+        # Second sequence: 0 -> 2 (first state satisfied, second state not satisfied)
+        StringPair("0", "false", "0==0  √", True),
+        StringPair("2", "false", "2==1  ×", False),
+
+        # Third sequence: 0 -> 1 (both states satisfied in sequence - SUCCESS!)
+        StringPair("0", "false", "0==0  √", True),
+        StringPair("1", "true", "1==1  √", True),
+
+        # Fourth sequence: 1 -> 0 (wrong direction, expression resets)
+        StringPair("1", "false", "1==0  ×", False),
+        StringPair("0", "false", "0==1  ×", False),
+
+        # Fifth sequence: 0 -> 0 -> 1 (first state satisfied, stays in first state, then transitions)
+        StringPair("0", "false", "0==0  √", True),
+        StringPair("0", "false", "0==0  √", True),
+        StringPair("1", "true", "1==1  √", True)
+    ]
+
+    create_gif_animation(state_pairs, '{==0}->{==1}', 'state_transition_0_to_1', speed_multiplier=1.5)
 
 if __name__ == "__main__":
-    main()
+    # Create the state transition demonstration
+    create_state_transition_demo()
+
+    # Optionally also create the original count example
+    # main()
