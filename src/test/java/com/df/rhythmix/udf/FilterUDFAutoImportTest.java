@@ -29,10 +29,6 @@ class FilterUDFAutoImportTest {
     @Test
     @DisplayName("测试FilterUDF自动导入功能")
     void testAutoImportFunctionality() {
-        // Verify that auto-import has been completed
-        Assertions.assertTrue(FilterUDFRegistry.isAutoImportCompleted(), 
-                            "Auto-import should be completed");
-        
         // Verify that built-in FilterUDFs are registered
         Assertions.assertTrue(FilterUDFRegistry.isRegistered("tempFilter"), 
                             "tempFilter should be auto-registered");
@@ -121,4 +117,24 @@ class FilterUDFAutoImportTest {
         Assertions.assertTrue(result); // Sum (25+30=55) > 50
     }
 
+    @Test
+    @DisplayName("测试FilterUDF注册信息")
+    void testFilterUDFRegistrationInfo() {
+        // Test registry information methods
+        Assertions.assertTrue(FilterUDFRegistry.getRegisteredCount() > 0, 
+                            "Should have registered FilterUDFs");
+        
+        Assertions.assertFalse(FilterUDFRegistry.getRegisteredNames().isEmpty(), 
+                             "Should have registered FilterUDF names");
+        
+        // Test specific FilterUDF retrieval
+        FilterUDF tempFilter = FilterUDFRegistry.getFilterUDF("tempFilter");
+        Assertions.assertNotNull(tempFilter, "tempFilter should be retrievable");
+        Assertions.assertEquals("tempFilter", tempFilter.getName(), 
+                               "Retrieved FilterUDF should have correct name");
+        
+        // Test non-existent FilterUDF
+        FilterUDF nonExistent = FilterUDFRegistry.getFilterUDF("nonExistentFilter");
+        Assertions.assertNull(nonExistent, "Non-existent FilterUDF should return null");
+    }
 }

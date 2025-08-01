@@ -25,9 +25,7 @@ public class Executor {
     @Setter
     private HashMap<String, Object> originalEnv = new HashMap<>();
 
-    static {
-        Register.importFunction();
-    }
+
 
     public Executor(String code, EnvProxy env) {
         this.code = code;
@@ -47,7 +45,7 @@ public class Executor {
 
     public boolean execute(Object event) {
         this.envProxy.rawPut("event", event);
-        this.envProxy.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
+        this.envProxy.rawPut("filterUDFMap", FilterUDFRegistry.getREGISTERED_UDFS());
         Expression expr = AviatorFunctionUtil.getExpr(code);
         Object res = expr.execute(envProxy.getEnv());
         Boolean res1 = (Boolean) res;

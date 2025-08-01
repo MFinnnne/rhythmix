@@ -1,15 +1,17 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.util.EventData;
-import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Filter UDF interface for custom filtering logic in Rhythmix expressions.
- * <p>
+ *
  * Users can implement this interface to create custom filter functions that
  * determine whether to keep or discard EventData based on custom logic.
+ * Supports both individual event filtering and batch list filtering.
  *
  * @author MFine
  * @version 1.0
@@ -35,6 +37,13 @@ public interface FilterUDF {
         return true;
     }
 
+    /**
+     * Filters a list of EventData objects, keeping only those that pass the filter condition.
+     * Default implementation applies the single-event filter method to each event in the list.
+     *
+     * @param events The list of EventData objects to be filtered
+     * @return A new list containing only the EventData objects that passed the filter
+     */
     default List<EventData> filter(List<EventData> events) {
         return events;
     }

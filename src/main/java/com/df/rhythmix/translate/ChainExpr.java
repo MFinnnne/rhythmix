@@ -39,7 +39,7 @@ public class ChainExpr {
         try {
             PebbleTemplate chainTemplate = ENGINE.getTemplate("expr/chain.peb");
             Writer writer = new StringWriter();
-            env.put("rawChainQueue", new LinkedList<>());
+            env.put("rawChainQueue", new ArrayList<>());
             env.put("processedChainQueue", null);
             env.put("chainResult", null);
             env.put("debugChainResult", null);

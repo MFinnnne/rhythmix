@@ -14,7 +14,6 @@ import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
 import com.df.rhythmix.udf.FilterUDF;
 import com.df.rhythmix.udf.FilterUDFRegistry;
-import com.googlecode.aviator.AviatorEvaluator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
 import java.io.StringWriter;
@@ -40,7 +39,7 @@ public class Filter {
                 // Handle UDF function call
                 String udfName = extractUDFName(state);
                 boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
-                        Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
+                               Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
 
                 context.put("funcName", name);
                 context.put("isUDF", true);
@@ -52,7 +51,7 @@ public class Filter {
                 // Handle traditional comparison expression
                 String stateCode = Translator.translate(state, context, env);
                 boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
-                        Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
+                               Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
 
                 context.put("funcName", name);
                 context.put("isUDF", false);
@@ -70,19 +69,18 @@ public class Filter {
      * Determines if the AST node represents a filter UDF function call
      * by checking if it's a VARIABLE node with CALL_STMT children and matches a registered UDF
      */
-    private static boolean isFilterUDFCall(ASTNode state, EnvProxy env) {
+    private static boolean isFilterUDFCall(ASTNode state, EnvProxy env) throws TranslatorException {
         // Check if it's a variable with function call syntax (has CALL_STMT child)
         if (state.getType() == ASTNodeTypes.VARIABLE &&
-                !state.getChildren().isEmpty() &&
-                state.getChildren().get(0).getType() == ASTNodeTypes.CALL_STMT) {
+            !state.getChildren().isEmpty() &&
+            state.getChildren().get(0).getType() == ASTNodeTypes.CALL_STMT) {
 
             String functionName = state.getLabel();
-
-            // First check if it's manually registered in the environment
+            // Then check if it's auto-imported in the FilterUDFRegistry
             if (FilterUDFRegistry.isRegistered(functionName)) {
                 return true;
             }
-            return false;
+            throw new TranslatorException("{} is not a registered filter UDF", functionName);
         }
         return false;
     }

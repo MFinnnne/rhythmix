@@ -3,7 +3,7 @@
  * @Date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-07-08 21:27:12
  * @LastEditors: MFine
- * @Description: 
+ * @Description:
  */
 package com.df.rhythmix.lib;
 
@@ -11,41 +11,42 @@ import com.df.rhythmix.exception.ComputeException;
 import com.googlecode.aviator.annotation.Import;
 import com.googlecode.aviator.annotation.ImportScope;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Import(ns = "queue", scopes = {ImportScope.Static})
 public class AviatorQueue {
 
-    public static LinkedList<Object> create() {
-        return new LinkedList<>();
+    public static ArrayList<Object> create() {
+        return new ArrayList<>();
     }
 
-    public static Object poll(LinkedList<Object> queue) {
-        return queue.poll();
+    public static Object poll(ArrayList<Object> queue) {
+        return queue.remove(0);
     }
 
-    public static void push(LinkedList<Object> queue, Object object) {
+    public static void push(ArrayList<Object> queue, Object object) {
         queue.add(object);
     }
 
-    public static void clear(LinkedList<Object> queue) {
+    public static void clear(ArrayList<Object> queue) {
         queue.clear();
     }
 
-    public static Object first(LinkedList<Object> queue) {
-        return queue.getFirst();
+    public static Object first(ArrayList<Object> queue) {
+        return queue.get(0);
     }
 
-    public static Object last(LinkedList<Object> queue) {
-        return queue.getLast();
+    public static Object last(ArrayList<Object> queue) {
+        return queue.get(queue.size() - 1);
     }
 
-    public static LinkedList<Object> sub(LinkedList<Object> queue, int startIndex, int endIndex) throws ComputeException {
+    public static ArrayList<Object> sub(ArrayList<Object> queue, int startIndex, int endIndex) throws ComputeException {
         if (queue.size() >= endIndex) {
             List<Object> objects = queue.subList(startIndex, endIndex);
-            return new LinkedList<>(objects);
+            return new ArrayList<>(objects);
         }
-        return new LinkedList<>(queue);
+        return new ArrayList<>(queue);
     }
 }

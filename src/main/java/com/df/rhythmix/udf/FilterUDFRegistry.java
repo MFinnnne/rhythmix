@@ -27,6 +27,7 @@ public class FilterUDFRegistry {
     /**
      * Thread-safe map to store registered FilterUDF instances by name
      */
+    @Getter
     private static final Map<String, FilterUDF> REGISTERED_UDFS = new ConcurrentHashMap<>();
 
     /**
