@@ -7,52 +7,77 @@ import com.googlecode.aviator.runtime.type.AviatorBoolean;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.function.BiFunction;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Optimized Aviator configuration for type-agnostic comparison operations.
+ * Provides enhanced performance through caching, early type detection, and optimized comparison logic.
+ *
  * @author MFine
- * @version 1.0
+ * @version 2.0 (Optimized)
  * @date 2025/6/7 23:53
  **/
 public class AviatorConfig {
-    
+
     // Constants for comparison results
     private static final int EQUAL = 0;
     private static final int GREATER = 1;
     private static final int LESS = -1;
-    
-    // Pattern to match numeric strings (including integers and decimals)
-    private static final Pattern NUMERIC_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
-    
-    // Boolean string constants
+
+    // Optimized regex pattern with better performance characteristics
+
+    // Pre-compiled boolean values for faster lookup
     private static final String TRUE_STR = "true";
     private static final String FALSE_STR = "false";
-    private static final String ONE_STR = "1";
-    private static final String ZERO_STR = "0";
-    
+
+    // Cache for type detection results to avoid repeated parsing
+    private static final ConcurrentHashMap<String, ValueType> TYPE_CACHE = new ConcurrentHashMap<>(256);
+    private static final ConcurrentHashMap<String, Number> NUMERIC_CACHE = new ConcurrentHashMap<>(128);
+
+    // Maximum cache size to prevent memory leaks
+    private static final int MAX_CACHE_SIZE = 1000;
+
     /**
-     * Enum for comparison operations to improve readability
+     * Enum representing the detected type of a value for optimized processing
+     */
+    private enum ValueType {
+        INTEGER, DOUBLE, BOOLEAN_TRUE, BOOLEAN_FALSE, STRING, NULL
+    }
+
+    /**
+     * Optimized comparison operation interface that avoids redundant compareValues calls
+     */
+    @FunctionalInterface
+    private interface OptimizedComparator {
+        boolean compare(int compareResult);
+    }
+
+    /**
+     * Optimized comparison operations that work directly with comparison results
      */
     private enum ComparisonOp {
-        GT((left, right) -> compareValues(left, right) > 0),
-        GTE((left, right) -> compareValues(left, right) >= 0),
-        LT((left, right) -> compareValues(left, right) < 0),
-        LTE((left, right) -> compareValues(left, right) <= 0),
-        EQ((left, right) -> compareValues(left, right) == 0),
-        NEQ((left, right) -> compareValues(left, right) != 0);
-        
-        private final BiFunction<Object, Object, Boolean> comparator;
-        
-        ComparisonOp(BiFunction<Object, Object, Boolean> comparator) {
+        GT(result -> result > 0),
+        GTE(result -> result >= 0),
+        LT(result -> result < 0),
+        LTE(result -> result <= 0),
+        EQ(result -> result == 0),
+        NEQ(result -> result != 0);
+
+        private final OptimizedComparator comparator;
+
+        ComparisonOp(OptimizedComparator comparator) {
             this.comparator = comparator;
         }
-        
+
+        public boolean evaluate(int compareResult) {
+            return comparator.compare(compareResult);
+        }
+
         public boolean compare(Object left, Object right) {
-            return comparator.apply(left, right);
+            return comparator.compare(compareValues(left, right));
         }
     }
-    
+
     public static void operatorOverloading() {
         // Register all comparison operators using the unified approach
         registerOperator(OperatorType.GT, ComparisonOp.GT);
@@ -62,9 +87,9 @@ public class AviatorConfig {
         registerOperator(OperatorType.EQ, ComparisonOp.EQ);
         registerOperator(OperatorType.NEQ, ComparisonOp.NEQ);
     }
-    
+
     /**
-     * Unified operator registration method to eliminate code duplication
+     * Unified operator registration method with optimized comparison logic
      */
     private static void registerOperator(OperatorType operatorType, ComparisonOp operation) {
         AviatorEvaluator.getInstance().addOpFunction(operatorType, new AbstractFunction() {
@@ -75,166 +100,274 @@ public class AviatorConfig {
 
             @Override
             public AviatorObject call(Map<String, Object> map, AviatorObject left, AviatorObject right) {
-                // If same type, use built-in comparison for better performance
+                // If same type, use built-in comparison for optimal performance
                 if (left.getAviatorType() == right.getAviatorType()) {
                     int compareResult = left.compare(right, map);
-                    return AviatorBoolean.valueOf(evaluateBuiltinComparison(compareResult, operation));
+                    return AviatorBoolean.valueOf(operation.evaluate(compareResult));
                 }
-                
-                // Type-agnostic comparison
+
+                // Optimized type-agnostic comparison
                 Object leftValue = left.getValue(map);
                 Object rightValue = right.getValue(map);
-                return AviatorBoolean.valueOf(operation.compare(leftValue, rightValue));
+                int compareResult = compareValues(leftValue, rightValue);
+                return AviatorBoolean.valueOf(operation.evaluate(compareResult));
             }
         });
     }
-    
+
     /**
-     * Evaluate built-in comparison result based on operation type
-     */
-    private static boolean evaluateBuiltinComparison(int compareResult, ComparisonOp operation) {
-        switch (operation) {
-            case GT: return compareResult > 0;
-            case GTE: return compareResult >= 0;
-            case LT: return compareResult < 0;
-            case LTE: return compareResult <= 0;
-            case EQ: return compareResult == 0;
-            case NEQ: return compareResult != 0;
-            default: return false;
-        }
-    }
-    
-    /**
-     * Unified comparison method for all types
+     * Optimized comparison method with caching and early type detection
      * @param leftValue left operand
      * @param rightValue right operand
      * @return comparison result: negative if left < right, 0 if equal, positive if left > right
      */
     private static int compareValues(Object leftValue, Object rightValue) {
-        // Handle null values
+        // Handle null values first (most common edge case)
         if (leftValue == null && rightValue == null) return EQUAL;
         if (leftValue == null) return LESS;
         if (rightValue == null) return GREATER;
-        
+
+        // Try direct numeric comparison for common numeric types
+        if (leftValue instanceof Number && rightValue instanceof Number) {
+            return compareNumbers((Number) leftValue, (Number) rightValue);
+        }
+
+        // Convert to strings only when necessary
         String leftStr = String.valueOf(leftValue);
         String rightStr = String.valueOf(rightValue);
-        
-        // Try numeric comparison first
-        if (isNumeric(leftStr) && isNumeric(rightStr)) {
-            return compareAsNumbers(leftStr, rightStr);
+
+        // Get cached or detect types
+        ValueType leftType = getValueType(leftStr);
+        ValueType rightType = getValueType(rightStr);
+
+        // Optimized comparison based on detected types
+        return compareByTypes(leftStr, rightStr, leftType, rightType);
+    }
+
+    /**
+     * Fast comparison for direct Number instances
+     */
+    private static int compareNumbers(Number left, Number right) {
+        // Handle common integer cases first
+        if (left instanceof Integer && right instanceof Integer) {
+            return Integer.compare((Integer) left, (Integer) right);
         }
-        
-        // Handle mixed numeric/boolean comparisons
-        Integer mixedResult = handleMixedComparison(leftStr, rightStr);
-        if (mixedResult != null) {
-            return mixedResult;
+        if (left instanceof Long && right instanceof Long) {
+            return Long.compare((Long) left, (Long) right);
         }
-        
-        // Handle boolean comparisons
-        if (isBooleanString(leftStr) && isBooleanString(rightStr)) {
-            return compareBooleans(leftStr, rightStr);
+
+        // Fall back to double comparison for mixed or floating point numbers
+        return Double.compare(left.doubleValue(), right.doubleValue());
+    }
+
+    /**
+     * Optimized type-based comparison with minimal string operations
+     */
+    private static int compareByTypes(String leftStr, String rightStr, ValueType leftType, ValueType rightType) {
+        // Same type comparisons (most common case)
+        if (leftType == rightType) {
+            switch (leftType) {
+                case INTEGER:
+                case DOUBLE:
+                    return compareNumericStrings(leftStr, rightStr, leftType == ValueType.DOUBLE);
+                case BOOLEAN_TRUE:
+                case BOOLEAN_FALSE:
+                    return EQUAL; // Same boolean values are equal
+                case STRING:
+                    return leftStr.compareTo(rightStr);
+                case NULL:
+                    return EQUAL;
+            }
         }
-        
-        // Handle mixed boolean comparisons
-        Integer booleanMixedResult = handleMixedBooleanComparison(leftStr, rightStr);
-        if (booleanMixedResult != null) {
-            return booleanMixedResult;
+
+        // Mixed type comparisons with optimized logic
+        return compareMixedTypes(leftStr, rightStr, leftType, rightType);
+    }
+
+    /**
+     * Handle mixed type comparisons efficiently
+     */
+    private static int compareMixedTypes(String leftStr, String rightStr, ValueType leftType, ValueType rightType) {
+        // Numeric vs Boolean
+        if (isNumericType(leftType) && isBooleanType(rightType)) {
+            Number leftNum = getCachedNumber(leftStr);
+            int boolValue = (rightType == ValueType.BOOLEAN_TRUE) ? 1 : 0;
+            return Double.compare(leftNum.doubleValue(), boolValue);
         }
-        
-        // String comparison as fallback
+        if (isBooleanType(leftType) && isNumericType(rightType)) {
+            int boolValue = (leftType == ValueType.BOOLEAN_TRUE) ? 1 : 0;
+            Number rightNum = getCachedNumber(rightStr);
+            return Double.compare(boolValue, rightNum.doubleValue());
+        }
+
+        // Boolean vs String
+        if (isBooleanType(leftType) && rightType == ValueType.STRING) {
+            return (leftType == ValueType.BOOLEAN_TRUE) ? GREATER : LESS;
+        }
+        if (leftType == ValueType.STRING && isBooleanType(rightType)) {
+            return (rightType == ValueType.BOOLEAN_TRUE) ? LESS : GREATER;
+        }
+
+        // Numeric vs String (numeric > string)
+        if (isNumericType(leftType) && rightType == ValueType.STRING) {
+            return GREATER;
+        }
+        if (leftType == ValueType.STRING && isNumericType(rightType)) {
+            return LESS;
+        }
+
+        // Boolean comparison between different boolean types
+        if (isBooleanType(leftType) && isBooleanType(rightType)) {
+            boolean leftBool = (leftType == ValueType.BOOLEAN_TRUE);
+            boolean rightBool = (rightType == ValueType.BOOLEAN_TRUE);
+            return Boolean.compare(leftBool, rightBool);
+        }
+
+        // Default to string comparison
         return leftStr.compareTo(rightStr);
     }
-    
+
     /**
-     * Handle mixed numeric/non-numeric comparisons
+     * Get or detect the type of a string value with caching
      */
-    private static Integer handleMixedComparison(String leftStr, String rightStr) {
-        if (isNumeric(leftStr) && !isNumeric(rightStr)) {
-            if (rightStr.equalsIgnoreCase(TRUE_STR)) {
-                return compareAsNumbers(leftStr, ONE_STR);
-            } else if (rightStr.equalsIgnoreCase(FALSE_STR)) {
-                return compareAsNumbers(leftStr, ZERO_STR);
+    private static ValueType getValueType(String str) {
+        if (str == null) return ValueType.NULL;
+
+        // Check cache first
+        ValueType cached = TYPE_CACHE.get(str);
+        if (cached != null) {
+            return cached;
+        }
+
+        // Detect type
+        ValueType type = detectValueType(str);
+
+        // Cache the result if cache isn't too large
+        if (TYPE_CACHE.size() < MAX_CACHE_SIZE) {
+            TYPE_CACHE.put(str, type);
+        }
+
+        return type;
+    }
+
+    /**
+     * Fast type detection without regex for common cases
+     * AviatorScript's original string comparison semantics
+     */
+    private static ValueType detectValueType(String str) {
+        if (str.isEmpty()) return ValueType.STRING;
+
+        // Fast boolean check
+        if (str.length() <= 5) { // "false".length() == 5
+            if (TRUE_STR.equalsIgnoreCase(str)) return ValueType.BOOLEAN_TRUE;
+            if (FALSE_STR.equalsIgnoreCase(str)) return ValueType.BOOLEAN_FALSE;
+        }
+
+        // Fast numeric check for common patterns
+        char first = str.charAt(0);
+        if (first == '-' || (first >= '0' && first <= '9')) {
+            if (isNumericFast(str)) {
+                return str.contains(".") ? ValueType.DOUBLE : ValueType.INTEGER;
             }
-            return GREATER; // numeric > non-numeric string
         }
-        
-        if (!isNumeric(leftStr) && isNumeric(rightStr)) {
-            if (leftStr.equalsIgnoreCase(TRUE_STR)) {
-                return compareAsNumbers(ONE_STR, rightStr);
-            } else if (leftStr.equalsIgnoreCase(FALSE_STR)) {
-                return compareAsNumbers(ZERO_STR, rightStr);
+
+        return ValueType.STRING;
+    }
+
+    /**
+     * Fast numeric detection without regex for performance
+     */
+    private static boolean isNumericFast(String str) {
+        if (str.isEmpty()) return false;
+
+        int start = 0;
+        if (str.charAt(0) == '-') {
+            if (str.length() == 1) return false;
+            start = 1;
+        }
+
+        boolean hasDecimal = false;
+        for (int i = start; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '.') {
+                if (hasDecimal) return false; // Multiple decimals
+                hasDecimal = true;
+            } else if (c < '0' || c > '9') {
+                return false;
             }
-            return LESS; // non-numeric string < numeric
         }
-        
-        return null; // No mixed comparison applicable
+
+        return true;
     }
-    
+
     /**
-     * Handle mixed boolean/non-boolean comparisons
+     * Get cached numeric value or parse and cache it
      */
-    private static Integer handleMixedBooleanComparison(String leftStr, String rightStr) {
-        if (isBooleanString(leftStr) && !isBooleanString(rightStr)) {
-            boolean leftBool = Boolean.parseBoolean(leftStr);
-            return leftBool ? GREATER : LESS;
+    private static Number getCachedNumber(String str) {
+        Number cached = NUMERIC_CACHE.get(str);
+        if (cached != null) {
+            return cached;
         }
-        
-        if (!isBooleanString(leftStr) && isBooleanString(rightStr)) {
-            boolean rightBool = Boolean.parseBoolean(rightStr);
-            return rightBool ? LESS : GREATER;
-        }
-        
-        return null; // No mixed boolean comparison applicable
-    }
-    
-    /**
-     * Compare two boolean strings
-     */
-    private static int compareBooleans(String leftStr, String rightStr) {
-        boolean leftBool = Boolean.parseBoolean(leftStr);
-        boolean rightBool = Boolean.parseBoolean(rightStr);
-        
-        if (leftBool == rightBool) return EQUAL;
-        return leftBool ? GREATER : LESS; // true > false
-    }
-    
-    /**
-     * Check if a string represents a numeric value
-     */
-    private static boolean isNumeric(String str) {
-        if (str == null || str.trim().isEmpty()) {
-            return false;
-        }
-        return NUMERIC_PATTERN.matcher(str.trim()).matches();
-    }
-    
-    /**
-     * Check if a string represents a boolean value
-     */
-    private static boolean isBooleanString(String str) {
-        return str != null && (str.equalsIgnoreCase(TRUE_STR) || str.equalsIgnoreCase(FALSE_STR));
-    }
-    
-    /**
-     * Compare two numeric strings
-     * @return comparison result: negative if left < right, 0 if equal, positive if left > right
-     */
-    private static int compareAsNumbers(String leftStr, String rightStr) {
+
         try {
-            // Determine if we need floating point comparison
-            if (leftStr.contains(".") || rightStr.contains(".")) {
-                double leftDouble = Double.parseDouble(leftStr);
-                double rightDouble = Double.parseDouble(rightStr);
-                return Double.compare(leftDouble, rightDouble);
+            Number number;
+            if (str.contains(".")) {
+                number = Double.parseDouble(str);
             } else {
-                // Both are integers
-                long leftLong = Long.parseLong(leftStr);
-                long rightLong = Long.parseLong(rightStr);
-                return Long.compare(leftLong, rightLong);
+                long longValue = Long.parseLong(str);
+                // Use Integer for small values to save memory
+                if (longValue >= Integer.MIN_VALUE && longValue <= Integer.MAX_VALUE) {
+                    number = (int) longValue;
+                } else {
+                    number = longValue;
+                }
             }
+
+            // Cache if not too large
+            if (NUMERIC_CACHE.size() < MAX_CACHE_SIZE) {
+                NUMERIC_CACHE.put(str, number);
+            }
+
+            return number;
         } catch (NumberFormatException e) {
-            // Fallback to string comparison if parsing fails
+            // Return a sentinel value that will cause string comparison fallback
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * Optimized numeric string comparison with caching
+     */
+    private static int compareNumericStrings(String leftStr, String rightStr, boolean useDouble) {
+        Number leftNum = getCachedNumber(leftStr);
+        Number rightNum = getCachedNumber(rightStr);
+
+        // Handle parsing failures
+        if (Double.isNaN(leftNum.doubleValue()) || Double.isNaN(rightNum.doubleValue())) {
             return leftStr.compareTo(rightStr);
         }
+
+        if (useDouble) {
+            return Double.compare(leftNum.doubleValue(), rightNum.doubleValue());
+        } else {
+            return Long.compare(leftNum.longValue(), rightNum.longValue());
+        }
+    }
+
+    // Helper methods for type checking
+    private static boolean isNumericType(ValueType type) {
+        return type == ValueType.INTEGER || type == ValueType.DOUBLE;
+    }
+
+    private static boolean isBooleanType(ValueType type) {
+        return type == ValueType.BOOLEAN_TRUE || type == ValueType.BOOLEAN_FALSE;
+    }
+
+    /**
+     * Clear caches to prevent memory leaks in long-running applications
+     */
+    public static void clearCaches() {
+        TYPE_CACHE.clear();
+        NUMERIC_CACHE.clear();
     }
 }

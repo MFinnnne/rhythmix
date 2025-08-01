@@ -73,7 +73,7 @@ public class TypeInfer {
                 if (!astNode.getChildren().isEmpty() && astNode.getChildren(0).getType() == ASTNodeTypes.CALL_STMT) {
                     throw new TypeInferException("目前不支持函数返回类型的推断");
                 }
-                if (!env.containsKey(astNode.getLabel())) {
+                if (env.containsKey(astNode.getLabel())) {
                     throw new TypeInferException("未定义的变量:'{}'", astNode.getLabel());
                 }
                 String value = env.rawGet(astNode.getLabel()).toString();

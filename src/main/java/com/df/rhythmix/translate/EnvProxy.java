@@ -6,11 +6,11 @@ import lombok.Setter;
 
 import java.util.HashMap;
 
+@Setter
+@Getter
 public class EnvProxy{
 
 
-    @Getter
-    @Setter
     private HashMap<String, Object> env = new HashMap<>();
 
     public void put(String key, Object value) {
@@ -22,7 +22,7 @@ public class EnvProxy{
     }
 
     public  void rawPutAll(HashMap<String,Object> env){
-        this.env.putAll(env);;
+        this.env.putAll(env);
     }
 
 
@@ -36,7 +36,7 @@ public class EnvProxy{
     }
 
     public boolean containsKey(String key){
-        return this.env.containsKey(key);
+        return !this.env.containsKey(key);
     }
 
 }
