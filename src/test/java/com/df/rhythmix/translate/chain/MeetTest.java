@@ -1,5 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
+import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
@@ -20,10 +21,8 @@ class MeetTest {
     @Test
     void translate() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "collect().take(0,1).limit(100).sum().meet((<5||(8,12])&&!=10)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        String code = "take(0,1).limit(100).sum().meet((<5||(8,12])&&!=10)";
+        Executor executor = Compiler.compile(code);
         EventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         EventData p4 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));

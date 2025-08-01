@@ -10,4 +10,5 @@ target
 /doc/.idea
 /doc/src/__pycache__/*
 doc/__pycache__
-/logs/*
+*.log
+

@@ -3,7 +3,7 @@
  * @Date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-11 21:04:49
  * @LastEditors: MFine
- * @Description: 
+ * @Description:
  */
 package com.df.rhythmix.translate;
 
@@ -58,14 +58,16 @@ public class CompareExpr {
                 throw new TranslatorException("Comparison expression parameter cannot be an expression");
             }
             if (!Arrays.asList("!=", "==").contains(symbol)) {
-                if (!arg.getLexeme().isNumber()) {
+                if (!arg.getLexeme().isNumber() && !arg.getLexeme().isVariable()) {
                     throw new TranslatorException("{} cannot be followed by non-numeric type", symbol);
                 }
             }
             if (arg.getLexeme().isVariable()) {
-                throw new TranslatorException("Comparison expression parameter cannot be a variable");
+                context.put("comparedValue", env.getEnv().get(arg.getLabel()));
+            } else {
+                context.put("comparedValue", arg.getLexeme().getValue());
+
             }
-            context.put("comparedValue", arg.getLexeme().getValue());
 //            if (arg.getLexeme().getType() == TokenType.INTEGER) {
 //                context.put("type", "long");
 //            }
@@ -74,7 +76,7 @@ public class CompareExpr {
 //                context.put("type", "double");
 //            }
             template.evaluate(writer, context);
-            return writer.toString().replaceAll("\\r|\\n|\\s","");
+            return writer.toString().replaceAll("\\r|\\n|\\s", "");
         } catch (Exception e) {
             throw new TranslatorException(e.getMessage());
         }

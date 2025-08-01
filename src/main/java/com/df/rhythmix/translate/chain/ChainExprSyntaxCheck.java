@@ -19,11 +19,11 @@ public class ChainExprSyntaxCheck {
         // The last function can only be meet
         END_FUNC.add("meet");
 
-        CALL_TREE.put("filter", List.of("collect"));
-        CALL_TREE.put("collect", List.of( "take", "sum", "hitRate", "count", "avg", "stddev","window","limit"));
+        CALL_TREE.put("filter", List.of("take", "sum", "hitRate", "count", "avg", "stddev", "window", "limit"));
+        CALL_TREE.put("collect", List.of("take", "sum", "hitRate", "count", "avg", "stddev", "window", "limit"));
         CALL_TREE.put("limit", List.of("take", "sum", "count", "avg", "stddev"));
-        CALL_TREE.put("take", List.of("sum", "count", "avg", "stddev","limit"));
-        CALL_TREE.put("window", List.of("sum", "count", "avg", "stddev","limit"));
+        CALL_TREE.put("take", List.of("sum", "count", "avg", "stddev", "limit"));
+        CALL_TREE.put("window", List.of("sum", "count", "avg", "stddev", "limit"));
         CALL_TREE.put("sum", List.of("meet"));
         CALL_TREE.put("count", List.of("meet"));
         CALL_TREE.put("avg", List.of("meet"));

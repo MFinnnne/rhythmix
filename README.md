@@ -87,6 +87,8 @@ boolean res = executor.execute(eventData);
 
 一对尖括号内的 0 和 1 用逗号隔开，表示从 0 变化到 1。
 
+![state_transition_0_1](.\doc\media\videos\300p60\state_transition_enhanced.gif)
+
 ## 📝 表达式语法
 
 ### 箭头表达式
@@ -192,7 +194,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   filter(<=3)
   ```
 
-#### 数据限制
+#### 数据窗口
 
 - **limit** ⏱️
 

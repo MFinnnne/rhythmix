@@ -59,7 +59,7 @@ class ChainExprTest {
     @Test
     void translate2() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(500ms).take(-3,-1).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(500ms).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);

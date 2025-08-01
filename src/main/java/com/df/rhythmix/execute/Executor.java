@@ -3,6 +3,7 @@ package com.df.rhythmix.execute;
 import com.df.rhythmix.lib.AviatorConfig;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.translate.EnvProxy;
+import com.df.rhythmix.udf.FilterUDFRegistry;
 import com.df.rhythmix.util.AviatorFunctionUtil;
 import com.googlecode.aviator.Expression;
 import lombok.*;
@@ -19,19 +20,17 @@ public class Executor {
 
     @Getter
     @Setter
-    private EnvProxy envpProxy;
+    private EnvProxy envProxy;
 
     @Setter
     private HashMap<String, Object> originalEnv = new HashMap<>();
 
-    static {
-        Register.importFunction();
-    }
+
 
     public Executor(String code, EnvProxy env) {
         this.code = code;
-        this.envpProxy = env;
-        this.originalEnv.putAll(this.envpProxy.getEnv());
+        this.envProxy = env;
+        this.originalEnv.putAll(this.envProxy.getEnv());
         AviatorConfig.operatorOverloading();
     }
 
@@ -45,9 +44,10 @@ public class Executor {
     }
 
     public boolean execute(Object event) {
-        this.envpProxy.rawPut("event", event);
+        this.envProxy.rawPut("event", event);
+        this.envProxy.rawPut("filterUDFMap", FilterUDFRegistry.getREGISTERED_UDFS());
         Expression expr = AviatorFunctionUtil.getExpr(code);
-        Object res = expr.execute(envpProxy.getEnv());
+        Object res = expr.execute(envProxy.getEnv());
         Boolean res1 = (Boolean) res;
         if (res1) {
             resetEnv();
@@ -56,16 +56,16 @@ public class Executor {
     }
 
     public void resetEnv() {
-        this.envpProxy.getEnv().clear();
-        this.envpProxy.getEnv().putAll(this.getOriginalEnv());
+        this.envProxy.getEnv().clear();
+        this.envProxy.getEnv().putAll(this.getOriginalEnv());
     }
 
     public boolean execute(Object... events) {
         boolean res = false;
         Expression expr = AviatorFunctionUtil.getExpr(code);
         for (Object event : events) {
-            this.envpProxy.rawPut("event", event);
-            res = (Boolean) expr.execute(envpProxy.getEnv());
+            this.envProxy.rawPut("event", event);
+            res = (Boolean) expr.execute(envProxy.getEnv());
         }
         if (res) {
             resetEnv();

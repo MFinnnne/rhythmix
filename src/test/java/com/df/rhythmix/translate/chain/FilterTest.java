@@ -19,7 +19,7 @@ class FilterTest {
     @Test
     void test1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(>3).collect().sum().meet(>1)";
+        String code = "filter(>3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -40,7 +40,7 @@ class FilterTest {
     @Test
     void test2() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(>=3).collect().sum().meet(>1)";
+        String code = "filter(>=3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -59,7 +59,7 @@ class FilterTest {
     @Test
     void test3() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(<3).collect().sum().meet(>1)";
+        String code = "filter(<3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -83,7 +83,7 @@ class FilterTest {
     @Test
     void test4() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(<=3).collect().sum().meet(>1)";
+        String code = "filter(<=3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -105,7 +105,7 @@ class FilterTest {
     @Test
     void test5() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(==3).collect().sum().meet(>1)";
+        String code = "filter(==3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -122,7 +122,7 @@ class FilterTest {
     @Test
     void test6() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(!=3).collect().sum().meet(>1)";
+        String code = "filter(!=3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -138,7 +138,7 @@ class FilterTest {
     @Test
     void test7() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((1,4)).collect().sum().meet(>1)";
+        String code = "filter((1,4)).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -153,7 +153,7 @@ class FilterTest {
     @Test
     void test8() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((1,4]).collect().sum().meet(>1)";
+        String code = "filter((1,4]).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -172,7 +172,7 @@ class FilterTest {
     @Test
     void test9() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(((1,7]||>10)&&!=5).collect().sum().meet(>1)";
+        String code = "filter(((1,7]||>10)&&!=5).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -193,7 +193,7 @@ class FilterTest {
     @Test
     void test10() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((1,6)).collect().sum().meet(>1)||filter(>9).collect().sum().meet((12,30))";
+        String code = "filter((1,6)).sum().meet(>1)||filter(>9).sum().meet((12,30))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;

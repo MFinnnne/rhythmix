@@ -1,5 +1,6 @@
 package com.df.rhythmix.translate.chain;
 
+import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
@@ -24,11 +25,8 @@ class WindowTest {
     @Test
     void translate1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().window(2).sum().meet(>1)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode, env);
-        ;
+        String code = "filter((-5,5)).window(2).sum().meet(>1)";
+        Executor executor = Compiler.compile(code);
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
@@ -53,9 +51,7 @@ class WindowTest {
     void translate3() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).window(100ms).sum().meet(>=7)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode, env);
+        Executor executor = Compiler.compile(code);
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 51));
         EventData p21 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 67));
@@ -91,10 +87,8 @@ class WindowTest {
     @Test
     void translate5() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().window(1s).limit(5).avg().meet(<=0.5)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode, env);
+        String code = "filter((-5,5)).window(1s).limit(5).avg().meet(<=0.5)";
+        Executor executor = Compiler.compile(code);
         EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 510));
         EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis() + 1010));
