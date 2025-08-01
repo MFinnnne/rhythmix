@@ -6,6 +6,7 @@ from manim import config
 
 from config import DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_FORMAT, GIF_QUALITY, DEFAULT_FRAME_RATE
 from src.string_movement_animation import StringMovementAnimation, StringPair
+from src.state_transition_animation import StateTransitionAnimation, StateTransitionPair
 
 # Add the doc directory to Python path
 doc_dir = Path(__file__).parent
@@ -71,30 +72,70 @@ def create_state_transition_demo():
     Create a GIF demonstrating the {==0}->{==1} state transition expression.
     This shows how the expression detects a change from value 0 to value 1.
     """
-    # Demonstrate the {==0}->{==1} expression with various data sequences
+    # Demonstrate the {==0}->{==1} expression with forward-only state progression
+    # current_state represents the state AFTER processing each input
     state_pairs = [
-        # First sequence: 2 -> 0 (first state not satisfied, no transition)
-        StringPair("2", "false", "2==0  ×", False),
+        # Sequence 1: Input '2' (doesn't match first state {==0}, stays in state 0)
+        StateTransitionPair("2", "false", "2≠0", False, current_state=0),
 
-        # Second sequence: 0 -> 2 (first state satisfied, second state not satisfied)
-        StringPair("0", "false", "0==0  √", True),
-        StringPair("2", "false", "2==1  ×", False),
+        # Sequence 2: Input '0' -> '2' (first state satisfied, moves to state 1, then stays in state 1)
+        StateTransitionPair("0", "false", "0==0", True, current_state=1),
+        StateTransitionPair("2", "false", "2≠1", False, current_state=1),
 
-        # Third sequence: 0 -> 1 (both states satisfied in sequence - SUCCESS!)
-        StringPair("0", "false", "0==0  √", True),
-        StringPair("1", "true", "1==1  √", True),
+        # Sequence 3: Input '0' -> '1' (complete successful transition - SUCCESS!)
+        StateTransitionPair("0", "false", "0==0", True, current_state=1),
+        StateTransitionPair("1", "true", "1==1 SUCCESS!", True, current_state=0),  # Resets after success
 
-        # Fourth sequence: 1 -> 0 (wrong direction, expression resets)
-        StringPair("1", "false", "1==0  ×", False),
-        StringPair("0", "false", "0==1  ×", False),
+        # Sequence 4: Input '1' (doesn't match first state, stays in state 0)
+        StateTransitionPair("1", "false", "1≠0", False, current_state=0),
 
-        # Fifth sequence: 0 -> 0 -> 1 (first state satisfied, stays in first state, then transitions)
-        StringPair("0", "false", "0==0  √", True),
-        StringPair("0", "false", "0==0  √", True),
-        StringPair("1", "true", "1==1  √", True)
+        # Sequence 5: Input '0' (matches first state, moves to state 1)
+        StateTransitionPair("0", "false", "0==0", True, current_state=1),
+
+        # Sequence 6: Input '0' -> '0' -> '1' (forward-only: moves to state 1, stays in state 1, then succeeds)
+        StateTransitionPair("0", "false", "0!=1", False, current_state=1),
+        StateTransitionPair("0", "false", "waiting for 1", False, current_state=1),
+        StateTransitionPair("1", "true", "1==1 SUCCESS!", True, current_state=0)  # Resets after success
     ]
 
-    create_gif_animation(state_pairs, '{==0}->{==1}', 'state_transition_0_to_1', speed_multiplier=1.5)
+    create_state_transition_gif(state_pairs, 'state_transition_enhanced', speed_multiplier=1.5)
+
+
+def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_name="StateTransitionAnimation",
+                               speed_multiplier=1.0):
+    """
+    Create a GIF animation with state transition highlighting.
+
+    Args:
+        pairs: List of StateTransitionPair objects for the animation
+        output_name: Name for the output file (without extension)
+        speed_multiplier: Speed control (1.0=normal, 0.5=half speed, 2.0=double speed)
+    """
+    # Set up manim config for GIF output
+    if pairs is None:
+        pairs = []
+    config.pixel_width = DEFAULT_WIDTH
+    config.pixel_height = DEFAULT_HEIGHT
+    config.frame_rate = DEFAULT_FRAME_RATE
+    config.format = DEFAULT_FORMAT
+    config.quality = GIF_QUALITY
+
+    # Set custom output filename
+    config.output_file = output_name
+
+    # Create animation class
+    class GifStateTransitionAnimation(StateTransitionAnimation):
+        def __init__(self, **kwargs):
+            super().__init__(state_pairs=pairs, expression_parts=["{==0}", "->", "{==1}"],
+                           speed_multiplier=speed_multiplier, **kwargs)
+
+    # Render the animation
+    scene = GifStateTransitionAnimation()
+    scene.render()
+
+    print(f"✓ Enhanced State Transition GIF created: {output_name}.{DEFAULT_FORMAT}")
+    print(f"✓ Quality: {config.quality}")
+    return True
 
 if __name__ == "__main__":
     # Create the state transition demonstration
