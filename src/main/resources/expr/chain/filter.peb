@@ -2,7 +2,6 @@
 ## 过滤数据 符合条件则放行
 let chain_{{ funcName }} = lambda()->
     {% if isUDF is not null and isUDF == true %}
-    ## UDF filter logic - call the auto-imported FilterUDF instance function
     let udf = seq.get(filterUDFMap,"{{ udfName }}");
       {{ debug("udf：{}","udf") }}
     let res = {{ udfName }}.filter(udf,event);
@@ -12,6 +11,8 @@ let chain_{{ funcName }} = lambda()->
     {% endif %}
     if(res){
         {{ debug("filter() 接收数据：{}","event.value") }}
+        nextChainData = nil;
+        queue.push({% var rawChainQueue %},event);
         return true;
     }
     {% if strict is not null and  strict == true %}

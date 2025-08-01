@@ -97,7 +97,7 @@ class FilterUDFTest {
 
 
         // Compile expression with filter UDF
-        String code = "filter(sensorFilter()).collect().count().meet(==1)";
+        String code = "filter(sensorFilter()).count().meet(==1)";
         Executor executor = Compiler.compile(code);
 
         // Test data - should only keep sensors with ID starting with "temp_"
@@ -120,7 +120,7 @@ class FilterUDFTest {
         TemplateEngine.enableDebugModel(true);
 
         // Test traditional comparison expression still works
-        String code1 = "filter(>20).collect().count().meet(==2)";
+        String code1 = "filter(>20).count().meet(==2)";
         Executor executor1 = Compiler.compile(code1);
 
         EventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));

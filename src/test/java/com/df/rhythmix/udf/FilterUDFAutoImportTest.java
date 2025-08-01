@@ -53,7 +53,7 @@ class FilterUDFAutoImportTest {
     @DisplayName("测试自动导入的tempFilter UDF")
     void testAutoImportedTempFilter() throws TranslatorException {
         // Use auto-imported tempFilter without manual registration
-        String code = "filter(tempFilter()).collect().count().meet(==2)";
+        String code = "filter(tempFilter()).count().meet(==2)";
         Executor executor = Compiler.compile(code);
         
         // Test data - tempFilter should keep temperatures between -50 and 100
@@ -77,7 +77,7 @@ class FilterUDFAutoImportTest {
     @DisplayName("测试自动导入的numericFilter UDF")
     void testAutoImportedNumericFilter() throws TranslatorException {
         // Use auto-imported numericFilter without manual registration
-        String code = "filter(numericFilter()).collect().count().meet(==2)";
+        String code = "filter(numericFilter()).count().meet(==2)";
         Executor executor = Compiler.compile(code);
         
         // Test data - numericFilter should keep only numeric values
@@ -101,7 +101,7 @@ class FilterUDFAutoImportTest {
     @DisplayName("测试自动导入的positiveFilter UDF")
     void testAutoImportedPositiveFilter() throws TranslatorException {
         // Use auto-imported positiveFilter without manual registration
-        String code = "filter(positiveFilter()).collect().sum().meet(>50)";
+        String code = "filter(positiveFilter()).sum().meet(>50)";
         Executor executor = Compiler.compile(code);
         
         // Test data - positiveFilter should keep only positive values

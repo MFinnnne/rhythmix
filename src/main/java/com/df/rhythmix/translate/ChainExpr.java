@@ -101,20 +101,20 @@ public class ChainExpr {
             ArrayList<Token> tokens = lexer.analyse("collect()".chars().mapToObj(x -> (char) x));
             ASTNode colAST = Expr.parse(new PeekTokenIterator(tokens.stream()));
             Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
-            if ("filter".equals(allCallStmtLabel.get(0))) {
-                ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
-                ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
-                astNode.getChildren(1).getChildren().set(0, colAST);
-                astNode.getChildren(1).getChildren().set(1, expr);
-                expr.addChild(copyVarNode);
-                expr.addChild(copyOpNode);
-            } else {
+            if (!"filter".equals(allCallStmtLabel.get(0))) {
                 ASTNode copyVarNode = astNode.getChildren(0);
                 ASTNode copyOpNode = astNode.getChildren(1);
                 astNode.getChildren().set(0, colAST);
                 astNode.getChildren().set(1, expr);
                 expr.addChild(copyVarNode);
                 expr.addChild(copyOpNode);
+            } else {
+//                ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
+//                ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
+//                astNode.getChildren(1).getChildren().set(0, colAST);
+//                astNode.getChildren(1).getChildren().set(1, expr);
+//                expr.addChild(copyVarNode);
+//                expr.addChild(copyOpNode);
             }
         }
     }

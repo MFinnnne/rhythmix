@@ -179,7 +179,7 @@ class ArrowExprTest {
     @Test
     void translate11() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "{collect().count().meet(==5)||filter(>1).collect().window(3).sum().meet(>10)}->{(-1,5]}->{delay(100ms)}->{keep(>10,100ms)}";
+        String code = "{count().meet(==5)||filter(>1).window(3).sum().meet(>10)}->{(-1,5]}->{delay(100ms)}->{keep(>10,100ms)}";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);

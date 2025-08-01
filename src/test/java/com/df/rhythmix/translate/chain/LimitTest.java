@@ -21,7 +21,7 @@ class LimitTest {
     @Test
     void test1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(((1,7]||>10)&&!=5).collect().window(2).sum().meet(>1)";
+        String code = "filter(((1,7]||>10)&&!=5).window(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;
@@ -67,7 +67,7 @@ class LimitTest {
     @Test
     void test4() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter(((1,7]||>10)&&!=5).collect().limit(0ms).sum().meet(>1)";
+        String code = "filter(((1,7]||>10)&&!=5).limit(0ms).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         Assertions.assertThrows(TranslatorException.class,()->{
             String transCode = Translator.translate(code, env);
@@ -78,7 +78,7 @@ class LimitTest {
     @Test
     void test5() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(2).take(-3,-1).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(2).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;

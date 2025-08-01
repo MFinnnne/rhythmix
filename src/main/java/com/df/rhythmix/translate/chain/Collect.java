@@ -28,5 +28,4 @@ public class Collect {
             throw new RuntimeException(e);
         }
     }
-
 }

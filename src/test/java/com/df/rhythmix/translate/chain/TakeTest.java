@@ -16,7 +16,7 @@ class TakeTest {
     @Test
     void translate1() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).take(-3,-1).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
@@ -40,7 +40,7 @@ class TakeTest {
     @Test
     void translate2() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).take(0,-1).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(0,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
@@ -61,7 +61,7 @@ class TakeTest {
     @Test
     void translate3() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).take(-3,5).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(-3,5).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
@@ -117,7 +117,7 @@ class TakeTest {
     @Test
     void translate6() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).take(-3).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(-3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
@@ -138,7 +138,7 @@ class TakeTest {
     @Test
     void translate7() throws TranslatorException{
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).collect().limit(5).take(2).sum().meet(>1)";
+        String code = "filter((-5,5)).limit(5).take(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);

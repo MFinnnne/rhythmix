@@ -2,7 +2,6 @@
 ## 收集数据存入到数据队列中等待后续操作
 
 let chain_{{ funcName }} = lambda()->
-
    nextChainData = nil;
    queue.push({% var rawChainQueue %},event);
 {#   {% debug "collect:{}",rawChainQueue %}#}
