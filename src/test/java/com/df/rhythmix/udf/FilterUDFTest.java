@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,6 +56,11 @@ class FilterUDFTest {
         @Override
         public boolean filter(EventData event) {
             return event.getId().startsWith("temp_");
+        }
+
+        @Override
+        public List<EventData> filter(List<EventData> events) {
+            return FilterUDF.super.filter(events);
         }
     }
 

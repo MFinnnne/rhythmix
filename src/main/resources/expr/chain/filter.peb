@@ -1,29 +1,112 @@
 ## ===============  chain filter start ===============
-## 过滤数据 符合条件则放行
+## 过滤数据 符合条件则放行 (Filter data - pass through if conditions are met)
+##
+## This template generates filter logic that supports two modes:
+## 1. Traditional comparison expressions: filter(>20), filter(=="active"), filter([10,50])
+## 2. User-defined filter functions: filter(tempFilter()), filter(numericFilter())
+##
+## Template Variables:
+## - funcName: The chain function name (usually "filter")
+## - isUDF: Boolean flag indicating if this is a UDF call (true) or comparison expression (false)
+## - udfName: Name of the FilterUDF function (only when isUDF=true)
+## - stateCode: Generated AviatorScript code for comparison expressions (only when isUDF=false)
+## - strict: Boolean flag for strict mode behavior (clears queues on failure)
+##
 let chain_{{ funcName }} = lambda()->
     {% if isUDF is not null and isUDF == true %}
+    ## UDF filter logic - retrieve and call the FilterUDF instance
+    ## Get the FilterUDF instance from the filterUDFMap using the UDF name
     let udf = seq.get(filterUDFMap,"{{ udfName }}");
-      {{ debug("udf：{}","udf") }}
+    {{ debug("udf：{}","udf") }}
+    ## Call the FilterUDF's filter method with the UDF instance and current event
+    ## This returns true to keep the data, false to discard it
     let res = {{ udfName }}.filter(udf,event);
+
     {% else %}
     ## Traditional comparison expression logic
+    ## stateCode contains generated AviatorScript code for expressions like:
+    ## - event.value > 20 (for filter(>20))
+    ## - event.value == "active" (for filter(=="active"))
+    ## - event.value >= 10 && event.value <= 50 (for filter([10,50]))
     let res = {{ stateCode }};
     {% endif %}
+    ## ===== DATA ACCEPTANCE AND QUEUE MANAGEMENT =====
+    ## If the filter condition is met (res=true), accept the data and continue chain processing
     if(res){
         {{ debug("filter() 接收数据：{}","event.value") }}
+
+        ## Reset the nextChainData flag to indicate we're processing current event
+        ## This prevents chain functions from using stale data from previous iterations
         nextChainData = nil;
+
+        ## Add the current event to the raw data queue for downstream chain functions
+        ## rawChainQueue stores all events that have passed the filter condition
+        ## This queue is used by subsequent chain functions like collect(), sum(), avg(), etc.
         queue.push({% var rawChainQueue %},event);
+
+        {% if isUDF is not null and isUDF == true %}
+        ## UDF-specific queue processing logic
+        ## For FilterUDFs, we may need additional processing of the entire queue
+        ## Get the UDF instance again for potential batch processing
+
+        let udf = seq.get(filterUDFMap,"{{ udfName }}");
+
+        ## Apply UDF filtering to the entire rawChainQueue if the UDF supports batch processing
+        ## This allows FilterUDFs to perform operations on the accumulated data set
+        ## Note: This line may modify the rawChainQueue based on UDF-specific logic
+        {% var rawChainQueue %}  = {{ udfName }}.filter(udf,{% var rawChainQueue %});
+        {% endif %}
+
+        ## Return true to indicate successful filter pass and continue chain execution
+        ## This allows the next chain function in the pipeline to process the data
         return true;
     }
+
+    ## ===== STRICT MODE ERROR HANDLING =====
+    ## Strict mode is activated by using the "!" suffix in expressions like:
+    ## - filter(>20!) or filter(tempFilter()!)
+    ## - Triggered when strict=true is passed to the filter function
     {% if strict is not null and  strict == true %}
     else {
+        ## In strict mode, if filter condition fails, reset the entire chain state
+        ## This provides "all-or-nothing" behavior where any filter failure resets everything
+
+        ## Reset the chain result flag to false, indicating chain failure
         {% var chainResult  %} = false;
+
+        ## Clear the raw data queue, removing all previously accepted events
+        ## This ensures that failed filter conditions don't leave partial data
         queue.clear({% var rawChainQueue %});
+
+        ## Clear the processed data queue if it exists
+        ## processedChainQueue contains intermediate results from chain functions
+        ## like window(), limit(), etc. that need to be reset on strict mode failure
         {% if processedChainQueue != nil %}
         queue.clear({% var processedChainQueue %});
         {% endif %}
     }
     {% endif %}
+
+    ## ===== DEFAULT REJECTION LOGIC =====
+    ## If filter condition is not met (res=false) and not in strict mode:
+    ## - Simply discard the current event without affecting existing queues
+    ## - Continue waiting for the next event that might pass the filter
+    ## - Return false to indicate this event should not continue in the chain
     return false;
 end;
 ## ===============  chain filter  end  ===============
+##
+## Summary of Filter Chain Behavior:
+## 1. Traditional Filters: Use comparison expressions (>, ==, [min,max]) to test event.value
+## 2. UDF Filters: Call FilterUDF.filter(event) method for custom filtering logic
+## 3. Queue Management: Accepted events are added to rawChainQueue for downstream processing
+## 4. Strict Mode: Filter failures reset all chain state (queues and results)
+## 5. Normal Mode: Filter failures only discard current event, preserving existing state
+## 6. Return Values: true = continue chain, false = discard event
+##
+## Chain Integration: This filter function integrates with other chain functions like:
+## - collect(): Uses rawChainQueue to gather filtered events
+## - sum()/avg(): Operates on values from rawChainQueue
+## - limit(): Controls rawChainQueue size
+## - window(): Creates processedChainQueue from rawChainQueue
+## - meet(): Evaluates final conditions on processed results
