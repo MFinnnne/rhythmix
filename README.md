@@ -105,6 +105,8 @@ boolean res = executor.execute(eventData);
 {>1}->{count(<1,3)}->{==3}
 ```
 
+![](doc/media/videos/300p60/complex_state_transition.gif)
+
 这个表达式表示：当输入的数据依次满足"大于 1"、"三次（非连续）小于 1"、"等于 3"时，表达式成立并返回 true。
 
 只有当前一个状态满足后，才会继续校验下一个状态。
@@ -210,7 +212,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       public String getName() {
           return "tempFilter"; // 过滤器名称，用于表达式中调用
       }
-
+  
       @Override
       public boolean filter(EventData event) {
           try {
@@ -228,14 +230,14 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   ```js
   // 使用自定义温度过滤器
   filter(tempFilter()).sum().meet(>100)
-
+  
   // 组合使用多个自定义过滤器
   filter(tempFilter()).filter(sensorFilter()).count().meet(>=5)
   ```
 
-  **内置过滤器**：
+  **内置示例过滤器**：
 
-  Rhythmix 提供了一些常用的内置过滤器：
+  Rhythmix 提供了一些示例内置过滤器,你可以参考这个来编写自己的过滤器：
 
   | 过滤器名称 | 功能描述 | 使用示例 |
   |-----------|----------|----------|
@@ -252,7 +254,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       public String getName() {
           return "arrayFilter";
       }
-
+  
       @Override
       public List<EventData> filter(List<EventData> events) {
           // 只保留最后3个数据
