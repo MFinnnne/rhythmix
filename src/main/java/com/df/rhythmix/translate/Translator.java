@@ -34,8 +34,10 @@ public class Translator {
         try {
             Map<String, Object> context = new HashMap<>();
             return translate(code, context, env);
+        } catch (TranslatorException e) {
+            throw e;
         } catch (Exception e) {
-            throw new TranslatorException("Illegal expression,{}", e);
+            throw new TranslatorException("Illegal expression: " + e.getMessage());
         }
     }
 
@@ -65,6 +67,8 @@ public class Translator {
             ((ArrayList<String>) context.get("baseCodes")).add(callCode);
             baseTemplate.evaluate(writer, context);
             return writer.toString();
+        } catch (TranslatorException e) {
+            throw e;
         } catch (Exception e) {
             throw new TranslatorException(e.getMessage());
         }
@@ -104,7 +108,7 @@ public class Translator {
                     return astNode.getLabel() + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
                 } else {
                     if (env.containsKey(astNode.getLabel())) {
-                        throw new TranslatorException("Undefined variable:'{}'", astNode.getLabel());
+                        throw new TranslatorException("Undefined variable: '{}'", astNode.getLexeme(), astNode.getLabel());
                     }
                     return env.rawGet(astNode.getLabel()).toString();
                 }
@@ -134,7 +138,7 @@ public class Translator {
             default:
                 break;
         }
-        throw new TranslatorException(astNode.getLabel());
+        throw new TranslatorException("Unsupported AST node: " + astNode.getLabel(), astNode.getLexeme());
     }
 
 }
