@@ -1,9 +1,5 @@
 package com.df.rhythmix.exception;
 
-import com.df.rhythmix.lexer.Token;
-
-import java.util.List;
-
 /**
  * @author MFine
  * @version 1.0
