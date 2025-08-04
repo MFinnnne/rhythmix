@@ -2,6 +2,8 @@ package com.df.rhythmix.translate;
 
 
 import cn.hutool.core.util.StrUtil;
+import com.df.rhythmix.exception.ErrorFormatter;
+import com.df.rhythmix.exception.RhythmixException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
@@ -11,6 +13,7 @@ import com.df.rhythmix.parser.ast.Expr;
 import com.df.rhythmix.util.Config;
 import com.df.rhythmix.util.PeekTokenIterator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 
+@Slf4j
 public class Translator {
 
 
@@ -34,10 +38,9 @@ public class Translator {
         try {
             Map<String, Object> context = new HashMap<>();
             return translate(code, context, env);
-        } catch (TranslatorException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new TranslatorException("Illegal expression: " + e.getMessage());
+        }catch (RhythmixException e) {
+            throw new TranslatorException(e.getMessage(),
+                e.getCharacterPosition(), e.getLine(), e.getColumn());
         }
     }
 
@@ -67,10 +70,27 @@ public class Translator {
             ((ArrayList<String>) context.get("baseCodes")).add(callCode);
             baseTemplate.evaluate(writer, context);
             return writer.toString();
-        } catch (TranslatorException e) {
-            throw e;
+        }  catch (RhythmixException e) {
+            TranslatorException wrappedException = new TranslatorException("Translation failed: " + e.getMessage(),
+                e.getCharacterPosition(), e.getLine(), e.getColumn());
+
+            if (!code.isEmpty()) {
+                String formattedError = ErrorFormatter.formatError(wrappedException, code);
+                log.error(formattedError);
+            }
+            throw wrappedException;
         } catch (Exception e) {
-            throw new TranslatorException(e.getMessage());
+            // For generic exceptions, create a TranslatorException and use ErrorFormatter
+            TranslatorException translatorException = new TranslatorException( e.getMessage());
+
+            if (code != null && !code.isEmpty()) {
+                // Use ErrorFormatter to display the error with source code context
+                String formattedError = ErrorFormatter.formatError(translatorException, code);
+                log.error(formattedError);
+            } else {
+                log.error(translatorException.toString());
+            }
+            throw translatorException;
         }
     }
 

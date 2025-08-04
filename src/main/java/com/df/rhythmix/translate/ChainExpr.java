@@ -1,5 +1,6 @@
 package com.df.rhythmix.translate;
 
+import com.df.rhythmix.exception.ErrorFormatter;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -53,9 +54,9 @@ public class ChainExpr {
             context.put("chainSobelCode", code);
             chainTemplate.evaluate(writer, context);
             return writer.toString();
-        } catch (TranslatorException | IOException | LexicalException | ParseException e) {
-            e.printStackTrace();
-            throw new TranslatorException(e.getMessage());
+        } catch (IOException | TranslatorException | LexicalException | ParseException e) {
+            Token contextToken = astNode.getLexeme();
+            throw new TranslatorException(e.getMessage(), contextToken);
         }
     }
 
@@ -67,7 +68,9 @@ public class ChainExpr {
             List<ASTNode> windowVar = window.getChildren(0).getChildren();
             if (limitVar.size() == windowVar.size()) {
                 if (!limitVar.get(0).getLabel().equals(windowVar.get(0).getLabel())) {
-                    throw new ParseException("Both limit and window parameters must be the same");
+                    // Use the window node's token for position information since that's where the conflict occurs
+                    Token errorToken = window.getLexeme();
+                    throw new ParseException("Both limit and window parameters must be the same", errorToken);
                 }
             }
         }
@@ -108,13 +111,6 @@ public class ChainExpr {
                 astNode.getChildren().set(1, expr);
                 expr.addChild(copyVarNode);
                 expr.addChild(copyOpNode);
-            } else {
-//                ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
-//                ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
-//                astNode.getChildren(1).getChildren().set(0, colAST);
-//                astNode.getChildren(1).getChildren().set(1, expr);
-//                expr.addChild(copyVarNode);
-//                expr.addChild(copyOpNode);
             }
         }
     }
@@ -147,14 +143,18 @@ public class ChainExpr {
                     case "hitRate":
                         return Calculator.HitRate.translate(astNode, env);
                     default:
-                        throw new TranslatorException("Chain expression does not support {} operator", name);
+                        // Use the AST node's token for position information
+                        Token errorToken = astNode.getLexeme();
+                        throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);
                 }
             }
             String left = recursiveTrans(astNode.getChildren(0), env);
             String right = recursiveTrans(astNode.getChildren(1), env);
             return left + "\n" + right;
         }
-        throw new TranslatorException("Chain call translation error");
+        // Use the AST node's token for position information
+        Token errorToken = astNode.getLexeme();
+        throw new TranslatorException("Chain call translation error", errorToken);
     }
 
 }

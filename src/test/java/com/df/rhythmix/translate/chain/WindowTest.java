@@ -38,7 +38,7 @@ class WindowTest {
     }
 
     @Test
-    void translate2() throws LexicalException, TranslatorException, IOException, ParseException {
+    void translate2() {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).collect().window(0).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
