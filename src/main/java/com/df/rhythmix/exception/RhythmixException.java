@@ -149,15 +149,6 @@ public abstract class RhythmixException extends Exception {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    /**
-     * Set position information manually.
-     * This can be useful when position info is determined after exception creation.
-     */
-    public void setPositionInfo(int characterPosition, int line, int column) {
-        this.characterPosition = characterPosition;
-        this.line = line;
-        this.column = column;
-    }
 
     /**
      * Set position information from a token.

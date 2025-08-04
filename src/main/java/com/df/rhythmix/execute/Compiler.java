@@ -92,16 +92,12 @@ public class Compiler {
         private final boolean success;
         private final Executor executor;
         private final RhythmixException exception;
-        private final String formattedError;
-        private final String detailedErrorReport;
 
         private CompilationResult(boolean success, Executor executor, RhythmixException exception,
                                   String formattedError, String detailedErrorReport) {
             this.success = success;
             this.executor = executor;
             this.exception = exception;
-            this.formattedError = formattedError;
-            this.detailedErrorReport = detailedErrorReport;
         }
 
         public static CompilationResult success(Executor executor) {
@@ -112,7 +108,6 @@ public class Compiler {
             return new CompilationResult(false, null, exception, formattedError, detailedErrorReport);
         }
 
-        // Backward compatibility method
         public static CompilationResult failure(RhythmixException exception, String detailedErrorReport) {
             return new CompilationResult(false, null, exception, null, detailedErrorReport);
         }
