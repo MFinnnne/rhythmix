@@ -101,7 +101,6 @@ public class Expr extends ASTNode {
         ASTNode parse = Factor.parse(it);
         Token lookahead = it.peek();
         if (parse instanceof Variable) {
-            // 如果变量后面跟着感叹号表示这是严格连续标识
             if (it.hasNext() && "!".equals(lookahead.getValue())) {
                 parse.setLabel(parse.getLabel() + lookahead.getValue());
                 parse.getLexeme().setValue(parse.getLexeme().getValue() + lookahead.getValue());
