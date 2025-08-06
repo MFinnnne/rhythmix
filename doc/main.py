@@ -102,7 +102,7 @@ def create_state_transition_demo():
 
 
 def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_name="StateTransitionAnimation",
-                               speed_multiplier=1.0):
+                               speed_multiplier=1.0, expression_parts=None):
     """
     Create a GIF animation with state transition highlighting.
 
@@ -110,10 +110,14 @@ def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_
         pairs: List of StateTransitionPair objects for the animation
         output_name: Name for the output file (without extension)
         speed_multiplier: Speed control (1.0=normal, 0.5=half speed, 2.0=double speed)
+        expression_parts: List of expression parts (defaults to ["{==0}", "->", "{==1}"])
     """
     # Set up manim config for GIF output
     if pairs is None:
         pairs = []
+    if expression_parts is None:
+        expression_parts = ["{==0}", "->", "{==1}"]
+
     config.pixel_width = DEFAULT_WIDTH
     config.pixel_height = DEFAULT_HEIGHT
     config.frame_rate = DEFAULT_FRAME_RATE
@@ -126,7 +130,7 @@ def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_
     # Create animation class
     class GifStateTransitionAnimation(StateTransitionAnimation):
         def __init__(self, **kwargs):
-            super().__init__(state_pairs=pairs, expression_parts=["{==0}", "->", "{==1}"],
+            super().__init__(state_pairs=pairs, expression_parts=expression_parts,
                            speed_multiplier=speed_multiplier, **kwargs)
 
     # Render the animation
@@ -137,8 +141,58 @@ def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_
     print(f"✓ Quality: {config.quality}")
     return True
 
+def create_complex_state_transition_demo():
+    """
+    Create a GIF demonstrating the {>1}->{count(<1,3)}->{==3} state transition expression.
+    This shows a complex multi-state transition with counting logic.
+
+    States:
+    0: Waiting for {>1} (value greater than 1)
+    1: Waiting for {count(<1,3)} (counting values less than 1, need exactly 3)
+    2: Waiting for {==3} (value equal to 3)
+    """
+    # Demonstrate the {>1}->{count(<1,3)}->{==3} expression
+    # current_state: 0=waiting for >1, 1=counting <1 values (need 3), 2=waiting for ==3
+    state_pairs = [
+        # Sequence 1: Input '0' (doesn't match first state {>1}, stays in state 0)
+        StateTransitionPair("0", "false", "0≤1", False, current_state=0),
+
+        # Sequence 2: Input '2' (matches {>1}, moves to state 1 - start counting)
+        StateTransitionPair("2", "false", "2>1 ✓", True, current_state=1),
+
+        # Sequence 3: Count values < 1 (need 3 total)
+        StateTransitionPair("0", "false", "0<1 (1/3)", True, current_state=1),
+        StateTransitionPair("-1", "false", "-1<1 (2/3)", True, current_state=1),
+        StateTransitionPair("0.5", "false", "0.5<1 (3/3)", True, current_state=2),  # Count complete, move to state 2
+
+        # Sequence 4: Input '2' (doesn't match {==3}, stays in state 2)
+        StateTransitionPair("2", "false", "2≠3", False, current_state=2),
+
+        # Sequence 5: Input '3' (matches {==3} - SUCCESS!)
+        StateTransitionPair("3", "true", "3==3 SUCCESS!", True, current_state=0),  # Reset after success
+
+        # Sequence 6: Show another complete cycle
+        StateTransitionPair("5", "false", "5>1 ✓", True, current_state=1),  # Start new cycle
+        StateTransitionPair("0", "false", "0<1 (1/3)", True, current_state=1),
+        StateTransitionPair("-0.5", "false", "-0.5<1 (2/3)", True, current_state=1),
+        StateTransitionPair("0.1", "false", "0.1<1 (3/3)", True, current_state=2),
+        StateTransitionPair("3", "true", "3==3 SUCCESS!", True, current_state=0),  # Complete success
+
+        # Sequence 7: Show failure case - wrong count
+        StateTransitionPair("10", "false", "10>1 ✓", True, current_state=1),
+        StateTransitionPair("0", "false", "0<1 (1/3)", True, current_state=1),
+        StateTransitionPair("2", "false", "2≥1, reset", False, current_state=0),  # Reset on invalid input
+    ]
+
+    create_state_transition_gif(state_pairs, 'complex_state_transition', speed_multiplier=1.2,
+                                expression_parts=["{>1}", "->", "{count(<1,3)}", "->", "{==3}"])
+
+
 if __name__ == "__main__":
-    # Create the state transition demonstration
+    # Create the complex state transition demonstration
+    create_complex_state_transition_demo()
+
+    # Create the basic state transition demonstration
     create_state_transition_demo()
 
     # Optionally also create the original count example

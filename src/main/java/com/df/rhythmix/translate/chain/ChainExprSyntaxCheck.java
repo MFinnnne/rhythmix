@@ -1,6 +1,8 @@
 package com.df.rhythmix.translate.chain;
 
 import com.df.rhythmix.exception.TranslatorException;
+import com.df.rhythmix.parser.ast.ASTNode;
+import com.df.rhythmix.util.ParserUtils;
 
 import java.util.*;
 
@@ -13,12 +15,9 @@ public class ChainExprSyntaxCheck {
     private static final Map<String, List<String>> CALL_TREE = new HashMap<>();
 
     static {
-        // The first function can only be filter or collect
         START_FUNC.add("filter");
         START_FUNC.add("collect");
-        // The last function can only be meet
         END_FUNC.add("meet");
-
         CALL_TREE.put("filter", List.of("take", "sum", "hitRate", "count", "avg", "stddev", "window", "limit"));
         CALL_TREE.put("collect", List.of("take", "sum", "hitRate", "count", "avg", "stddev", "window", "limit"));
         CALL_TREE.put("limit", List.of("take", "sum", "count", "avg", "stddev"));
@@ -31,27 +30,28 @@ public class ChainExprSyntaxCheck {
         CALL_TREE.put("hitRate", List.of("meet"));
     }
 
-    public static void check(List<String> chainCall) throws TranslatorException {
-        for (int i = 0; i < chainCall.size(); i++) {
+    public static void check(ASTNode astNode) throws TranslatorException {
+        List<ASTNode> nodes = ParserUtils.getAllCallStmtNode(astNode);
+        for (int i = 0; i < nodes.size(); i++) {
             if (i == 0) {
-                if (!START_FUNC.contains(chainCall.get(0))) {
-                    throw new TranslatorException("{} cannot be the first operator", chainCall.get(0));
+                if (!START_FUNC.contains(nodes.get(0).getLabel())) {
+                    throw new TranslatorException("{} cannot be the first operator", nodes.get(0).getLexeme(), nodes.get(0).getLabel());
                 }
             }
-            if (i == chainCall.size() - 1) {
-                if (!END_FUNC.contains(chainCall.get(chainCall.size() - 1))) {
-                    throw new TranslatorException("{} cannot be the last operator", chainCall.get(chainCall.size() - 1));
+            if (i == nodes.size() - 1) {
+                if (!END_FUNC.contains(nodes.get(nodes.size() - 1).getLabel())) {
+                    throw new TranslatorException("{} cannot be the last operator", nodes.get(nodes.size() - 1).getLexeme(), nodes.get(nodes.size() - 1).getLabel());
                 }
                 break;
             }
-            var curFunc = chainCall.get(i);
-            var nextFunc = chainCall.get(i + 1);
+            var curFunc = nodes.get(i).getLabel();
+            var nextFunc = nodes.get(i + 1).getLabel();
             if (CALL_TREE.containsKey(curFunc)) {
                 if (!CALL_TREE.get(curFunc).contains(nextFunc)) {
-                    throw new TranslatorException("'{}' operator cannot be followed by '{}' operator", curFunc, nextFunc);
+                    throw new TranslatorException("'{}' operator cannot be followed by '{}' operator", nodes.get(i).getLexeme(), curFunc, nextFunc);
                 }
             } else {
-                throw new TranslatorException("{} operator is not defined", curFunc);
+                throw new TranslatorException("{} operator is not defined", nodes.get(i).getLexeme(), curFunc);
             }
         }
     }

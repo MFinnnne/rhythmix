@@ -3,7 +3,7 @@
  * @Date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-12 00:52:45
  * @LastEditors: MFine
- * @Description: 
+ * @Description:
  */
 package com.df.rhythmix.exception;
 
@@ -14,29 +14,34 @@ import com.df.rhythmix.lexer.Token;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class ParseException extends Exception {
-    private final String msg;
+public class ParseException extends RhythmixException {
 
     public ParseException(String msg) {
-        this.msg = msg;
+        super(msg);
     }
 
     public ParseException(Token token) {
-        this.msg = String.format("Syntax error, unexpected character %s", token.getValue());
+        super(String.format("Syntax error, unexpected character %s", token.getValue()), token);
     }
 
     public ParseException(String ch, Token token) {
-        this.msg = String.format("Syntax error, unexpected character \"%s\", expected \"%s\" ", token.getValue(), ch);
+        super(String.format("Syntax error, unexpected character \"%s\", expected \"%s\" ", token.getValue(), ch), token);
     }
-
 
     public ParseException(CharSequence template, Token... tokens) {
-        this.msg = StrUtil.format(template, String.join("", Arrays.stream(tokens).map(Token::getValue).collect(Collectors.joining())));
+        super(StrUtil.format(template, String.join("", Arrays.stream(tokens).map(Token::getValue).collect(Collectors.joining()))));
+        // Extract position info from the first token if available
+        if (tokens.length > 0 && tokens[0] != null && tokens[0].hasPositionInfo()) {
+            setPositionInfo(tokens[0]);
+        }
     }
 
+    public ParseException(String msg, int characterPosition, int line, int column) {
+        super(msg, characterPosition, line, column);
+    }
 
     @Override
-    public String getMessage() {
-        return this.msg;
+    public String getExceptionType() {
+        return "parse";
     }
 }

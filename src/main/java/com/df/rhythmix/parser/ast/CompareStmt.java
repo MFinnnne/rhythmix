@@ -38,8 +38,6 @@ public class CompareStmt extends Stmt {
             ASTNode arg = Expr.parse(it, table);
             compareStmt.addChild(arg);
             return compareStmt;
-        } catch (ParseException e) {
-            throw new ParseException(e.getMessage());
         } finally {
             Expr.table = new PriorityTable();
         }

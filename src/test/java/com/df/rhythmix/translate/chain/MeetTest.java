@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 class MeetTest {
 
     @Test
-    void translate() throws LexicalException, TranslatorException, IOException, ParseException {
+    void translate() throws TranslatorException{
         TemplateEngine.enableDebugModel(true);
         String code = "take(0,1).limit(100).sum().meet((<5||(8,12])&&!=10)";
         Executor executor = Compiler.compile(code);

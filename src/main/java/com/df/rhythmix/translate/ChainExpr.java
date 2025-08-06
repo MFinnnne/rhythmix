@@ -6,7 +6,9 @@ import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.lexer.TokenType;
-import com.df.rhythmix.parser.ast.*;
+import com.df.rhythmix.parser.ast.ASTNode;
+import com.df.rhythmix.parser.ast.ASTNodeTypes;
+import com.df.rhythmix.parser.ast.Expr;
 import com.df.rhythmix.translate.chain.*;
 import com.df.rhythmix.util.ParserUtils;
 import com.df.rhythmix.util.PeekTokenIterator;
@@ -16,7 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
@@ -46,16 +51,15 @@ public class ChainExpr {
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
             collectAutoComplete(astNode, allCallStmtLabel);
             checkLimitAndWindow(astNode);
-            allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
-            ChainExprSyntaxCheck.check(allCallStmtLabel);
+            ChainExprSyntaxCheck.check(astNode);
             String code = recursiveTrans(astNode, env);
-            context.put("chainFuncs", allCallStmtLabel);
+            context.put("chainFuncs", ParserUtils.getAllCallStmtLabel(astNode));
             context.put("chainSobelCode", code);
             chainTemplate.evaluate(writer, context);
             return writer.toString();
-        } catch (TranslatorException | IOException | LexicalException | ParseException e) {
-            e.printStackTrace();
-            throw new TranslatorException(e.getMessage());
+        } catch (IOException | TranslatorException | LexicalException | ParseException e) {
+            Token contextToken = astNode.getLexeme();
+            throw new TranslatorException(e.getMessage(), contextToken);
         }
     }
 
@@ -67,7 +71,9 @@ public class ChainExpr {
             List<ASTNode> windowVar = window.getChildren(0).getChildren();
             if (limitVar.size() == windowVar.size()) {
                 if (!limitVar.get(0).getLabel().equals(windowVar.get(0).getLabel())) {
-                    throw new ParseException("Both limit and window parameters must be the same");
+                    // Use the window node's token for position information since that's where the conflict occurs
+                    Token errorToken = window.getLexeme();
+                    throw new ParseException("Both limit and window parameters must be the same", errorToken);
                 }
             }
         }
@@ -108,13 +114,6 @@ public class ChainExpr {
                 astNode.getChildren().set(1, expr);
                 expr.addChild(copyVarNode);
                 expr.addChild(copyOpNode);
-            } else {
-//                ASTNode copyVarNode = astNode.getChildren(1).getChildren(0);
-//                ASTNode copyOpNode = astNode.getChildren(1).getChildren(1);
-//                astNode.getChildren(1).getChildren().set(0, colAST);
-//                astNode.getChildren(1).getChildren().set(1, expr);
-//                expr.addChild(copyVarNode);
-//                expr.addChild(copyOpNode);
             }
         }
     }
@@ -147,14 +146,18 @@ public class ChainExpr {
                     case "hitRate":
                         return Calculator.HitRate.translate(astNode, env);
                     default:
-                        throw new TranslatorException("Chain expression does not support {} operator", name);
+                        // Use the AST node's token for position information
+                        Token errorToken = astNode.getLexeme();
+                        throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);
                 }
             }
             String left = recursiveTrans(astNode.getChildren(0), env);
             String right = recursiveTrans(astNode.getChildren(1), env);
             return left + "\n" + right;
         }
-        throw new TranslatorException("Chain call translation error");
+        // Use the AST node's token for position information
+        Token errorToken = astNode.getLexeme();
+        throw new TranslatorException("Chain call translation error", errorToken);
     }
 
 }

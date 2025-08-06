@@ -33,30 +33,24 @@ public class Filter {
             Map<String, Object> context = new HashMap<>();
             String name = astNode.getLabel();
             ASTNode state = astNode.getChildren(0).getChildren(0);
+            boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
+                    Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
+            context.put("strict", strict);
+            context.put("funcName", name);
 
             // Check if this is a UDF function call by analyzing the AST
             if (isFilterUDFCall(state, env)) {
                 // Handle UDF function call
                 String udfName = extractUDFName(state);
-                boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
-                               Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
-
-                context.put("funcName", name);
                 context.put("isUDF", true);
                 context.put("udfName", udfName);
-                context.put("strict", strict);
                 FILTER.evaluate(writer, context);
                 return writer.toString();
             } else {
                 // Handle traditional comparison expression
                 String stateCode = Translator.translate(state, context, env);
-                boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
-                               Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
-
-                context.put("funcName", name);
                 context.put("isUDF", false);
                 context.put("stateCode", stateCode);
-                context.put("strict", strict);
                 FILTER.evaluate(writer, context);
                 return writer.toString();
             }
@@ -72,8 +66,8 @@ public class Filter {
     private static boolean isFilterUDFCall(ASTNode state, EnvProxy env) throws TranslatorException {
         // Check if it's a variable with function call syntax (has CALL_STMT child)
         if (state.getType() == ASTNodeTypes.VARIABLE &&
-            !state.getChildren().isEmpty() &&
-            state.getChildren().get(0).getType() == ASTNodeTypes.CALL_STMT) {
+                !state.getChildren().isEmpty() &&
+                state.getChildren().get(0).getType() == ASTNodeTypes.CALL_STMT) {
 
             String functionName = state.getLabel();
             // Then check if it's auto-imported in the FilterUDFRegistry

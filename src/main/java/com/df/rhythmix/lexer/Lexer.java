@@ -13,29 +13,63 @@ public class Lexer {
     public ArrayList<Token> analyse(PeekIterator<Character> source) throws LexicalException {
         ArrayList<Token> tokens = new ArrayList<>();
         PeekIterator<Character> iterator = new PeekIterator<>(source, (char) 0);
+        int position = 0;
+        int line = 1;
+        int column = 1;
+
         while (iterator.hasNext()) {
             Character next = iterator.next();
             if (next == (char) 0) {
                 break;
             }
             Character lookahead = iterator.peek();
-            if (next == ' ' || next.equals('\n')) {
+
+            if (next == ' ') {
+                position++;
+                column++;
+                continue;
+            }
+            if (next.equals('\n')) {
+                position++;
+                line++;
+                column = 1;
                 continue;
             }
             //删除注释
             if (next == '/') {
                 if (lookahead == '/') {
-                    while (iterator.hasNext() && iterator.next() != '\n') {
-                        ;
+                    position++;
+                    column++;
+                    while (iterator.hasNext()) {
+                        Character c = iterator.next();
+                        position++;
+                        if (c == '\n') {
+                            line++;
+                            column = 1;
+                            break;
+                        } else {
+                            column++;
+                        }
                     }
                 } else if (lookahead == '*') {
                     iterator.next();
+                    position += 2;
+                    column += 2;
                     boolean valid = false;
                     while (iterator.hasNext()) {
                         Character c = iterator.next();
+                        position++;
+                        if (c == '\n') {
+                            line++;
+                            column = 1;
+                        } else {
+                            column++;
+                        }
                         if (c == '*' && iterator.peek() == '/') {
                             valid = true;
                             iterator.next();
+                            position++;
+                            column++;
                             break;
                         }
                     }
@@ -44,41 +78,60 @@ public class Lexer {
                     }
                 } else {
                     iterator.putBack();
-                    tokens.add(Token.makeOp(iterator));
+                    tokens.add(Token.makeOp(iterator, position, line, column));
+                    position++;
+                    column++;
                 }
                 continue;
             }
 
             if (next == '{' || next == '}' || next == '(' || next == ')' || next == '[' || next == ']') {
-                tokens.add(new Token(TokenType.BRACKET, next + ""));
+                tokens.add(new Token(TokenType.BRACKET, next + "", position, position, line, column));
+                position++;
+                column++;
                 continue;
             }
 
             if (next == '<' || next == '>') {
                 iterator.putBack();
-                tokens.add(Token.makeOp(iterator));
+                Token token = Token.makeOp(iterator, position, line, column);
+                tokens.add(token);
+                position += token.getValue().length();
+                column += token.getValue().length();
                 continue;
             }
             if (next == '"' || next == '\'') {
                 iterator.putBack();
-                tokens.add(Token.makeString(iterator));
+                Token token = Token.makeString(iterator, position, line, column);
+                tokens.add(token);
+                position += token.getValue().length();
+                column += token.getValue().length();
                 continue;
             }
 
             if (AlphabetHelper.isLetter(next)) {
                 iterator.putBack();
-                tokens.add(Token.makeVarOrKeyword(iterator));
+                Token token = Token.makeVarOrKeyword(iterator, position, line, column);
+                tokens.add(token);
+                position += token.getValue().length();
+                column += token.getValue().length();
                 continue;
             }
 
             if (AlphabetHelper.isNumber(next)) {
                 iterator.putBack();
-                tokens.add(Token.makeNumber(iterator));
+                Token token = Token.makeNumber(iterator, position, line, column);
+                tokens.add(token);
+                position += token.getValue().length();
+                column += token.getValue().length();
                 continue;
             }
             if (next == '.' && AlphabetHelper.isLiteral(lookahead)) {
                 iterator.putBack();
-                tokens.add(Token.makeOp(iterator));
+                Token token = Token.makeOp(iterator, position, line, column);
+                tokens.add(token);
+                position += token.getValue().length();
+                column += token.getValue().length();
                 continue;
             }
             if ((next == '+' || next == '-' || next == '.') && AlphabetHelper.isNumber(lookahead)) {
@@ -86,27 +139,39 @@ public class Lexer {
                 if (token != null) {
                     if ("(".equals(token.getValue())) {
                         iterator.putBack();
-                        tokens.add(Token.makeNumber(iterator));
+                        Token numToken = Token.makeNumber(iterator, position, line, column);
+                        tokens.add(numToken);
+                        position += numToken.getValue().length();
+                        column += numToken.getValue().length();
                         continue;
                     }
                     if (")".equals(token.getValue())) {
                         if (AlphabetHelper.isOperator(next)) {
                             iterator.putBack();
-                            tokens.add(Token.makeOp(iterator));
+                            Token opToken = Token.makeOp(iterator, position, line, column);
+                            tokens.add(opToken);
+                            position += opToken.getValue().length();
+                            column += opToken.getValue().length();
                             continue;
                         }
                     }
                 }
                 if (token == null || !token.isValue()) {
                     iterator.putBack();
-                    tokens.add(Token.makeNumber(iterator));
+                    Token numToken = Token.makeNumber(iterator, position, line, column);
+                    tokens.add(numToken);
+                    position += numToken.getValue().length();
+                    column += numToken.getValue().length();
                     continue;
                 }
 
             }
             if (AlphabetHelper.isOperator(next)) {
                 iterator.putBack();
-                tokens.add(Token.makeOp(iterator));
+                Token opToken = Token.makeOp(iterator, position, line, column);
+                tokens.add(opToken);
+                position += opToken.getValue().length();
+                column += opToken.getValue().length();
                 continue;
             }
             throw new LexicalException(next);

@@ -254,6 +254,7 @@ class StateTransitionAnimation(DocAnimation):
             )
             
             # Update highlighting based on current state and input
+            # Use the current state (before processing this input) to determine which part to highlight
             self._update_state_highlighting(expression_texts, pair, current_state)
 
             # Show the result
@@ -263,6 +264,7 @@ class StateTransitionAnimation(DocAnimation):
             self._add_record_entry(pair, recording_texts, recording_group, recording_title)
 
             # Update current state to the predefined state from the pair
+            # This represents the state AFTER processing this input
             current_state = pair.current_state
             
             # Clean up for next iteration (except for the last pair)
@@ -288,29 +290,50 @@ class StateTransitionAnimation(DocAnimation):
         Args:
             expression_texts: List of expression text objects
             pair: Current StateTransitionPair
-            current_state: Current state (0 or 1)
+            current_state: Current state (0, 1, 2, etc.)
         """
-        # Determine highlighting color based on whether the current input satisfies the expected state
-        if current_state == 0:
-            # We're waiting for the first state {==0}
-            if pair.left == "0" and pair.recording_tag:
-                # Input satisfies the first state - GREEN
-                self._highlight_expression_part(expression_texts, 0, "#00FF00")  # Green highlight
-            else:
-                # Input does not satisfy the first state - RED
-                self._highlight_expression_part(expression_texts, 0, "#FF0000")  # Red highlight
+        # Get the index of the state part to highlight based on expression structure
+        state_part_index = self._get_state_part_index(current_state)
 
-        elif current_state == 1:
-            # We're waiting for the second state {==1}
-            if pair.left == "1" and pair.right.lower() == "true":
-                # Input satisfies the second state - GREEN
-                self._highlight_expression_part(expression_texts, 2, "#00FF00")  # Green highlight
-            else:
-                # Input does not satisfy the second state - RED
-                self._highlight_expression_part(expression_texts, 2, "#FF0000")  # Red highlight
+        # Determine highlighting color based on whether the current input satisfies the expected state
+        if pair.recording_tag:
+            # Input satisfies the current state - GREEN
+            self._highlight_expression_part(expression_texts, state_part_index, "#00FF00")  # Green highlight
+        else:
+            # Input does not satisfy the current state - RED
+            self._highlight_expression_part(expression_texts, state_part_index, "#FF0000")  # Red highlight
 
         # Brief pause to show the highlighting before evaluation
         self.wait(self._get_runtime(0.15))
+
+    def _get_state_part_index(self, current_state):
+        """
+        Get the index of the expression part to highlight based on current state.
+
+        Args:
+            current_state: Current state number
+
+        Returns:
+            Index of the expression part to highlight
+        """
+        # For expressions like ["{>1}", "->", "{count(<1,3)}", "->", "{==3}"]
+        # State 0 -> index 0 ({>1})
+        # State 1 -> index 2 ({count(<1,3)})
+        # State 2 -> index 4 ({==3})
+
+        # For expressions like ["{==0}", "->", "{==1}"]
+        # State 0 -> index 0 ({==0})
+        # State 1 -> index 2 ({==1})
+
+        if len(self.expression_parts) == 3:
+            # Simple two-state expression: {==0} -> {==1}
+            return current_state * 2  # 0->0, 1->2
+        elif len(self.expression_parts) == 5:
+            # Three-state expression: {>1} -> {count(<1,3)} -> {==3}
+            return current_state * 2  # 0->0, 1->2, 2->4
+        else:
+            # Default fallback
+            return min(current_state * 2, len(self.expression_parts) - 1)
 
     def _update_current_state(self, current_state, pair):
         """
