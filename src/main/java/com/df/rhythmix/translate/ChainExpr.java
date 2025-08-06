@@ -51,10 +51,9 @@ public class ChainExpr {
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
             collectAutoComplete(astNode, allCallStmtLabel);
             checkLimitAndWindow(astNode);
-            allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
-            ChainExprSyntaxCheck.check(allCallStmtLabel);
+            ChainExprSyntaxCheck.check(astNode);
             String code = recursiveTrans(astNode, env);
-            context.put("chainFuncs", allCallStmtLabel);
+            context.put("chainFuncs", ParserUtils.getAllCallStmtLabel(astNode));
             context.put("chainSobelCode", code);
             chainTemplate.evaluate(writer, context);
             return writer.toString();

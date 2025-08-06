@@ -31,7 +31,6 @@ public class CustomExtension implements Extension {
          * by our expression parser and compiled in their own unique way. This
          * includes the block and parent functions.
          */
-
         functions.put("debug", new DebugFunction());
         return functions;
     }

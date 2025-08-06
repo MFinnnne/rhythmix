@@ -127,6 +127,23 @@ public class ParserUtils {
         return list;
     }
 
+    public static List<ASTNode> getAllCallStmtNode(ASTNode root) {
+        var queue = new LinkedList<ASTNode>();
+        var list = new ArrayList<ASTNode>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            var node = queue.poll();
+            if (node.getType() == ASTNodeTypes.VARIABLE) {
+                if (!node.getChildren().isEmpty() && node.getChildren(0).getType() == ASTNodeTypes.CALL_STMT) {
+                    list.add(node);
+                }
+            } else {
+                queue.addAll(node.getChildren());
+            }
+        }
+        return list;
+    }
+
     public static List<String> getAllVarLabel(ASTNode root) {
         var queue = new LinkedList<ASTNode>();
         var list = new ArrayList<String>();

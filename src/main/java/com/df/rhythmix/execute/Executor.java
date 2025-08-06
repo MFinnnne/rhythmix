@@ -44,6 +44,7 @@ public class Executor {
     }
 
     public boolean execute(Object event) {
+
         this.envProxy.rawPut("event", event);
         this.envProxy.rawPut("filterUDFMap", FilterUDFRegistry.getREGISTERED_UDFS());
         Expression expr = AviatorFunctionUtil.getExpr(code);
