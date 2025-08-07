@@ -329,7 +329,7 @@ class FilterUDFTest {
         for (EventData event : new EventData[]{event1, event2, event3, event4, event5}) {
             result = executor.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
-                             (result ? "MATCH" : "continue"));
+                    (result ? "MATCH" : "continue"));
         }
 
         Assertions.assertTrue(result); // Sum of last 3 events: 30+40+50 = 120
@@ -352,7 +352,7 @@ class FilterUDFTest {
         for (EventData event : new EventData[]{event1, event2, event3, event4, event5}) {
             result = executor.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
-                             (result ? "MATCH" : "continue"));
+                    (result ? "MATCH" : "continue"));
         }
 
         Assertions.assertTrue(result); // Average of last 3 events: (30+40+50)/3 = 40.0
@@ -374,17 +374,17 @@ class FilterUDFTest {
         Executor executor2 = Compiler.compile(code2);
 
         EventData[] fourEvents = {
-            Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
-            Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100)),
-            Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200)),
-            Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300))
+                Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
+                Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100)),
+                Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200)),
+                Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300))
         };
 
         boolean result2 = false;
         for (EventData event : fourEvents) {
             result2 = executor2.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
-                             (result2 ? "MATCH" : "continue"));
+                    (result2 ? "MATCH" : "continue"));
         }
 
         Assertions.assertTrue(result2); // Sum of last 3 events: 20+30+40 = 90
@@ -402,11 +402,11 @@ class FilterUDFTest {
         Executor arrayExecutor = Compiler.compile(arrayCode);
 
         EventData[] events = {
-            Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
-            Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100)),
-            Util.genEventData("sensor3", "40", new Timestamp(System.currentTimeMillis() + 200)),
-            Util.genEventData("sensor4", "20", new Timestamp(System.currentTimeMillis() + 300)),
-            Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400))
+                Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
+                Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100)),
+                Util.genEventData("sensor3", "40", new Timestamp(System.currentTimeMillis() + 200)),
+                Util.genEventData("sensor4", "20", new Timestamp(System.currentTimeMillis() + 300)),
+                Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400))
         };
 
         // Test traditional filter: should keep values > 25 (30, 40, 50)
@@ -423,6 +423,5 @@ class FilterUDFTest {
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
     }
-
 
 }

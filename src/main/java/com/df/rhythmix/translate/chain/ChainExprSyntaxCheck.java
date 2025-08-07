@@ -3,15 +3,19 @@ package com.df.rhythmix.translate.chain;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.util.ParserUtils;
+import lombok.Getter;
 
 import java.util.*;
 
 public class ChainExprSyntaxCheck {
 
+    @Getter
     private static final List<String> START_FUNC = new ArrayList<>();
+    @Getter
     private static final List<String> END_FUNC = new ArrayList<>();
 
 
+    @Getter
     private static final Map<String, List<String>> CALL_TREE = new HashMap<>();
 
     static {

@@ -32,11 +32,16 @@ public class Filter {
             Writer writer = new StringWriter();
             Map<String, Object> context = new HashMap<>();
             String name = astNode.getLabel();
+            context.put("funcName", name);
+
+            if (astNode.getChildren(0).getChildren().isEmpty()) {
+                FILTER.evaluate(writer, context);
+                return writer.toString();
+            }
             ASTNode state = astNode.getChildren(0).getChildren(0);
             boolean strict = astNode.getChildren(0).getChildren().size() > 1 &&
                     Boolean.parseBoolean(astNode.getChildren(0).getChildren(1).getLexeme().getValue());
             context.put("strict", strict);
-            context.put("funcName", name);
 
             // Check if this is a UDF function call by analyzing the AST
             if (isFilterUDFCall(state, env)) {

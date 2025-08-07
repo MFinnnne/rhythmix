@@ -1,5 +1,5 @@
 ## ===============  chain filter start ===============
-## 过滤数据 符合条件则放行 (Filter data - pass through if conditions are met)
+## Filter data - pass through if conditions are met
 ##
 ## This template generates filter logic that supports two modes:
 ## 1. Traditional comparison expressions: filter(>20), filter(=="active"), filter([10,50])
@@ -11,6 +11,7 @@
 ## - udfName: Name of the FilterUDF function (only when isUDF=true)
 ## - stateCode: Generated AviatorScript code for comparison expressions (only when isUDF=false)
 ## - strict: Boolean flag for strict mode behavior (clears queues on failure)
+
 let chain_{{ funcName }} = lambda()->
     {% if isUDF is not null and isUDF == true %}
     let udf = seq.get(filterUDFMap,"{{ udfName }}");
@@ -19,7 +20,12 @@ let chain_{{ funcName }} = lambda()->
 
     {% else %}
     ## Traditional comparison expression logic
-    let res = {{ stateCode }};
+    {% if stateCode is not null %}
+       let res = {{ stateCode }};
+    {% else %}
+        let res = true;
+    {% endif %}
+
     {% endif %}
     ## ===== DATA ACCEPTANCE AND QUEUE MANAGEMENT =====
     if(res){

@@ -49,7 +49,7 @@ public class ChainExpr {
             env.put("chainResult", null);
             env.put("debugChainResult", null);
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
-            collectAutoComplete(astNode, allCallStmtLabel);
+            filterAutoAdd(astNode, allCallStmtLabel);
             checkLimitAndWindow(astNode);
             ChainExprSyntaxCheck.check(astNode);
             String code = recursiveTrans(astNode, env);
@@ -101,20 +101,18 @@ public class ChainExpr {
         }
     }
 
-    private static void collectAutoComplete(ASTNode astNode, List<String> allCallStmtLabel) throws LexicalException, ParseException {
-        if (!allCallStmtLabel.contains("collect")) {
+    private static void filterAutoAdd(ASTNode astNode, List<String> allCallStmtLabel) throws LexicalException, ParseException {
+        if (!allCallStmtLabel.contains("filter")) {
             Lexer lexer = new Lexer();
-            ArrayList<Token> tokens = lexer.analyse("collect()".chars().mapToObj(x -> (char) x));
+            ArrayList<Token> tokens = lexer.analyse("filter()".chars().mapToObj(x -> (char) x));
             ASTNode colAST = Expr.parse(new PeekTokenIterator(tokens.stream()));
             Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
-            if (!"filter".equals(allCallStmtLabel.get(0))) {
-                ASTNode copyVarNode = astNode.getChildren(0);
-                ASTNode copyOpNode = astNode.getChildren(1);
-                astNode.getChildren().set(0, colAST);
-                astNode.getChildren().set(1, expr);
-                expr.addChild(copyVarNode);
-                expr.addChild(copyOpNode);
-            }
+            ASTNode copyVarNode = astNode.getChildren(0);
+            ASTNode copyOpNode = astNode.getChildren(1);
+            astNode.getChildren().set(0, colAST);
+            astNode.getChildren().set(1, expr);
+            expr.addChild(copyVarNode);
+            expr.addChild(copyOpNode);
         }
     }
 
@@ -159,5 +157,4 @@ public class ChainExpr {
         Token errorToken = astNode.getLexeme();
         throw new TranslatorException("Chain call translation error", errorToken);
     }
-
 }
