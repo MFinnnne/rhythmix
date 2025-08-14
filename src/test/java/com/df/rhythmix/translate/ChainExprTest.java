@@ -75,7 +75,7 @@ class ChainExprTest {
     @Test
     void translate3() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "collect().limit(500ms).take(0,3).stddev().meet(==1.414)";
+        String code = "limit(500ms).take(0,3).stddev().meet(==1.414)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
@@ -92,7 +92,7 @@ class ChainExprTest {
     @Test
     void translate4() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "collect().count().meet(==2)";
+        String code = "count().meet(==2)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);

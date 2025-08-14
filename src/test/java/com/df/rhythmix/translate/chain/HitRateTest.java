@@ -20,7 +20,7 @@ public class HitRateTest {
     void test1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
 
-        String code = "collect().hitRate((1,5)).meet((>=0.5))";
+        String code = "hitRate((1,5)).meet((>=0.5))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;

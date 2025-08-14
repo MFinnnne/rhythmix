@@ -19,7 +19,7 @@ class ChainExprSyntaxCheckTest {
     @Test
     void check1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "collect().count().meet(==2)";
+        String code = "count().meet(==2)";
         Lexer lexer = new Lexer();
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
@@ -37,19 +37,11 @@ class ChainExprSyntaxCheckTest {
         Assertions.assertDoesNotThrow(()->ChainExpr.translate(tokens, env));
     }
 
+
     @Test
     void check3() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "collect().count()";
-        Lexer lexer = new Lexer();
-        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-        EnvProxy env = new EnvProxy();
-        Assertions.assertThrows(TranslatorException.class,()->ChainExpr.translate(tokens, env));
-    }
-    @Test
-    void check4() throws LexicalException, TranslatorException, IOException, ParseException {
-        TemplateEngine.enableDebugModel(true);
-        String code = "collect().sum().take(-3).count()";
+        String code = "sum().take(-3).count()";
         Lexer lexer = new Lexer();
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
