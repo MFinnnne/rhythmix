@@ -422,6 +422,27 @@ class FilterUDFTest {
             arrayResult = arrayExecutor.execute(event);
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
+
+    }
+
+    @Test
+    void testFilterSimplifyMode() throws TranslatorException {
+
+        String arrayCode = "arrayFilter().count().meet(==3)";
+        Executor arrayExecutor = Compiler.compile(arrayCode);
+        EventData[] events = {
+                Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
+                Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100)),
+                Util.genEventData("sensor3", "40", new Timestamp(System.currentTimeMillis() + 200)),
+                Util.genEventData("sensor4", "20", new Timestamp(System.currentTimeMillis() + 300)),
+                Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400))
+        };
+
+        boolean arrayResult = false;
+        for (EventData event : events) {
+            arrayResult = arrayExecutor.execute(event);
+        }
+        Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
     }
 
 }

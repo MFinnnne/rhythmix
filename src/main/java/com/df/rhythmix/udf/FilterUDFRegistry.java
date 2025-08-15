@@ -1,6 +1,7 @@
 package com.df.rhythmix.udf;
 
 import cn.hutool.core.util.ClassUtil;
+import com.df.rhythmix.config.ChainFunctionConfig;
 import com.googlecode.aviator.AviatorEvaluator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +93,7 @@ public class FilterUDFRegistry {
                         AviatorEvaluator.addInstanceFunctions(udfName, filterUDF.getClass());
                         // Store in our registry for tracking
                         REGISTERED_UDFS.put(udfName, filterUDF);
-
+                        ChainFunctionConfig.getInstance().addStartFunc(udfName);
                         log.info("Successfully registered FilterUDF: {} (class: {})", udfName, clazz.getName());
                         successCount++;
 

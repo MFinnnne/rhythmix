@@ -1,4 +1,4 @@
-package com.df.rhythmix.util;
+package com.df.rhythmix.config;
 
 import cn.hutool.core.util.RandomUtil;
 

@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 
 public class HitRateTest {
     @Test
-    void test1() throws LexicalException, TranslatorException, IOException, ParseException {
+    void test1() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
 
         String code = "hitRate((1,5)).meet((>=0.5))";

@@ -1,5 +1,6 @@
 package com.df.rhythmix.translate;
 
+import com.df.rhythmix.config.ChainFunctionConfig;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -102,6 +103,12 @@ public class ChainExpr {
     }
 
     private static void filterAutoAdd(ASTNode astNode, List<String> allCallStmtLabel) throws LexicalException, ParseException {
+        String filterName = allCallStmtLabel.get(0);
+
+        if (ChainFunctionConfig.getInstance().getStartFunc().contains(filterName)) {
+            return;
+        }
+
         if (!allCallStmtLabel.contains("filter")) {
             Lexer lexer = new Lexer();
             ArrayList<Token> tokens = lexer.analyse("filter()".chars().mapToObj(x -> (char) x));
@@ -145,6 +152,9 @@ public class ChainExpr {
                         return Calculator.HitRate.translate(astNode, env);
                     default:
                         // Use the AST node's token for position information
+                        if (ChainFunctionConfig.getInstance().getStartFunc().contains(name)) {
+                            return Filter.translate(astNode, env, name);
+                        }
                         Token errorToken = astNode.getLexeme();
                         throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);
                 }

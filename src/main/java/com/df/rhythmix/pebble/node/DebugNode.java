@@ -1,7 +1,7 @@
 package com.df.rhythmix.pebble.node;
 
 import com.df.rhythmix.pebble.TemplateEngine;
-import com.df.rhythmix.util.Config;
+import com.df.rhythmix.config.Config;
 import io.pebbletemplates.pebble.extension.NodeVisitor;
 import io.pebbletemplates.pebble.node.AbstractRenderableNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;

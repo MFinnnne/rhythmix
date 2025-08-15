@@ -10,7 +10,7 @@ import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.parser.ast.ASTNodeTypes;
 import com.df.rhythmix.parser.ast.Expr;
-import com.df.rhythmix.util.Config;
+import com.df.rhythmix.config.Config;
 import com.df.rhythmix.util.PeekTokenIterator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -71,26 +71,10 @@ public class Translator {
             baseTemplate.evaluate(writer, context);
             return writer.toString();
         }  catch (RhythmixException e) {
-            TranslatorException wrappedException = new TranslatorException("Translation failed: " + e.getMessage(),
+            throw new TranslatorException("Translation failed: " + e.getMessage(),
                 e.getCharacterPosition(), e.getLine(), e.getColumn());
-
-            if (!code.isEmpty()) {
-                String formattedError = ErrorFormatter.formatError(wrappedException, code);
-                log.error(formattedError);
-            }
-            throw wrappedException;
         } catch (Exception e) {
-            // For generic exceptions, create a TranslatorException and use ErrorFormatter
-            TranslatorException translatorException = new TranslatorException( e.getMessage());
-
-            if (code != null && !code.isEmpty()) {
-                // Use ErrorFormatter to display the error with source code context
-                String formattedError = ErrorFormatter.formatError(translatorException, code);
-                log.error(formattedError);
-            } else {
-                log.error(translatorException.toString());
-            }
-            throw translatorException;
+            throw new TranslatorException( e.getMessage());
         }
     }
 
