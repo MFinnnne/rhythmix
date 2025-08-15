@@ -266,11 +266,41 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   }
   ```
 
+  **简化模式 - 直接使用过滤器名称** 🚀
+
+  为了让表达式更加简洁，Rhythmix 支持直接使用过滤器名称作为过滤条件，无需显式调用 `filter()` 函数：
+
+  ```js
+  // 传统写法
+  filter(tempFilter()).sum().meet(>100)
+
+  // 简化写法 - 直接使用过滤器名称
+  tempFilter().sum().meet(>100)
+
+  // 更多简化示例
+  numericFilter().avg().meet(>10)     // 等同于 filter(numericFilter()).avg().meet(>10)
+  positiveFilter().count().meet(>=5)  // 等同于 filter(positiveFilter()).count().meet(>=5)
+  ```
+
+  **自动检测和转换**：
+
+  系统会自动检测表达式中的自定义过滤器调用，并将其转换为相应的过滤逻辑：
+
+  ```js
+  // 用户编写
+  tempFilter().sum().meet(>100)
+
+  // 系统内部转换为
+  filter(tempFilter()).sum().meet(>100)
+  ```
+
   > 💡 **重要说明**:
   > - 自定义过滤器会自动被系统发现和注册，无需手动注册
   > - 过滤器名称必须唯一，重复名称会导致注册失败
   > - 支持与普通过滤条件和其他UDF环境变量组合使用
   > - 过滤器应该处理异常情况，避免影响整个表达式的执行
+  > - **简化模式**：可以直接使用过滤器名称，无需显式调用 `filter()` 函数
+  > - 支持多个过滤器的链式调用和与传统过滤条件的混合使用
 
 
 #### 数据限制
@@ -342,15 +372,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   > // 系统自动转换为
   > filter(>0).limit(5).window(5).sum().meet(>10)
   > ```
-  >
-  > ```js
-  > // 用户编写的表达式
-  > filter(>0).window(100ms).avg().meet(>5)
-  >
-  > // 系统自动转换为
-  > filter(>0).limit(100ms).window(100ms).avg().meet(>5)
-  > ```
-  >
+
   > ⚠️ **limit 和 window 函数使用限制**:
   > - **不建议手动同时使用** limit 和 window 函数，这可能导致意外的行为
   > - 如果必须同时使用，两者的参数类型和数值必须完全一致：
