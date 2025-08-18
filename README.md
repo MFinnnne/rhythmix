@@ -181,7 +181,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
 
 > 🔍 **链式表达式的编写可以分为四个部分**：
 > 1. 过滤出想要的数据
-> 2. 限制数据的范围（数据个数或时间）
+> 2. 限制参与计算的数据的数量（数据个数或时间）
 > 3. 运算规则
 > 4. 符合条件
 
@@ -229,25 +229,22 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
 
   ```js
   // 使用自定义温度过滤器
-  filter(tempFilter()).sum().meet(>100)
-  
-  // 组合使用多个自定义过滤器
-  filter(tempFilter()).filter(sensorFilter()).count().meet(>=5)
+  tempFilter().sum().meet(>100)
   ```
-
+  
   **内置示例过滤器**：
-
+  
   Rhythmix 提供了一些示例内置过滤器,你可以参考这个来编写自己的过滤器：
-
+  
   | 过滤器名称 | 功能描述 | 使用示例 |
   |-----------|----------|----------|
   | `numericFilter()` | 🔢 只保留数值类型的数据 | `filter(numericFilter()).avg().meet(>10)` |
   | `positiveFilter()` | ➕ 只保留正数值的数据 | `filter(positiveFilter()).sum().meet(>0)` |
-
+  
   **高级功能 - 批量过滤**：
-
+  
   对于需要对整个数据列表进行处理的场景，可以重写 `filter(List<EventData>)` 方法：
-
+  
   ```java
   public class ArrayFilterUDF implements FilterUDF {
       @Override
@@ -265,12 +262,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       }
   }
   ```
-
-  > 💡 **重要说明**:
-  > - 自定义过滤器会自动被系统发现和注册，无需手动注册
-  > - 过滤器名称必须唯一，重复名称会导致注册失败
-  > - 支持与普通过滤条件和其他UDF环境变量组合使用
-  > - 过滤器应该处理异常情况，避免影响整个表达式的执行
+  
 
 
 #### 数据限制
@@ -342,15 +334,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   > // 系统自动转换为
   > filter(>0).limit(5).window(5).sum().meet(>10)
   > ```
-  >
-  > ```js
-  > // 用户编写的表达式
-  > filter(>0).window(100ms).avg().meet(>5)
-  >
-  > // 系统自动转换为
-  > filter(>0).limit(100ms).window(100ms).avg().meet(>5)
-  > ```
-  >
+
   > ⚠️ **limit 和 window 函数使用限制**:
   > - **不建议手动同时使用** limit 和 window 函数，这可能导致意外的行为
   > - 如果必须同时使用，两者的参数类型和数值必须完全一致：
@@ -419,9 +403,127 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
   ```js
   // 整数序列 [10, 7, 10], stddev() 将返回 1.414
   filter(>0).stddev()
-  
+
   // 浮点数序列 [10.5, 7.3, 10.2], stddev() 将返回 1.473
   filter(>0).stddev()
+  ```
+
+- **自定义计算函数** 🧮
+
+  除了使用内置的计算函数外，Rhythmix 还支持自定义计算器函数（CalculatorUDF），让您可以实现复杂的自定义计算逻辑。
+
+  **创建自定义计算器**：
+
+  实现 `CalculatorUDF` 接口来创建自定义计算器：
+
+  ```java
+  public class MyMaxCalculator implements CalculatorUDF {
+      @Override
+      public String getName() {
+          return "myMax"; // 计算器名称，用于表达式中调用
+      }
+
+      @Override
+      public Number calculate(List<EventData> values) {
+          // 自定义计算逻辑：找出最大值
+          if (values == null || values.isEmpty()) {
+              return 0;
+          }
+
+          double max = Double.NEGATIVE_INFINITY;
+          boolean hasValidNumber = false;
+
+          for (EventData eventData : values) {
+              if (eventData == null || eventData.getValue() == null) {
+                  continue;
+              }
+
+              try {
+                  double num;
+                  Object value = eventData.getValue();
+                  if (value instanceof Number) {
+                      num = ((Number) value).doubleValue();
+                  } else {
+                      num = Double.parseDouble(value.toString());
+                  }
+
+                  if (!Double.isNaN(num) && num > max) {
+                      max = num;
+                  }
+                  hasValidNumber = true;
+              } catch (NumberFormatException e) {
+                  // 跳过非数值类型的数据
+                  continue;
+              }
+          }
+
+          return hasValidNumber ? (max == Math.floor(max) ? (long) max : max) : 0;
+      }
+  }
+  ```
+
+  **在表达式中使用**：
+
+  ```js
+  // 使用自定义最大值计算器
+  filter(>0).limit(5).myMax().meet(>10)
+
+  // 复杂链式表达式示例
+  filter((-100,100)).window(10).myMax().meet(>=50)
+  ```
+
+  **内置示例计算器**：
+
+  Rhythmix 提供了一些示例内置计算器，你可以参考这些来编写自己的计算器：
+
+  | 计算器名称 | 功能描述 | 使用示例 |
+  |-----------|----------|----------|
+  | `medianCalc()` | 📊 计算数据序列的中位数 | `filter(>0).medianCalc().meet(>5)` |
+  | `maxCalc()` | 📈 找出数据序列的最大值 | `filter(>0).maxCalc().meet(>100)` |
+  | `minCalc()` | 📉 找出数据序列的最小值 | `filter(>0).minCalc().meet(<10)` |
+  | `myMax()` | 🔝 自定义最大值计算器 | `filter(>0).limit(5).myMax().meet(>10)` |
+
+  **高级功能 - 复杂计算逻辑**：
+
+  自定义计算器可以实现任意复杂的计算逻辑：
+
+  ```java
+  public class WeightedAverageCalculator implements CalculatorUDF {
+      @Override
+      public String getName() {
+          return "weightedAvg";
+      }
+
+      @Override
+      public Number calculate(List<EventData> values) {
+          // 实现加权平均计算
+          double totalWeight = 0;
+          double weightedSum = 0;
+
+          for (int i = 0; i < values.size(); i++) {
+              EventData data = values.get(i);
+              if (data != null && data.getValue() instanceof Number) {
+                  double value = ((Number) data.getValue()).doubleValue();
+                  double weight = i + 1; // 越新的数据权重越大
+
+                  weightedSum += value * weight;
+                  totalWeight += weight;
+              }
+          }
+
+          return totalWeight > 0 ? weightedSum / totalWeight : 0;
+      }
+  }
+  ```
+
+  **使用示例**：
+
+  ```js
+  // 加权平均计算示例
+  filter(>0).limit(10).weightedAvg().meet(>15)
+
+  // 与其他函数组合使用
+  filter([10,100]).window(5).weightedAvg().meet(>=30)
   ```
 
 > 💡 **注意**:
@@ -429,6 +531,9 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
 > - 对于非数值类型的数据将抛出计算异常
 > - 标准差计算至少需要2个数据点
 > - 当输入序列包含浮点数时,计算结果会自动转换为浮点数类型
+> - **自定义计算器**会自动被系统发现和注册，无需手动注册
+> - 计算器名称必须唯一，重复名称会导致注册失败
+> - 自定义计算器应该处理异常情况，避免影响整个表达式的执行
 
 
 ---

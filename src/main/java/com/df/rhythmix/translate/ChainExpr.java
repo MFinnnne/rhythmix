@@ -1,5 +1,6 @@
 package com.df.rhythmix.translate;
 
+import com.df.rhythmix.config.ChainFunctionConfig;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
@@ -49,7 +50,7 @@ public class ChainExpr {
             env.put("chainResult", null);
             env.put("debugChainResult", null);
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
-            collectAutoComplete(astNode, allCallStmtLabel);
+            filterAutoAdd(astNode, allCallStmtLabel);
             checkLimitAndWindow(astNode);
             ChainExprSyntaxCheck.check(astNode);
             String code = recursiveTrans(astNode, env);
@@ -101,20 +102,24 @@ public class ChainExpr {
         }
     }
 
-    private static void collectAutoComplete(ASTNode astNode, List<String> allCallStmtLabel) throws LexicalException, ParseException {
-        if (!allCallStmtLabel.contains("collect")) {
+    private static void filterAutoAdd(ASTNode astNode, List<String> allCallStmtLabel) throws LexicalException, ParseException {
+        String filterName = allCallStmtLabel.get(0);
+
+        if (ChainFunctionConfig.getInstance().getStartFunc().contains(filterName)) {
+            return;
+        }
+
+        if (!allCallStmtLabel.contains("filter")) {
             Lexer lexer = new Lexer();
-            ArrayList<Token> tokens = lexer.analyse("collect()".chars().mapToObj(x -> (char) x));
+            ArrayList<Token> tokens = lexer.analyse("filter()".chars().mapToObj(x -> (char) x));
             ASTNode colAST = Expr.parse(new PeekTokenIterator(tokens.stream()));
             Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
-            if (!"filter".equals(allCallStmtLabel.get(0))) {
-                ASTNode copyVarNode = astNode.getChildren(0);
-                ASTNode copyOpNode = astNode.getChildren(1);
-                astNode.getChildren().set(0, colAST);
-                astNode.getChildren().set(1, expr);
-                expr.addChild(copyVarNode);
-                expr.addChild(copyOpNode);
-            }
+            ASTNode copyVarNode = astNode.getChildren(0);
+            ASTNode copyOpNode = astNode.getChildren(1);
+            astNode.getChildren().set(0, colAST);
+            astNode.getChildren().set(1, expr);
+            expr.addChild(copyVarNode);
+            expr.addChild(copyOpNode);
         }
     }
 
@@ -147,6 +152,12 @@ public class ChainExpr {
                         return Calculator.HitRate.translate(astNode, env);
                     default:
                         // Use the AST node's token for position information
+                        if (ChainFunctionConfig.getInstance().getStartFunc().contains(name)) {
+                            return Filter.translate(astNode, env, name);
+                        }
+                        if (ChainFunctionConfig.getInstance().getCalcFunc().contains(name)) {
+                            return Calculator.Custom.translate(astNode, env);
+                        }
                         Token errorToken = astNode.getLexeme();
                         throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);
                 }
@@ -159,5 +170,4 @@ public class ChainExpr {
         Token errorToken = astNode.getLexeme();
         throw new TranslatorException("Chain call translation error", errorToken);
     }
-
 }

@@ -17,10 +17,10 @@ import java.sql.Timestamp;
 
 public class HitRateTest {
     @Test
-    void test1() throws LexicalException, TranslatorException, IOException, ParseException {
+    void test1() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
 
-        String code = "collect().hitRate((1,5)).meet((>=0.5))";
+        String code = "hitRate((1,5)).meet((>=0.5))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode,env);;

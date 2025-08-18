@@ -12,7 +12,7 @@ import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.parser.ast.*;
-import com.df.rhythmix.util.Config;
+import com.df.rhythmix.config.Config;
 import com.df.rhythmix.util.PeekTokenIterator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 

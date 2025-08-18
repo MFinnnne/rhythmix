@@ -1,30 +1,30 @@
-package com.df.rhythmix.udf.builtin;
+package com.df.rhythmix.udf.builtin.filter;
 
 import com.df.rhythmix.udf.FilterUDF;
 import com.df.rhythmix.util.EventData;
 
 /**
- * Built-in positive value filter UDF that keeps only positive numeric values.
+ * Built-in numeric filter UDF that keeps only numeric values.
  * This will be auto-discovered and registered at startup.
  * 
- * Usage in expressions: filter(positiveFilter())
+ * Usage in expressions: filter(numericFilter())
  * 
  * @author MFine
  * @version 1.0
  * @date 2025-07-18
  */
-public class PositiveFilterUDF implements FilterUDF {
+public class NumericFilterUDF implements FilterUDF {
     
     @Override
     public String getName() {
-        return "positiveFilter";
+        return "numericFilter";
     }
     
     @Override
     public boolean filter(EventData event) {
         try {
-            double value = Double.parseDouble(event.getValue());
-            return value > 0;
+            Double.parseDouble(event.getValue());
+            return true;
         } catch (NumberFormatException e) {
             return false;
         }

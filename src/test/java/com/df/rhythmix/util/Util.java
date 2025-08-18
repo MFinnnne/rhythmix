@@ -7,23 +7,7 @@ import java.sql.Timestamp;
 @Slf4j
 public class Util {
     public static EventData genEventData(String pointId, String value, Timestamp ts) {
-        EventValueType dataType = EventValueType.STRING;
-        if (value.equals("true") || value.equals("false")) {
-            dataType = EventValueType.BOOL;
-        }
-        try {
-            Integer.parseInt(value);
-            dataType = EventValueType.INT;
-        } catch (Exception ignore) {
-
-        }
-        try {
-            Float.parseFloat(value);
-            dataType = EventValueType.FLOAT;
-        } catch (Exception ignore) {
-        }
-
-        return new EventData(pointId, "1", value, ts, dataType);
+        return new EventData(pointId, "1", value, ts);
     }
 
     public static Timestamp addSeconds(Timestamp oriTs, long sec) {

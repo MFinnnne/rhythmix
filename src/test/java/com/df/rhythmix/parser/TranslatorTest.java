@@ -63,7 +63,7 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        EventData point1 = new EventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), EventValueType.INT);
+        EventData point1 = new EventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()));
 
 
         env.put("event", point1);
@@ -88,9 +88,9 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        EventData point1 = new EventData("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
-        EventData point2 = new EventData("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
-        EventData point3 = new EventData("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
+        EventData point1 = new EventData("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()));
+        EventData point2 = new EventData("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()));
+        EventData point3 = new EventData("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()));
         boolean execute = build.execute(point1);
         Assertions.assertFalse(execute);
         boolean execute1 = build.execute(point2);
@@ -107,7 +107,7 @@ class TranslatorTest {
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
         Executor build = new Executor(translate, env);
-        EventData point1 =  new EventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()), EventValueType.INT);
+        EventData point1 =  new EventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()));
 
 
         env.put("event", point1);

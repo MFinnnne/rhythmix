@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate;
 
-import com.df.rhythmix.util.Config;
+import com.df.rhythmix.config.Config;
 import lombok.Getter;
 import lombok.Setter;
 

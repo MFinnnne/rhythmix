@@ -1,11 +1,13 @@
 package com.df.rhythmix.translate.chain;
 
 import com.df.rhythmix.exception.TranslatorException;
+import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ public class Calculator {
                 FILTER.evaluate(writer, context);
                 return writer.toString();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new TranslatorException("translate sum error", astNode.getLexeme());
             }
         }
     }
@@ -52,7 +54,7 @@ public class Calculator {
                 FILTER.evaluate(writer, context);
                 return writer.toString();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new TranslatorException("translate average  error", astNode.getLexeme());
             }
         }
     }
@@ -74,7 +76,7 @@ public class Calculator {
                 FILTER.evaluate(writer, context);
                 return writer.toString();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new TranslatorException("translate Standard deviation  error", astNode.getLexeme());
             }
         }
     }
@@ -95,7 +97,7 @@ public class Calculator {
                 FILTER.evaluate(writer, context);
                 return writer.toString();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new TranslatorException("translate Count  error", astNode.getLexeme());
             }
         }
     }
@@ -116,7 +118,26 @@ public class Calculator {
                 template.evaluate(writer, context);
                 return writer.toString();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new TranslatorException("translate hitRate error", astNode.getLexeme());
+            }
+        }
+    }
+
+    public static class Custom {
+        public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
+            try {
+
+                PebbleTemplate template = ENGINE.getTemplate("expr/chain/calculator.peb");
+                // todo
+                StringWriter stringWriter = new StringWriter();
+                Map<String, Object> context = new HashMap<>();
+                String funName = astNode.getLabel();
+                context.put("funcName", funName);
+                template.evaluate(stringWriter, context);
+                return stringWriter.toString();
+
+            } catch (IOException e) {
+                throw new TranslatorException("translate {} error", astNode.getLabel(), astNode.getLexeme());
             }
         }
     }
