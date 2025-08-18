@@ -155,6 +155,9 @@ public class ChainExpr {
                         if (ChainFunctionConfig.getInstance().getStartFunc().contains(name)) {
                             return Filter.translate(astNode, env, name);
                         }
+                        if (ChainFunctionConfig.getInstance().getCalcFunc().contains(name)) {
+                            return Calculator.Custom.translate(astNode, env);
+                        }
                         Token errorToken = astNode.getLexeme();
                         throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);
                 }

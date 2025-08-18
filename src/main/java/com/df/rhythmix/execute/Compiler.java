@@ -6,6 +6,8 @@ import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
+import com.df.rhythmix.udf.CalculatorUDFRegistry;
+import com.df.rhythmix.udf.FilterUDFRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -27,6 +29,8 @@ public class Compiler {
         try {
             EnvProxy env = new EnvProxy();
             String translatedCode = Translator.translate(code, env);
+            env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
+            env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             return new Executor(translatedCode, env);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);
@@ -48,25 +52,18 @@ public class Compiler {
             EnvProxy env = new EnvProxy();
             env.rawPutAll(udfEnv);
             String translatedCode = Translator.translate(code, env);
+            env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
+            env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             return new Executor(translatedCode, env);
         } catch (RhythmixException e) {
             // Use ErrorFormatter.formatError() to display the error with source code context
             String formattedError = ErrorFormatter.formatError(e, code);
-            System.err.println(formattedError);
+            log.error(formattedError);
             throw e;
         }
     }
 
-    /**
-     * Compile source code and return detailed error information if compilation fails.
-     * This method is useful for interactive environments and IDEs.
-     *
-     * @param code The source code to compile
-     * @return CompilationResult containing either the executor or detailed error information
-     */
-    public static CompilationResult compileWithDetailedErrors(String code) {
-        return compileWithDetailedErrors(code, null);
-    }
+
 
     /**
      * Compile source code with custom UDF environment and return detailed error information if compilation fails.

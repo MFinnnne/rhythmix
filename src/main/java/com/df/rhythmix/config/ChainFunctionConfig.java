@@ -116,41 +116,7 @@ public class ChainFunctionConfig {
         }
     }
 
-
-    /**
-     * Update function lists and rebuild call tree.
-     * Thread-safe method using synchronization.
-     *
-     * @param startFunc new start functions (null to keep existing)
-     * @param endFunc new end functions (null to keep existing)
-     * @param limitFunc new limit functions (null to keep existing)
-     * @param calcFunc new calc functions (null to keep existing)
-     */
-    public synchronized void updateConfiguration(List<String> startFunc, List<String> endFunc,
-                                                 List<String> limitFunc, List<String> calcFunc) {
-        if (startFunc != null) {
-            this.startFunc.clear();
-            this.startFunc.addAll(startFunc);
-        }
-        if (endFunc != null) {
-            this.endFunc.clear();
-            this.endFunc.addAll(endFunc);
-        }
-        if (limitFunc != null) {
-            this.limitFunc.clear();
-            this.limitFunc.addAll(limitFunc);
-        }
-        if (calcFunc != null) {
-            this.calcFunc.clear();
-            this.calcFunc.addAll(calcFunc);
-        }
-
-        // Rebuild call tree with new configuration
-        callTree.clear();
-        buildCallTree();
-    }
-
-    /**
+      /**
      * Update startFunc by adding one or more function names.
      * Thread-safe method using synchronization.
      *
@@ -160,6 +126,16 @@ public class ChainFunctionConfig {
         for (String funcName : functionNames) {
             if (!this.startFunc.contains(funcName)) {
                 this.startFunc.add(funcName);
+            }
+        }
+        // Rebuild call tree to reflect changes
+        buildCallTree();
+    }
+
+    public synchronized  void addCalcFunc(String... functionNames) {
+        for (String funcName : functionNames) {
+            if (!this.calcFunc.contains(funcName)) {
+                this.calcFunc.add(funcName);
             }
         }
         // Rebuild call tree to reflect changes

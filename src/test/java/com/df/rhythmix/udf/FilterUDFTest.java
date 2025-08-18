@@ -109,8 +109,8 @@ class FilterUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - should only keep sensors with ID starting with "temp_"
-        EventData event1 = new EventData("temp_001", "sensor1", "25.5", new Timestamp(System.currentTimeMillis()), EventValueType.FLOAT);
-        EventData event2 = new EventData("humidity_001", "sensor2", "60.0", new Timestamp(System.currentTimeMillis() + 100), EventValueType.FLOAT);
+        EventData event1 = new EventData("temp_001", "sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
+        EventData event2 = new EventData("humidity_001", "sensor2", "60.0", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
         result = executor.execute(event1); // Keep (ID starts with "temp_")
@@ -177,12 +177,12 @@ class FilterUDFTest {
 
         // Mixed sensor data with numeric values
         EventData[] sensorEvents = {
-                new EventData("temp_001", "s1", "25", new Timestamp(System.currentTimeMillis()), EventValueType.INT),        // Keep, value=25
-                new EventData("humidity_001", "s2", "60", new Timestamp(System.currentTimeMillis() + 100), EventValueType.INT), // Discard
-                new EventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200), EventValueType.INT),   // Keep, value=30
-                new EventData("pressure_001", "s4", "1013", new Timestamp(System.currentTimeMillis() + 300), EventValueType.INT), // Discard
-                new EventData("temp_003", "s5", "35", new Timestamp(System.currentTimeMillis() + 400), EventValueType.INT),   // Keep, value=35
-                new EventData("temp_004", "s6", "15", new Timestamp(System.currentTimeMillis() + 500), EventValueType.INT)    // Keep, value=15
+                new EventData("temp_001", "s1", "25", new Timestamp(System.currentTimeMillis())),        // Keep, value=25
+                new EventData("humidity_001", "s2", "60", new Timestamp(System.currentTimeMillis() + 100)), // Discard
+                new EventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200)),   // Keep, value=30
+                new EventData("pressure_001", "s4", "1013", new Timestamp(System.currentTimeMillis() + 300)), // Discard
+                new EventData("temp_003", "s5", "35", new Timestamp(System.currentTimeMillis() + 400)),   // Keep, value=35
+                new EventData("temp_004", "s6", "15", new Timestamp(System.currentTimeMillis() + 500))    // Keep, value=15
         };
 
         boolean result = false;
@@ -210,12 +210,12 @@ class FilterUDFTest {
 
         // Sensor data with temperature values
         EventData[] sensorEvents = {
-                new EventData("temp_001", "s1", "20", new Timestamp(System.currentTimeMillis()), EventValueType.INT),        // Keep, value=20
-                new EventData("humidity_001", "s2", "80", new Timestamp(System.currentTimeMillis() + 100), EventValueType.INT), // Discard
-                new EventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200), EventValueType.INT),   // Keep, value=30
-                new EventData("temp_003", "s5", "40", new Timestamp(System.currentTimeMillis() + 400), EventValueType.INT),   // Keep, value=40
-                new EventData("temp_004", "s6", "50", new Timestamp(System.currentTimeMillis() + 500), EventValueType.INT),   // Keep but limited out
-                new EventData("pressure_001", "s4", "1000", new Timestamp(System.currentTimeMillis() + 300), EventValueType.INT) // Discard
+                new EventData("temp_001", "s1", "20", new Timestamp(System.currentTimeMillis())),        // Keep, value=20
+                new EventData("humidity_001", "s2", "80", new Timestamp(System.currentTimeMillis() + 100)), // Discard
+                new EventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200)),   // Keep, value=30
+                new EventData("temp_003", "s5", "40", new Timestamp(System.currentTimeMillis() + 400)),   // Keep, value=40
+                new EventData("temp_004", "s6", "50", new Timestamp(System.currentTimeMillis() + 500)),   // Keep but limited out
+                new EventData("pressure_001", "s4", "1000", new Timestamp(System.currentTimeMillis() + 300)) // Discard
         };
 
         boolean result = false;
@@ -443,6 +443,31 @@ class FilterUDFTest {
             arrayResult = arrayExecutor.execute(event);
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
+    }
+
+
+    @Test
+    void testFilterSimplifyModeMixedUsage()  {
+
+        String arrayCode = "arrayFilter().filter(>30).count().meet(==3)";
+        String finalArrayCode = arrayCode;
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Compiler.compile(finalArrayCode);
+        });
+
+        arrayCode = "filter(>30).arrayFilter().count().meet(==3)";
+        String finalArrayCode1 = arrayCode;
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Compiler.compile(finalArrayCode1);
+        });
+
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Compiler.compile("filter(>30).filter([1,7]).count().meet(==3)");
+        });
+
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Compiler.compile("arrayFilter().sensorFilter().count().meet(==3)");
+        });
     }
 
 }

@@ -14,5 +14,4 @@ public class EventData {
     private String name;
     private String value;
     private Timestamp ts;
-    private EventValueType valueType;
 }
