@@ -141,4 +141,14 @@ public class ChainFunctionConfig {
         // Rebuild call tree to reflect changes
         buildCallTree();
     }
+
+    public synchronized  void  addEndFunc(String... functionNames) {
+        for (String funcName : functionNames) {
+            if (!this.endFunc.contains(funcName)) {
+                this.endFunc.add(funcName);
+            }
+        }
+        // Rebuild call tree to reflect changes
+        buildCallTree();
+    }
 }

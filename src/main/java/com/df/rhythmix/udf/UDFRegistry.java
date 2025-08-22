@@ -256,6 +256,8 @@ public class UDFRegistry<T> {
                 return ((FilterUDF) udf).getName();
             } else if (udf instanceof CalculatorUDF) {
                 return ((CalculatorUDF) udf).getName();
+            } else if (udf instanceof MeetUDF) {
+                return ((MeetUDF) udf).getName();
             } else {
                 // Try to call getName() method via reflection
                 return (String) udf.getClass().getMethod("getName").invoke(udf);

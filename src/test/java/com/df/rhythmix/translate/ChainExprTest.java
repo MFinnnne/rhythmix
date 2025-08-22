@@ -1,5 +1,6 @@
 package com.df.rhythmix.translate;
 
+import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.util.EventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
@@ -75,11 +76,8 @@ class ChainExprTest {
     @Test
     void translate3() throws LexicalException, ParseException, TranslatorException, IOException {
         TemplateEngine.enableDebugModel(true);
-        String code = "limit(500ms).take(0,3).stddev().meet(==1.414)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode, env);
-        ;
+        String code = "limit(500ms).take(0,3).stddev().meet((1.414,1.415))";
+        Executor executor = Compiler.compile(code);
         EventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         EventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
         EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
@@ -88,6 +86,7 @@ class ChainExprTest {
         boolean execute = executor.execute(p3);
         Assertions.assertTrue(execute);
     }
+
 
     @Test
     void translate4() throws LexicalException, ParseException, TranslatorException, IOException {
@@ -163,5 +162,15 @@ class ChainExprTest {
         executor.execute(p1);
         executor.execute(p2);
         boolean execute = executor.execute(p3);
+    }
+
+
+    @Test
+    void translate9() throws LexicalException, ParseException, TranslatorException, IOException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "limit(500ms).take(0,3).stddev().meet((1.414,<1.415))";
+        Assertions.assertThrows(TranslatorException.class, () -> {
+            Executor executor = Compiler.compile(code);
+        });
     }
 }

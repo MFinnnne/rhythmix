@@ -11,31 +11,31 @@ import java.util.List;
 @Import(ns = "calc", scopes = {ImportScope.Static})
 public class AviatorMath {
 
-    public static String sum(List<Object> values) throws ComputeException {
+    public static Number sum(List<Object> values) throws ComputeException {
         if (values == null || values.isEmpty()) {
-            return "0";
+            return 0;
         }
         List<Token> tokens = EventUtil.event2ValueToken(values);
         if (tokens.stream().allMatch(Token::isInteger)) {
-            return String.valueOf(tokens.stream().mapToInt(item -> Integer.parseInt(item.getValue())).sum());
+            return tokens.stream().mapToInt(item -> Integer.parseInt(item.getValue())).sum();
         } else if (tokens.stream().anyMatch(Token::isFloat)) {
-            return String.valueOf(tokens.stream().mapToDouble(item -> Double.parseDouble(item.getValue())).sum());
+            return tokens.stream().mapToDouble(item -> Double.parseDouble(item.getValue())).sum();
         } else {
             throw new ComputeException("该类型不能计算");
         }
     }
 
-    public static String avg(List<Object> values) throws ComputeException {
+    public static Number avg(List<Object> values) throws ComputeException {
         if (values == null || values.isEmpty()) {
-            return "0";
+            return 0;
         }
-        String sum = AviatorMath.sum(values);
-        return String.valueOf(Double.parseDouble(sum) / values.size());
+        Number sum = AviatorMath.sum(values);
+        return sum.doubleValue() / values.size();
     }
 
 
-    public static String count(List<Object> values) throws ComputeException {
-        return String.valueOf(values.size());
+    public static Number count(List<Object> values) throws ComputeException {
+        return values.size();
     }
 
 
@@ -44,7 +44,7 @@ public class AviatorMath {
      * @return 标准差
      * @throws ComputeException 计算异常
      */
-    public static String stddev(List<Object> values) throws ComputeException {
+    public static Number stddev(List<Object> values) throws ComputeException {
         if (values.size() < 2) {
             throw new ComputeException("列表中至少需要两个数字来计算标准差");
         }
@@ -64,6 +64,6 @@ public class AviatorMath {
             squaredDifferenceSum += Math.pow(num - mean, 2);
         }
         double variance = squaredDifferenceSum / numbers.length;
-        return String.format("%.3f", Math.sqrt(variance));
+        return Math.sqrt(variance);
     }
 }

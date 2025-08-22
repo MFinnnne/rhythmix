@@ -58,9 +58,11 @@ public class ChainExpr {
             context.put("chainSobelCode", code);
             chainTemplate.evaluate(writer, context);
             return writer.toString();
-        } catch (IOException | TranslatorException | LexicalException | ParseException e) {
-            Token contextToken = astNode.getLexeme();
-            throw new TranslatorException(e.getMessage(), contextToken);
+        } catch (TranslatorException | LexicalException | ParseException e) {
+            throw new TranslatorException("Translation failed: " + e.getMessage(),
+                    e.getCharacterPosition(), e.getLine(), e.getColumn());
+        }catch (IOException e){
+            throw new TranslatorException(e.getMessage());
         }
     }
 
@@ -157,6 +159,9 @@ public class ChainExpr {
                         }
                         if (ChainFunctionConfig.getInstance().getCalcFunc().contains(name)) {
                             return Calculator.Custom.translate(astNode, env);
+                        }
+                        if (ChainFunctionConfig.getInstance().getEndFunc().contains(name)) {
+                            return Meet.translate(astNode, env,true);
                         }
                         Token errorToken = astNode.getLexeme();
                         throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);

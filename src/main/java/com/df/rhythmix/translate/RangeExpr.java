@@ -56,26 +56,8 @@ public class RangeExpr {
             ASTNode arg1 = astNode.getChildren(0).getChildren(0);
             ASTNode arg2 = astNode.getChildren(1).getChildren(0);
             Writer writer = new StringWriter();
-
-            TokenType arg1Type = TypeInfer.infer(arg1, env);
-            TokenType arg2Type = TypeInfer.infer(arg2, env);
-            if (!TypeInfer.isNumber(arg1Type) || !TypeInfer.isNumber(arg2Type)) {
-                throw new TranslatorException("Range expression parameters must be numeric");
-            }
-
-            if (arg1Type != arg2Type) {
-                throw new TranslatorException("Range expression parameters must be of the same type");
-            }
-
             context.put("leftValue", Translator.translate(arg1, context, env));
             context.put("rightValue", Translator.translate(arg2, context, env));
-
-            if (arg1Type == TokenType.INTEGER) {
-                context.put("type", "long");
-            } else {
-                context.put("type", "double");
-            }
-
             if ("(".equals(leftSymbol.getValue())) {
                 context.put("leftSymbol", ">");
             }
