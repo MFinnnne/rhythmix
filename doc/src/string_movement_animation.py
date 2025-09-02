@@ -16,8 +16,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 class StringPair:
     """Represents a pair of strings for the animation."""
 
-    def __init__(self, left: str, right: str = 'False', record_text: str = "", recording_tag: bool = False,
-                 delay: float = 0.1, movement_duration: float = 0.3,
+    def __init__(self, left: str, right: str = 'False', recording_tag: bool = False,
+                 record_text: str = "", delay: float = 0.1, movement_duration: float = 0.3,
                  left_color: Optional[str] = None, right_color: Optional[str] = None, **kwargs):
         """
         Initialize StringPair.
@@ -80,7 +80,7 @@ class StringPair:
             "left string √" for recording_tag=True
             "left string ×" for recording_tag=False
         """
-        return f"{self.record_text} {self.get_status_indicator()}"
+        return f"{self.left} {self.get_status_indicator()}"
 
 
 def create_string_pairs(*args, **kwargs) -> List[StringPair]:
@@ -148,7 +148,7 @@ class StringMovementAnimation(DocAnimation):
         center_string = self._setup_center_string()
         recording_texts, recording_group, recording_title = self._setup_record_title(center_string)
         self._setup_side_strings(center_string, recording_texts, recording_group, recording_title)
-        self.wait(1)
+        self.wait(0.5)
 
     def _setup_center_string(self):
         """
@@ -199,13 +199,13 @@ class StringMovementAnimation(DocAnimation):
 
         Args:
             pair: The StringPair object to record.
-            recording_texts: List to store recording text objects.
+            recording_texts: List to store recording text mobjects.
             recording_group: VGroup for recording elements.
             recording_title: The recording title mobject.
         """
         # Add this pair to the recording
         record_text = self.create_subtitle(pair.get_combined_text(),
-                                           scale=0.7)  # Increased scale for better readability
+                                           scale=0.8)  # Increased scale for better readability
         # Set color based on status (green for true, red for false)
         status_color = "secondary" if pair.recording_tag else "accent"
         from config import COLORS
@@ -229,6 +229,7 @@ class StringMovementAnimation(DocAnimation):
             record_text.next_to(recording_texts[-2], DOWN, buff=0.2)
         else:
             # Horizontal layout for additional entries
+            column = (len(recording_texts) - 1) // max_vertical_entries
             row = (len(recording_texts) - 1) % max_vertical_entries
 
             if row == 0:
@@ -255,7 +256,7 @@ class StringMovementAnimation(DocAnimation):
         total_columns = (total_entries - 1) // max_vertical_entries + 1
 
         # Calculate the total width needed for all columns
-        column_width = 3.5  # Approximate width per column including spacing
+        column_width = 2.5  # Approximate width per column including spacing
         total_width = total_columns * column_width
 
         # Calculate starting position to center all columns
@@ -268,7 +269,7 @@ class StringMovementAnimation(DocAnimation):
 
             # Calculate position for this text
             x_pos = start_x + column * column_width
-            y_pos = recording_title.get_bottom()[1] - 0.3 - (row * 0.7)  # 0.3 initial offset, 0.5 per row
+            y_pos = recording_title.get_bottom()[1] - 0.3 - (row * 0.5)  # 0.3 initial offset, 0.5 per row
 
             # Move the text to new position
             text.move_to([x_pos, y_pos, 0])

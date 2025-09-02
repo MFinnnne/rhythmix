@@ -188,12 +188,60 @@ def create_complex_state_transition_demo():
                                 expression_parts=["{>1}", "->", "{count(<1,3)}", "->", "{==3}"])
 
 
+
+def create_equal_chain_state_transition_demo():
+    """
+    Create a GIF demonstrating the {==0}=>{==1}=>{==0} state transition expression.
+    This shows a three-state transition: wait for 0, then 1, then 0 (success), then reset.
+
+    States:
+    0: Waiting for {==0}
+    1: Waiting for {==1}
+    2: Waiting for {==0}
+    """
+    # Demonstration sequences for {==0}=>{==1}=>{==0}
+    # current_state denotes the state AFTER processing the input
+    state_pairs = [
+        # Start: state 0 expects 0
+        StateTransitionPair("2", "false", "2≠0", False, current_state=0),
+        StateTransitionPair("0", "false", "0==0 ✓", True, current_state=1),
+
+        # Now in state 1 expects 1
+        StateTransitionPair("2", "false", "2≠1", False, current_state=1),
+        StateTransitionPair("1", "false", "1==1 ✓", True, current_state=2),
+
+        # Now in state 2 expects 0
+        StateTransitionPair("3", "false", "3≠0", False, current_state=2),
+        StateTransitionPair("0", "true", "0==0 SUCCESS!", True, current_state=0),  # Reset after success
+
+        # Show a full quick successful cycle
+        StateTransitionPair("0", "false", "0==0 ✓", True, current_state=1),
+        StateTransitionPair("1", "false", "1==1 ✓", True, current_state=2),
+        StateTransitionPair("0", "true", "0==0 SUCCESS!", True, current_state=0),
+
+        # Failure example in state 1, stays awaiting 1
+        StateTransitionPair("0", "false", "0==0 ✓ (back to state 1)", True, current_state=1),
+        StateTransitionPair("0", "false", "0≠1 (still waiting for 1)", False, current_state=1),
+    ]
+
+    create_state_transition_gif(
+        state_pairs,
+        output_name='equal_chain_state_transition',
+        speed_multiplier=1.2,
+        expression_parts=["{==0}", "=>", "{==1}", "=>", "{==0}"]
+    )
+
+
 if __name__ == "__main__":
+    # Create the equal chain state transition demonstration ({==0}=>{==1}=>{==0})
+    create_equal_chain_state_transition_demo()
+
     # Create the complex state transition demonstration
-    create_complex_state_transition_demo()
+    # create_complex_state_transition_demo()
 
     # Create the basic state transition demonstration
-    create_state_transition_demo()
+    # create_state_transition_demo()
 
     # Optionally also create the original count example
+    create_equal_chain_state_transition_demo()
     # main()
