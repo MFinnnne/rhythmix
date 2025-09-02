@@ -9,6 +9,7 @@ package com.df.rhythmix.lib;
 
 import com.df.rhythmix.udf.FilterUDFRegistry;
 import com.df.rhythmix.udf.CalculatorUDFRegistry;
+import com.df.rhythmix.udf.MeetUDFRegistry;
 import com.googlecode.aviator.AviatorEvaluator;
 
 public class Register {
@@ -25,6 +26,9 @@ public class Register {
 
             // Auto-import CalculatorUDF instances
             CalculatorUDFRegistry.autoImportCalculatorUDFs();
+
+            // Auto-import MeetUDF instances
+            MeetUDFRegistry.autoImportMeetUDFs();
 
         } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);

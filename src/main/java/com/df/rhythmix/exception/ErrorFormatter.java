@@ -53,7 +53,7 @@ public class ErrorFormatter {
             pointer.append(" ".repeat(lineNumWidth));
             pointer.append(" | ");
 
-            pointer.append(" ".repeat(Math.max(0, errorColumn)));
+            pointer.append(" ".repeat(Math.max(0, errorColumn-1)));
             pointer.append("^");
 
             String errorMsg = getShortErrorMessage(exception.getMessage());

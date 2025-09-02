@@ -160,4 +160,5 @@ public abstract class RhythmixException extends Exception {
             this.column = token.getColumn();
         }
     }
+
 }

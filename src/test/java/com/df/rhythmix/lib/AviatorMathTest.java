@@ -21,8 +21,8 @@ class AviatorMathTest {
         objects.add(p1);
         objects.add(p2);
         objects.add(p3);
-        String res = AviatorMath.sum(objects);
-        Assertions.assertEquals("27", res);
+        Number res = AviatorMath.sum(objects);
+        Assertions.assertEquals(27, res);
     }
 
     @Test
@@ -34,8 +34,8 @@ class AviatorMathTest {
         objects.add(p1);
         objects.add(p2);
         objects.add(p3);
-        String res = AviatorMath.avg(objects);
-        Assertions.assertEquals("9.0", res);
+        Number res = AviatorMath.avg(objects);
+        Assertions.assertEquals(9.0, res);
     }
 
     @Test
@@ -47,8 +47,8 @@ class AviatorMathTest {
         objects.add(p1);
         objects.add(p2);
         objects.add(p3);
-        String res = AviatorMath.count(objects);
-        Assertions.assertEquals("3", res);
+        Number res = AviatorMath.count(objects);
+        Assertions.assertEquals(3, res);
     }
 
     @Test
@@ -60,7 +60,7 @@ class AviatorMathTest {
         objects.add(p1);
         objects.add(p2);
         objects.add(p3);
-        String stddev = AviatorMath.stddev(objects);
-        Assertions.assertEquals("1.414",stddev);
+        Number stddev = AviatorMath.stddev(objects);
+        Assertions.assertEquals("1.4142135623730951",stddev.toString());
     }
 }

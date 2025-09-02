@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
-    <!-- 添加LOG_HOME属性定义，提供默认值 -->
     <property name="LOG_HOME" value="${LOG_HOME:-./logs}"/>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">

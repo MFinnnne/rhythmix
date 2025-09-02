@@ -59,6 +59,9 @@ public class RangeStmt extends Stmt {
             } else {
                 return null;
             }
+            if (!it.peek().isNumber() && !it.peek().isVariable() && !it.peek().isScalar()){
+                throw new ParseException(it.peek());
+            }
             ASTNode arg2 = Expr.parse(it);
             if (arg2 == null) {
                 return null;
@@ -78,7 +81,7 @@ public class RangeStmt extends Stmt {
             }
             return rangeStmt;
         } catch (ParseException e) {
-            throw new ParseException(e.getMessage());
+            throw e;
         } finally {
             Expr.table = new PriorityTable();
         }

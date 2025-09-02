@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 
-class SlopeTranslateTest {
+class SlopeFunctionTest {
 
     @Test
     void translate() throws  TranslatorException {

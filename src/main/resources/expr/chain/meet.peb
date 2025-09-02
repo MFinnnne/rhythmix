@@ -1,7 +1,12 @@
 ## ===============  chain meet start ===============
 ## 过滤数据 符合条件则放行
 let chain_{{ funcName }} = lambda()->
-    let res = {{ stateCode }};
+    {% if isUDF is not null and isUDF == true %}
+       let udf = seq.get(meetUDFMap,"{{ funcName }}");
+       let res =  {{ funcName }}.meet(udf,{% var chainResult %});
+    {% else%}
+        let res = {{ stateCode }};
+    {% endif %}
     if(res){
         queue.clear({% var rawChainQueue %});
         {% var chainResult %}=nil;

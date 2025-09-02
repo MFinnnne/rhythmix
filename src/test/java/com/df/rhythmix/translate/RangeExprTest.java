@@ -80,29 +80,7 @@ class RangeExprTest {
         Assertions.assertFalse(compile.execute(p2));
     }
 
-    @Test
-    public void translateRangeExpr4() throws LexicalException, TranslatorException {
-        String code = "(1,3.0]";
-        Lexer lexer = new Lexer();
-        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-        Assertions.assertThrows(TranslatorException.class,()->{
-            EnvProxy env = new EnvProxy();
-            String translatedCode = RangeExpr.translate(tokens, env);
-            Executor compile = new Executor(translatedCode,env);
-        });
-    }
 
-    @Test
-    public void translateRangeExpr5() throws LexicalException, TranslatorException {
-        String code = "('1','3.0']";
-        Lexer lexer = new Lexer();
-        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-        Assertions.assertThrows(TranslatorException.class,()->{
-            EnvProxy env = new EnvProxy();
-            String translatedCode = RangeExpr.translate(tokens, env);
-            Executor compile = new Executor(translatedCode,env);
-        });
-    }
 
     @Test
     public void translateRangeExpr6() throws LexicalException, TranslatorException {

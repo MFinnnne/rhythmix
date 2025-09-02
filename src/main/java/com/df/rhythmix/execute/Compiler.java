@@ -8,6 +8,7 @@ import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
 import com.df.rhythmix.udf.CalculatorUDFRegistry;
 import com.df.rhythmix.udf.FilterUDFRegistry;
+import com.df.rhythmix.udf.MeetUDFRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class Compiler {
             String translatedCode = Translator.translate(code, env);
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
+            env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
             return new Executor(translatedCode, env);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);
@@ -54,6 +56,7 @@ public class Compiler {
             String translatedCode = Translator.translate(code, env);
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
+            env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
             return new Executor(translatedCode, env);
         } catch (RhythmixException e) {
             // Use ErrorFormatter.formatError() to display the error with source code context
@@ -62,7 +65,6 @@ public class Compiler {
             throw e;
         }
     }
-
 
 
     /**

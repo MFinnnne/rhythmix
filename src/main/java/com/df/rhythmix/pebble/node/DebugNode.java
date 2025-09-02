@@ -58,6 +58,7 @@ public class DebugNode extends AbstractRenderableNode {
                 code.delete(0, code.length());
                 code.append("p('").append(template.get(0)).append("');");
             }
+            code.append("\n");
             writer.write(code.toString());
         }
     }
