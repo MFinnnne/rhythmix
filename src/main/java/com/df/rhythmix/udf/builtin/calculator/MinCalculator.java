@@ -1,7 +1,7 @@
 package com.df.rhythmix.udf.builtin.calculator;
 
 import com.df.rhythmix.udf.CalculatorUDF;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class MinCalculator implements CalculatorUDF {
     }
 
     @Override
-    public Number calculate(List<EventData> values) {
+    public Number calculate(List<RhythmixEventData> values) {
         // Handle null or empty input
         if (values == null || values.isEmpty()) {
             return 0;
@@ -22,13 +22,13 @@ public class MinCalculator implements CalculatorUDF {
         boolean hasValidNumber = false;
 
         // Iterate through all EventData objects
-        for (EventData eventData : values) {
-            if (eventData == null) {
+        for (RhythmixEventData rhythmixEventData : values) {
+            if (rhythmixEventData == null) {
                 continue;
             }
 
             // Get the numeric value from EventData
-            Object value = eventData.getValue();
+            Object value = rhythmixEventData.getValue();
             if (value == null) {
                 continue;
             }

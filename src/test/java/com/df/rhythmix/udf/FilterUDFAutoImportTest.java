@@ -5,8 +5,7 @@ import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.pebble.TemplateEngine;
-import com.df.rhythmix.util.EventData;
-import com.df.rhythmix.util.EventValueType;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.*;
 
@@ -53,10 +52,10 @@ class FilterUDFAutoImportTest {
         Executor executor = Compiler.compile(code);
         
         // Test data - tempFilter should keep temperatures between -50 and 100
-        EventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));      // Keep
-        EventData event2 = Util.genEventData("sensor2", "-60.0", new Timestamp(System.currentTimeMillis() + 100)); // Discard (< -50)
-        EventData event3 = Util.genEventData("sensor3", "75.0", new Timestamp(System.currentTimeMillis() + 200));  // Keep
-        EventData event4 = Util.genEventData("sensor4", "150.0", new Timestamp(System.currentTimeMillis() + 300)); // Discard (> 100)
+        RhythmixEventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));      // Keep
+        RhythmixEventData event2 = Util.genEventData("sensor2", "-60.0", new Timestamp(System.currentTimeMillis() + 100)); // Discard (< -50)
+        RhythmixEventData event3 = Util.genEventData("sensor3", "75.0", new Timestamp(System.currentTimeMillis() + 200));  // Keep
+        RhythmixEventData event4 = Util.genEventData("sensor4", "150.0", new Timestamp(System.currentTimeMillis() + 300)); // Discard (> 100)
         
         boolean result = false;
         result = executor.execute(event1); // Keep
@@ -77,10 +76,10 @@ class FilterUDFAutoImportTest {
         Executor executor = Compiler.compile(code);
         
         // Test data - numericFilter should keep only numeric values
-        EventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));      // Keep (numeric)
-        EventData event2 = Util.genEventData("sensor2", "invalid", new Timestamp(System.currentTimeMillis() + 100)); // Discard (non-numeric)
-        EventData event3 = Util.genEventData("sensor3", "42", new Timestamp(System.currentTimeMillis() + 200));    // Keep (numeric)
-        EventData event4 = Util.genEventData("sensor4", "error", new Timestamp(System.currentTimeMillis() + 300));  // Discard (non-numeric)
+        RhythmixEventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));      // Keep (numeric)
+        RhythmixEventData event2 = Util.genEventData("sensor2", "invalid", new Timestamp(System.currentTimeMillis() + 100)); // Discard (non-numeric)
+        RhythmixEventData event3 = Util.genEventData("sensor3", "42", new Timestamp(System.currentTimeMillis() + 200));    // Keep (numeric)
+        RhythmixEventData event4 = Util.genEventData("sensor4", "error", new Timestamp(System.currentTimeMillis() + 300));  // Discard (non-numeric)
         
         boolean result = false;
         result = executor.execute(event1); // Keep
@@ -101,10 +100,10 @@ class FilterUDFAutoImportTest {
         Executor executor = Compiler.compile(code);
         
         // Test data - positiveFilter should keep only positive values
-        EventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));      // Keep (positive)
-        EventData event2 = Util.genEventData("sensor2", "-10", new Timestamp(System.currentTimeMillis() + 100)); // Discard (negative)
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));  // Keep (positive)
-        EventData event4 = Util.genEventData("sensor4", "0", new Timestamp(System.currentTimeMillis() + 300));    // Discard (zero)
+        RhythmixEventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));      // Keep (positive)
+        RhythmixEventData event2 = Util.genEventData("sensor2", "-10", new Timestamp(System.currentTimeMillis() + 100)); // Discard (negative)
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));  // Keep (positive)
+        RhythmixEventData event4 = Util.genEventData("sensor4", "0", new Timestamp(System.currentTimeMillis() + 300));    // Discard (zero)
         
         boolean result = false;
         result = executor.execute(event1); // Keep (25)

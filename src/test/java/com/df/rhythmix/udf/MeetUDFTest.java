@@ -5,12 +5,11 @@ import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.pebble.TemplateEngine;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.*;
 
 import java.sql.Timestamp;
-import java.util.*;
 
 /**
  * Test cases for Meet UDF functionality with auto-import support
@@ -76,9 +75,9 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - sum should be >= 10 to pass thresholdMeet
-        EventData event1 = Util.genEventData("sensor1", "3", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "4", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "5", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "4", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "5", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
         result = executor.execute(event1); // Sum = 3
@@ -99,9 +98,9 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - average should be between 5-50 to pass rangeMeet
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
         result = executor.execute(event1); // Avg = 10
@@ -122,9 +121,9 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data with negative values - sum should be > 0 to pass positiveMeet
-        EventData event1 = Util.genEventData("sensor1", "-5", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "-3", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "10", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "-5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "-3", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "10", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
         result = executor.execute(event1); // Sum = -5
@@ -145,10 +144,10 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - count should be even to pass evenMeet
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
-        EventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
 
         boolean result = false;
         result = executor.execute(event1); // Count = 1 (odd)
@@ -175,9 +174,9 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - sum should be > 15 to pass customThresholdMeet
-        EventData event1 = Util.genEventData("sensor1", "5", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "6", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "7", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "6", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "7", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
         result = executor.execute(event1); // Sum = 5
@@ -201,9 +200,9 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - average should be between 20-100 to pass customRangeMeet
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "50", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "50", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
         result = executor.execute(event1); // Avg = 10
@@ -224,11 +223,11 @@ class MeetUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - only values > 5 will be filtered, limited to 3, then summed
-        EventData event1 = Util.genEventData("sensor1", "3", new Timestamp(System.currentTimeMillis())); // Filtered out
-        EventData event2 = Util.genEventData("sensor2", "6", new Timestamp(System.currentTimeMillis() + 100)); // Included
-        EventData event3 = Util.genEventData("sensor3", "7", new Timestamp(System.currentTimeMillis() + 200)); // Included
-        EventData event4 = Util.genEventData("sensor4", "8", new Timestamp(System.currentTimeMillis() + 300)); // Included
-        EventData event5 = Util.genEventData("sensor5", "9", new Timestamp(System.currentTimeMillis() + 400)); // Limited out
+        RhythmixEventData event1 = Util.genEventData("sensor1", "3", new Timestamp(System.currentTimeMillis())); // Filtered out
+        RhythmixEventData event2 = Util.genEventData("sensor2", "6", new Timestamp(System.currentTimeMillis() + 100)); // Included
+        RhythmixEventData event3 = Util.genEventData("sensor3", "7", new Timestamp(System.currentTimeMillis() + 200)); // Included
+        RhythmixEventData event4 = Util.genEventData("sensor4", "8", new Timestamp(System.currentTimeMillis() + 300)); // Included
+        RhythmixEventData event5 = Util.genEventData("sensor5", "9", new Timestamp(System.currentTimeMillis() + 400)); // Limited out
 
         boolean result = false;
         result = executor.execute(event1); // Sum = 0 (filtered out)
@@ -254,8 +253,8 @@ class MeetUDFTest {
         String code1 = "filter(>100).sum().thresholdMeet()";
         Executor executor1 = Compiler.compile(code1);
 
-        EventData event1 = Util.genEventData("sensor1", "5", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "10", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "10", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result1 = false;
         result1 = executor1.execute(event1); // Sum = 0 (no data > 100)
@@ -268,7 +267,7 @@ class MeetUDFTest {
         String code2 = "filter(>0).sum().thresholdMeet()";
         Executor executor2 = Compiler.compile(code2);
 
-        EventData event3 = Util.genEventData("sensor3", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "10", new Timestamp(System.currentTimeMillis()));
 
         boolean result2 = false;
         result2 = executor2.execute(event3); // Sum = 10
@@ -291,7 +290,7 @@ class MeetUDFTest {
         String code = "filter(>0).sum().thresholdMeet()";
         Executor executor = Compiler.compile(code);
 
-        EventData event = Util.genEventData("sensor", "15", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event = Util.genEventData("sensor", "15", new Timestamp(System.currentTimeMillis()));
         boolean result = executor.execute(event);
         Assertions.assertTrue(result); // 15 >= 10, should meet threshold
     }

@@ -1,7 +1,7 @@
 package com.df.rhythmix.udf.builtin.filter;
 
 import com.df.rhythmix.udf.FilterUDF;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 
 /**
  * Built-in positive value filter UDF that keeps only positive numeric values.
@@ -21,7 +21,7 @@ public class PositiveFilterUDF implements FilterUDF {
     }
     
     @Override
-    public boolean filter(EventData event) {
+    public boolean filter(RhythmixEventData event) {
         try {
             double value = Double.parseDouble(event.getValue());
             return value > 0;

@@ -1,12 +1,11 @@
 package com.df.rhythmix.udf;
 
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -25,12 +24,12 @@ public class UDFRegistryTest {
         }
 
         @Override
-        public boolean filter(EventData data) {
+        public boolean filter(RhythmixEventData data) {
             return true;
         }
 
         @Override
-        public List<EventData> filter(List<EventData> dataList) {
+        public List<RhythmixEventData> filter(List<RhythmixEventData> dataList) {
             return dataList;
         }
     }
@@ -43,7 +42,7 @@ public class UDFRegistryTest {
         }
 
         @Override
-        public Number calculate(List<EventData> values) {
+        public Number calculate(List<RhythmixEventData> values) {
             return 1.0;
         }
     }

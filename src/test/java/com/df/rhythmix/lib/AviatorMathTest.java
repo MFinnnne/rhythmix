@@ -1,7 +1,7 @@
 package com.df.rhythmix.lib;
 
 import com.df.rhythmix.exception.ComputeException;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,9 @@ class AviatorMathTest {
 
     @Test
     void sum() throws ComputeException {
-        EventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         List<Object> objects = new ArrayList<>();
         objects.add(p1);
         objects.add(p2);
@@ -27,9 +27,9 @@ class AviatorMathTest {
 
     @Test
     void avg() throws ComputeException {
-        EventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         List<Object> objects = new ArrayList<>();
         objects.add(p1);
         objects.add(p2);
@@ -40,9 +40,9 @@ class AviatorMathTest {
 
     @Test
     void count() throws ComputeException {
-        EventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         List<Object> objects = new ArrayList<>();
         objects.add(p1);
         objects.add(p2);
@@ -53,9 +53,9 @@ class AviatorMathTest {
 
     @Test
     void stddev() throws ComputeException {
-        EventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         List<Object> objects = new ArrayList<>();
         objects.add(p1);
         objects.add(p2);

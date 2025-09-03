@@ -5,7 +5,7 @@ import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Execution;
@@ -25,9 +25,9 @@ class ArrowExprTest {
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
 
-        EventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
         boolean execute = translate.execute(p1, p2);
         Assertions.assertTrue(execute);
         Assertions.assertFalse(translate.execute(p1, p3));
@@ -39,9 +39,9 @@ class ArrowExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
-        EventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
         boolean execute = translate.execute(p1, p2);
         Assertions.assertTrue(execute);
         Assertions.assertFalse(translate.execute(p1, p3));
@@ -53,9 +53,9 @@ class ArrowExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
-        EventData p1 = Util.genEventData("1", "15", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "15", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
         boolean execute = translate.execute(p1, p2);
         Assertions.assertTrue(execute);
         Assertions.assertFalse(translate.execute(p1, p3));
@@ -67,9 +67,9 @@ class ArrowExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
-        EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         boolean execute = translate.execute(p1, p2);
         Assertions.assertTrue(execute);
         Assertions.assertFalse(translate.execute(p2, p3));
@@ -82,9 +82,9 @@ class ArrowExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
-        EventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
         boolean execute = translate.execute(p1, p2);
         Assertions.assertTrue(execute);
         Assertions.assertFalse(translate.execute(p2, p3));
@@ -102,9 +102,9 @@ class ArrowExprTest {
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
-        EventData p1 = Util.genEventData("1", "10", ts);
-        EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p1 = Util.genEventData("1", "10", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 100));
         boolean execute = translate.execute(p1, p2, p3);
         Assertions.assertTrue(execute);
     }
@@ -118,9 +118,9 @@ class ArrowExprTest {
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
-        EventData p1 = Util.genEventData("1", "10", ts);
-        EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p1 = Util.genEventData("1", "10", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 100));
         boolean execute = translate.execute(p1, p2, p3);
         Assertions.assertTrue(execute);
     }
@@ -133,9 +133,9 @@ class ArrowExprTest {
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
-        EventData p1 = Util.genEventData("1", "9", ts);
-        EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
+        RhythmixEventData p1 = Util.genEventData("1", "9", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
         boolean execute = translate.execute(p1, p2, p3);
         Assertions.assertTrue(execute);
     }
@@ -148,10 +148,10 @@ class ArrowExprTest {
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
-        EventData p1 = Util.genEventData("1", "9", ts);
-        EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
-        EventData p4 = Util.genEventData("1", "7", Util.addMs(ts, 340));
+        RhythmixEventData p1 = Util.genEventData("1", "9", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
+        RhythmixEventData p4 = Util.genEventData("1", "7", Util.addMs(ts, 340));
         translate.execute(p1);
         translate.execute(p2);
         translate.execute(p3);
@@ -167,11 +167,11 @@ class ArrowExprTest {
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
-        EventData p1 = Util.genEventData("1", "9", ts);
-        EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
-        EventData p4 = Util.genEventData("1", "7", Util.addMs(ts, 350));
-        EventData p5 = Util.genEventData("1", "7", Util.addMs(ts, 550));
+        RhythmixEventData p1 = Util.genEventData("1", "9", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p3 = Util.genEventData("1", "7", Util.addMs(ts, 200));
+        RhythmixEventData p4 = Util.genEventData("1", "7", Util.addMs(ts, 350));
+        RhythmixEventData p5 = Util.genEventData("1", "7", Util.addMs(ts, 550));
         boolean execute = translate.execute(p1, p2, p3, p4, p5);
         Assertions.assertTrue(execute);
     }
@@ -185,12 +185,12 @@ class ArrowExprTest {
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         //第一种情况
-        EventData p1 = Util.genEventData("1", "9", ts);
-        EventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
-        EventData p6 = Util.genEventData("1", "3", Util.addMs(ts, 550));
-        EventData p7 = Util.genEventData("1", "3", Util.addMs(ts, 750));
-        EventData p8 = Util.genEventData("1", "11", Util.addMs(ts, 750));
-        EventData p9 = Util.genEventData("1", "11", Util.addMs(ts, 950));
+        RhythmixEventData p1 = Util.genEventData("1", "9", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "7", Util.addMs(ts, 100));
+        RhythmixEventData p6 = Util.genEventData("1", "3", Util.addMs(ts, 550));
+        RhythmixEventData p7 = Util.genEventData("1", "3", Util.addMs(ts, 750));
+        RhythmixEventData p8 = Util.genEventData("1", "11", Util.addMs(ts, 750));
+        RhythmixEventData p9 = Util.genEventData("1", "11", Util.addMs(ts, 950));
         boolean execute1 = translate.execute(p1, p2, p1, p2, p1);
         Assertions.assertFalse(execute1);
         boolean execute = translate.execute(p6);
@@ -219,11 +219,11 @@ class ArrowExprTest {
         Executor translate = new Executor(translatedCode, env);
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         //第一种情况
-        EventData p1 = Util.genEventData("1", "3", ts);
-        EventData p2 = Util.genEventData("1", "3", Util.addMs(ts, 110));
-        EventData p3 = Util.genEventData("1", "8", Util.addMs(ts, 250));
-        EventData p8 = Util.genEventData("1", "11", Util.addMs(ts, 750));
-        EventData p9 = Util.genEventData("1", "11", Util.addMs(ts, 950));
+        RhythmixEventData p1 = Util.genEventData("1", "3", ts);
+        RhythmixEventData p2 = Util.genEventData("1", "3", Util.addMs(ts, 110));
+        RhythmixEventData p3 = Util.genEventData("1", "8", Util.addMs(ts, 250));
+        RhythmixEventData p8 = Util.genEventData("1", "11", Util.addMs(ts, 750));
+        RhythmixEventData p9 = Util.genEventData("1", "11", Util.addMs(ts, 950));
         boolean execute1 = translate.execute(p3, p8, p9);
         Assertions.assertTrue(execute1);
 

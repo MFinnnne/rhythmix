@@ -5,7 +5,7 @@ import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,9 +21,9 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         boolean execute = executor.execute(p2);
         Assertions.assertFalse(execute);
@@ -45,9 +45,9 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         executor.execute(p2);
@@ -66,9 +66,9 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         executor.execute(p2);
@@ -88,8 +88,8 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             executor.execute(p1);
             executor.execute(p2);
@@ -105,8 +105,8 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             executor.execute(p1);
             executor.execute(p2);
@@ -122,9 +122,9 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         boolean execute = executor.execute(p2);
@@ -143,9 +143,9 @@ class TakeTest {
         String transCode = Translator.translate(code, env);
         Executor executor = new Executor(transCode, env);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         executor.execute(p1);
         executor.execute(p2);
         executor.execute(p2);

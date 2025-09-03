@@ -1,7 +1,6 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.lib.Register;
-import com.df.rhythmix.util.EventData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;

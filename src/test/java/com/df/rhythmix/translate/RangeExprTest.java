@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate;
 
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Executor;
@@ -25,9 +25,9 @@ class RangeExprTest {
         String translatedCode = RangeExpr.translate(tokens, env);
         Executor compile = new Executor(translatedCode,env);
         
-        EventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        EventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 
@@ -39,11 +39,11 @@ class RangeExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
         Executor compile = new Executor(translatedCode,env);
-        EventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        EventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(p3));
-        EventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 
@@ -56,11 +56,11 @@ class RangeExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
         Executor compile = new Executor(translatedCode,env);
-        EventData pointData = Util.genEventData("1", "2.0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData pointData = Util.genEventData("1", "2.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        EventData p3 = Util.genEventData("1", "3.0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "3.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(p3));
-        EventData p2 = Util.genEventData("1", "4.0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "4.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 
@@ -72,11 +72,11 @@ class RangeExprTest {
         env.rawPut("MAX",10);
         String translatedCode = Translator.translate(code, env);
         Executor compile = new Executor(translatedCode,env);
-        EventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        EventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(p3));
-        EventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 
@@ -90,11 +90,11 @@ class RangeExprTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
         Executor compile = new Executor(translatedCode,env);
-        EventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
-        EventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(p3));
-        EventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(compile.execute(p2));
     }
 

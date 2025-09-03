@@ -76,7 +76,7 @@ boolean res = exe.execute(p1, p2);
 ```java
 String code = "{==0}->{==1}";
 Executor executor = Compiler.compile(code);
-boolean res = executor.execute(eventData);
+boolean res = executor.execute(rhythmixEventData);
 ```
 
 对于简单的等于表达式，还可以使用更简洁的语法：
@@ -525,14 +525,14 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
           double max = Double.NEGATIVE_INFINITY;
           boolean hasValidNumber = false;
   
-          for (EventData eventData : values) {
-              if (eventData == null || eventData.getValue() == null) {
+          for (EventData rhythmixEventData : values) {
+              if (rhythmixEventData == null || rhythmixEventData.getValue() == null) {
                   continue;
               }
   
               try {
                   double num;
-                  Object value = eventData.getValue();
+                  Object value = rhythmixEventData.getValue();
                   if (value instanceof Number) {
                       num = ((Number) value).doubleValue();
                   } else {
