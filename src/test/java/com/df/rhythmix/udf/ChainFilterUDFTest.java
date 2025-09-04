@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * Test cases for Filter UDF functionality with auto-import support
  */
-class FilterUDFTest {
+class ChainFilterUDFTest {
 
     @BeforeAll
     static void setUp() {
@@ -25,7 +25,7 @@ class FilterUDFTest {
     /**
      * Simple temperature filter UDF for testing
      */
-    static public class TemperatureFilterUDF implements FilterUDF {
+    static public class TemperatureChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "tempFilter";
@@ -45,7 +45,7 @@ class FilterUDFTest {
     /**
      * Sensor ID pattern filter UDF for testing
      */
-    static public class SensorIdFilterUDF implements FilterUDF {
+    static public class SensorIdChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "sensorFilter";
@@ -60,7 +60,7 @@ class FilterUDFTest {
     /**
      * Array filter UDF for testing - keeps only the last 3 events when list size > 3
      */
-    static public class TestArrayFilterUDF implements FilterUDF {
+    static public class TestArrayChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "arrayFilter";

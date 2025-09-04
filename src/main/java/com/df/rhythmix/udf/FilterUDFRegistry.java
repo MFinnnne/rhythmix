@@ -1,7 +1,6 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.config.ChainFunctionConfig;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -26,7 +25,7 @@ public class FilterUDFRegistry {
     /**
      * Generic UDF registry instance for FilterUDF
      */
-    private static final UDFRegistry<FilterUDF> registry = new UDFRegistry<>(FilterUDF.class, "FilterUDF");
+    private static final UDFRegistry<ChainFilterUDF> registry = new UDFRegistry<>(ChainFilterUDF.class, "ChainFilterUDF");
 
     /**
      * Performs auto-discovery and registration of all FilterUDF implementations
@@ -44,11 +43,11 @@ public class FilterUDFRegistry {
      * Manually register a FilterUDF instance. This can be used alongside
      * auto-discovery for additional FilterUDFs that need manual registration.
      *
-     * @param filterUDF The FilterUDF instance to register
+     * @param chainFilterUDF The FilterUDF instance to register
      * @return true if registration was successful, false if name already exists
      */
-    public static boolean registerFilterUDF(FilterUDF filterUDF) {
-        return registry.registerUDF(filterUDF);
+    public static boolean registerFilterUDF(ChainFilterUDF chainFilterUDF) {
+        return registry.registerUDF(chainFilterUDF);
     }
 
     /**
@@ -57,7 +56,7 @@ public class FilterUDFRegistry {
      * @param name The name of the FilterUDF
      * @return The FilterUDF instance, or null if not found
      */
-    public static FilterUDF getFilterUDF(String name) {
+    public static ChainFilterUDF getFilterUDF(String name) {
         return registry.getUDF(name);
     }
 
@@ -110,7 +109,7 @@ public class FilterUDFRegistry {
      *
      * @return Map of all registered FilterUDF instances
      */
-    public static Map<String, FilterUDF> getRegisteredUdfs() {
+    public static Map<String, ChainFilterUDF> getRegisteredUdfs() {
         return registry.getRegisteredUDFs();
     }
 

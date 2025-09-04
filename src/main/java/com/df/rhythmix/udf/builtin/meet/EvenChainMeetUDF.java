@@ -1,6 +1,6 @@
 package com.df.rhythmix.udf.builtin.meet;
 
-import com.df.rhythmix.udf.MeetUDF;
+import com.df.rhythmix.udf.ChainMeetUDF;
 
 /**
  * Built-in even meet UDF that checks if a calculated value is an even number.
@@ -14,7 +14,7 @@ import com.df.rhythmix.udf.MeetUDF;
  * @author MFine
  * @version 1.0
  */
-public class EvenMeetUDF implements MeetUDF {
+public class EvenChainMeetUDF implements ChainMeetUDF {
     
     @Override
     public String getName() {

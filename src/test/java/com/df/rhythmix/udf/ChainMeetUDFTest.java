@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 /**
  * Test cases for Meet UDF functionality with auto-import support
  */
-class MeetUDFTest {
+class ChainMeetUDFTest {
 
     @BeforeAll
     static void setUp() {
@@ -25,7 +25,7 @@ class MeetUDFTest {
     /**
      * Simple custom meet UDF for testing - checks if value is greater than 15
      */
-    static public class CustomThresholdMeetUDF implements MeetUDF {
+    static public class CustomThresholdChainMeetUDF implements ChainMeetUDF {
         @Override
         public String getName() {
             return "customThresholdMeet";
@@ -47,7 +47,7 @@ class MeetUDFTest {
     /**
      * Range meet UDF for testing - checks if value is between 20 and 100
      */
-    static public class CustomRangeMeetUDF implements MeetUDF {
+    static public class CustomRangeChainMeetUDF implements ChainMeetUDF {
         @Override
         public String getName() {
             return "customRangeMeet";
@@ -167,7 +167,7 @@ class MeetUDFTest {
     @DisplayName("Test custom MeetUDF - custom threshold checking")
     void testCustomMeetUDF() throws TranslatorException {
         // Register custom meet UDF
-        MeetUDFRegistry.registerMeetUDF(new CustomThresholdMeetUDF());
+        MeetUDFRegistry.registerMeetUDF(new CustomThresholdChainMeetUDF());
 
         // Test custom thresholdMeet (threshold > 15)
         String code = "filter(>0).sum().customThresholdMeet()";
@@ -193,7 +193,7 @@ class MeetUDFTest {
     @DisplayName("Test custom RangeMeetUDF - custom range checking")
     void testCustomRangeMeetUDF() throws TranslatorException {
         // Register custom range meet UDF
-        MeetUDFRegistry.registerMeetUDF(new CustomRangeMeetUDF());
+        MeetUDFRegistry.registerMeetUDF(new CustomRangeChainMeetUDF());
 
         // Test custom rangeMeet (range 20-100)
         String code = "filter(>0).avg().customRangeMeet()";

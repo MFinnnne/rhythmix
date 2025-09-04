@@ -1,6 +1,6 @@
 package com.df.rhythmix.udf.builtin.meet;
 
-import com.df.rhythmix.udf.MeetUDF;
+import com.df.rhythmix.udf.ChainMeetUDF;
 
 /**
  * Built-in threshold meet UDF that checks if a calculated value meets a predefined threshold.
@@ -14,7 +14,7 @@ import com.df.rhythmix.udf.MeetUDF;
  * @author MFine
  * @version 1.0
  */
-public class ThresholdMeetUDF implements MeetUDF {
+public class ThresholdChainMeetUDF implements ChainMeetUDF {
 
     /**
      * The default threshold value

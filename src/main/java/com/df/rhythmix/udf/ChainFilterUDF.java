@@ -15,7 +15,7 @@ import java.util.List;
  * @version 1.0
  * @date 2025-07-18
  */
-public interface FilterUDF {
+public interface ChainFilterUDF {
 
     /**
      * Returns a unique name for the filter UDF that users can reference in expressions.

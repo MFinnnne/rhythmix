@@ -4,7 +4,7 @@ import com.df.rhythmix.util.RhythmixEventData;
 
 import java.util.List;
 
-public interface CalculatorUDF {
+public interface ChainCalculatorUDF {
     String getName();
 
     Number calculate(List<RhythmixEventData> values);

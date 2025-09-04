@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 /**
  * Test cases for FilterUDF auto-import functionality
  */
-class FilterUDFAutoImportTest {
+class ChainFilterUDFAutoImportTest {
 
     @BeforeAll
     static void setUp() {
@@ -127,13 +127,13 @@ class FilterUDFAutoImportTest {
                              "Should have registered FilterUDF names");
         
         // Test specific FilterUDF retrieval
-        FilterUDF tempFilter = FilterUDFRegistry.getFilterUDF("tempFilter");
+        ChainFilterUDF tempFilter = FilterUDFRegistry.getFilterUDF("tempFilter");
         Assertions.assertNotNull(tempFilter, "tempFilter should be retrievable");
         Assertions.assertEquals("tempFilter", tempFilter.getName(), 
                                "Retrieved FilterUDF should have correct name");
         
         // Test non-existent FilterUDF
-        FilterUDF nonExistent = FilterUDFRegistry.getFilterUDF("nonExistentFilter");
+        ChainFilterUDF nonExistent = FilterUDFRegistry.getFilterUDF("nonExistentFilter");
         Assertions.assertNull(nonExistent, "Non-existent FilterUDF should return null");
     }
 }

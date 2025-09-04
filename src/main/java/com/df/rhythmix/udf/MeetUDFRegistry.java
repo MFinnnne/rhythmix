@@ -1,7 +1,6 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.config.ChainFunctionConfig;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -25,7 +24,7 @@ public class MeetUDFRegistry {
     /**
      * Generic UDF registry instance for MeetUDF
      */
-    private static final UDFRegistry<MeetUDF> registry = new UDFRegistry<>(MeetUDF.class, "MeetUDF");
+    private static final UDFRegistry<ChainMeetUDF> registry = new UDFRegistry<>(ChainMeetUDF.class, "ChainMeetUDF");
 
     /**
      * Performs auto-discovery and registration of all MeetUDF implementations
@@ -41,11 +40,11 @@ public class MeetUDFRegistry {
      * Manually register a MeetUDF instance. This can be used alongside
      * auto-discovery for additional MeetUDFs that need manual registration.
      *
-     * @param meetUDF The MeetUDF instance to register
+     * @param chainMeetUDF The MeetUDF instance to register
      * @return true if registration was successful, false if name already exists
      */
-    public static boolean registerMeetUDF(MeetUDF meetUDF) {
-        return registry.registerUDF(meetUDF);
+    public static boolean registerMeetUDF(ChainMeetUDF chainMeetUDF) {
+        return registry.registerUDF(chainMeetUDF);
     }
 
     /**
@@ -54,7 +53,7 @@ public class MeetUDFRegistry {
      * @param name The name of the MeetUDF
      * @return The MeetUDF instance, or null if not found
      */
-    public static MeetUDF getMeetUDF(String name) {
+    public static ChainMeetUDF getMeetUDF(String name) {
         return registry.getUDF(name);
     }
 
@@ -108,7 +107,7 @@ public class MeetUDFRegistry {
      *
      * @return Map of all registered MeetUDF instances
      */
-    public static Map<String, MeetUDF> getRegisteredUdfs() {
+    public static Map<String, ChainMeetUDF> getRegisteredUdfs() {
         return registry.getRegisteredUDFs();
     }
 }

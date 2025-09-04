@@ -15,24 +15,12 @@ import java.util.Set;
  */
 public class CombinedUDFRegistryIntegrationTest {
 
-    @BeforeEach
-    void setUp() {
-        // Clear both registries before each test
-        FilterUDFRegistry.clear();
-        CalculatorUDFRegistry.clear();
-    }
-
-    @AfterEach
-    void tearDown() {
-        // Clean up after each test
-        FilterUDFRegistry.clear();
-        CalculatorUDFRegistry.clear();
-    }
-
     @Test
     @DisplayName("Test that both registries work independently")
     void testIndependentRegistries() {
         // Verify initial state
+        FilterUDFRegistry.clear();
+        CalculatorUDFRegistry.clear();
         assertEquals(0, FilterUDFRegistry.getRegisteredCount());
         assertEquals(0, CalculatorUDFRegistry.getRegisteredCount());
         assertFalse(FilterUDFRegistry.isAutoImportCompleted());

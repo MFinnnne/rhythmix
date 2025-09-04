@@ -12,7 +12,6 @@ import com.df.rhythmix.parser.ast.ASTNode;
 import com.df.rhythmix.parser.ast.ASTNodeTypes;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
-import com.df.rhythmix.udf.FilterUDF;
 import com.df.rhythmix.udf.FilterUDFRegistry;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 

@@ -1,11 +1,11 @@
 package com.df.rhythmix.udf.builtin.calculator;
 
-import com.df.rhythmix.udf.CalculatorUDF;
+import com.df.rhythmix.udf.ChainCalculatorUDF;
 import com.df.rhythmix.util.RhythmixEventData;
 
 import java.util.List;
 
-public class MaxCalculator implements CalculatorUDF {
+public class MaxChainCalculator implements ChainCalculatorUDF {
     @Override
     public String getName() {
         return "maxcalc";

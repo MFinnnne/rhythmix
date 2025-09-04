@@ -12,10 +12,10 @@ import java.util.Set;
 /**
  * Test class for MeetUDFRegistry functionality
  */
-public class MeetUDFRegistryTest {
+public class ChainMeetUDFRegistryTest {
 
     // Test implementation of MeetUDF
-    public static class TestMeetUDF implements MeetUDF {
+    public static class TestChainMeetUDF implements ChainMeetUDF {
         @Override
         public String getName() {
             return "testMeet";
@@ -31,7 +31,7 @@ public class MeetUDFRegistryTest {
     }
 
     // Another test implementation
-    public static class AnotherTestMeetUDF implements MeetUDF {
+    public static class AnotherTestChainMeetUDF implements ChainMeetUDF {
         @Override
         public String getName() {
             return "anotherMeet";
@@ -47,7 +47,7 @@ public class MeetUDFRegistryTest {
     }
 
     // Test implementation with duplicate name
-    public static class DuplicateNameMeetUDF implements MeetUDF {
+    public static class DuplicateNameChainMeetUDF implements ChainMeetUDF {
         @Override
         public String getName() {
             return "testMeet"; // Same name as TestMeetUDF
@@ -84,7 +84,7 @@ public class MeetUDFRegistryTest {
     @Test
     @DisplayName("Test manual registration")
     void testManualRegistration() {
-        TestMeetUDF testUDF = new TestMeetUDF();
+        TestChainMeetUDF testUDF = new TestChainMeetUDF();
         
         // Test successful registration
         assertTrue(MeetUDFRegistry.registerMeetUDF(testUDF));
@@ -96,8 +96,8 @@ public class MeetUDFRegistryTest {
     @Test
     @DisplayName("Test duplicate registration")
     void testDuplicateRegistration() {
-        TestMeetUDF testUDF1 = new TestMeetUDF();
-        DuplicateNameMeetUDF testUDF2 = new DuplicateNameMeetUDF();
+        TestChainMeetUDF testUDF1 = new TestChainMeetUDF();
+        DuplicateNameChainMeetUDF testUDF2 = new DuplicateNameChainMeetUDF();
         
         // First registration should succeed
         assertTrue(MeetUDFRegistry.registerMeetUDF(testUDF1));
@@ -119,7 +119,7 @@ public class MeetUDFRegistryTest {
     @Test
     @DisplayName("Test getMeetUDF")
     void testGetMeetUDF() {
-        TestMeetUDF testUDF = new TestMeetUDF();
+        TestChainMeetUDF testUDF = new TestChainMeetUDF();
         MeetUDFRegistry.registerMeetUDF(testUDF);
         
         assertEquals(testUDF, MeetUDFRegistry.getMeetUDF("testMeet"));
@@ -129,7 +129,7 @@ public class MeetUDFRegistryTest {
     @Test
     @DisplayName("Test isRegistered")
     void testIsRegistered() {
-        TestMeetUDF testUDF = new TestMeetUDF();
+        TestChainMeetUDF testUDF = new TestChainMeetUDF();
         
         assertFalse(MeetUDFRegistry.isRegistered("testMeet"));
         
@@ -142,8 +142,8 @@ public class MeetUDFRegistryTest {
     @Test
     @DisplayName("Test getRegisteredNames")
     void testGetRegisteredNames() {
-        TestMeetUDF testUDF1 = new TestMeetUDF();
-        AnotherTestMeetUDF testUDF2 = new AnotherTestMeetUDF();
+        TestChainMeetUDF testUDF1 = new TestChainMeetUDF();
+        AnotherTestChainMeetUDF testUDF2 = new AnotherTestChainMeetUDF();
         
         assertTrue(MeetUDFRegistry.getRegisteredNames().isEmpty());
         
@@ -161,18 +161,18 @@ public class MeetUDFRegistryTest {
     void testGetRegisteredCount() {
         assertEquals(0, MeetUDFRegistry.getRegisteredCount());
         
-        MeetUDFRegistry.registerMeetUDF(new TestMeetUDF());
+        MeetUDFRegistry.registerMeetUDF(new TestChainMeetUDF());
         assertEquals(1, MeetUDFRegistry.getRegisteredCount());
         
-        MeetUDFRegistry.registerMeetUDF(new AnotherTestMeetUDF());
+        MeetUDFRegistry.registerMeetUDF(new AnotherTestChainMeetUDF());
         assertEquals(2, MeetUDFRegistry.getRegisteredCount());
     }
 
     @Test
     @DisplayName("Test clear functionality")
     void testClear() {
-        MeetUDFRegistry.registerMeetUDF(new TestMeetUDF());
-        MeetUDFRegistry.registerMeetUDF(new AnotherTestMeetUDF());
+        MeetUDFRegistry.registerMeetUDF(new TestChainMeetUDF());
+        MeetUDFRegistry.registerMeetUDF(new AnotherTestChainMeetUDF());
         
         assertEquals(2, MeetUDFRegistry.getRegisteredCount());
         
@@ -185,7 +185,7 @@ public class MeetUDFRegistryTest {
     @Test
     @DisplayName("Test getRegisteredUdfs")
     void testGetRegisteredUdfs() {
-        TestMeetUDF testUDF = new TestMeetUDF();
+        TestChainMeetUDF testUDF = new TestChainMeetUDF();
         MeetUDFRegistry.registerMeetUDF(testUDF);
         
         assertEquals(1, MeetUDFRegistry.getRegisteredUdfs().size());
@@ -246,28 +246,28 @@ public class MeetUDFRegistryTest {
         Register.importFunction();
 
         // Test ThresholdMeetUDF
-        MeetUDF thresholdMeet = MeetUDFRegistry.getMeetUDF("thresholdMeet");
+        ChainMeetUDF thresholdMeet = MeetUDFRegistry.getMeetUDF("thresholdMeet");
         assertNotNull(thresholdMeet);
         assertEquals("thresholdMeet", thresholdMeet.getName());
         assertTrue(thresholdMeet.meet(15));   // Above threshold
         assertFalse(thresholdMeet.meet(5));   // Below threshold
 
         // Test RangeMeetUDF
-        MeetUDF rangeMeet = MeetUDFRegistry.getMeetUDF("rangeMeet");
+        ChainMeetUDF rangeMeet = MeetUDFRegistry.getMeetUDF("rangeMeet");
         assertNotNull(rangeMeet);
         assertEquals("rangeMeet", rangeMeet.getName());
         assertTrue(rangeMeet.meet(25));   // Within range
         assertFalse(rangeMeet.meet(100)); // Outside range
 
         // Test PositiveMeetUDF
-        MeetUDF positiveMeet = MeetUDFRegistry.getMeetUDF("positiveMeet");
+        ChainMeetUDF positiveMeet = MeetUDFRegistry.getMeetUDF("positiveMeet");
         assertNotNull(positiveMeet);
         assertEquals("positiveMeet", positiveMeet.getName());
         assertTrue(positiveMeet.meet(5));    // Positive
         assertFalse(positiveMeet.meet(-5));  // Negative
 
         // Test EvenMeetUDF
-        MeetUDF evenMeet = MeetUDFRegistry.getMeetUDF("evenMeet");
+        ChainMeetUDF evenMeet = MeetUDFRegistry.getMeetUDF("evenMeet");
         assertNotNull(evenMeet);
         assertEquals("evenMeet", evenMeet.getName());
         assertTrue(evenMeet.meet(4));    // Even
