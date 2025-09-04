@@ -1,32 +1,11 @@
 # 🎵 Rhythmix
 
-<div align="center">
-
 ![Version](https://img.shields.io/badge/版本-1.0.0-blue)
 ![License](https://img.shields.io/badge/许可证-MIT-green)
-
-</div>
 
 > **Rhythmix**（可以理解为"节奏混合"）是一个简单而强大的流数据处理规则表达式引擎。它能够在流数据中找出符合特定规律（节奏）的数据，就像按照某种节奏运作一样。
 
 ## 📑 目录
-
-- [🎵 Rhythmix](#-rhythmix)
-  - [📑 目录](#-目录)
-  - [🚀 项目简介](#-项目简介)
-  - [🏁 快速开始](#-快速开始)
-    - [基本示例](#基本示例)
-    - [状态转换示例](#状态转换示例)
-  - [📝 表达式语法](#-表达式语法)
-    - [箭头表达式](#箭头表达式)
-    - [状态表达式](#状态表达式)
-      - [比较表达式](#比较表达式)
-      - [区间表达式](#区间表达式)
-      - [逻辑表达式](#逻辑表达式)
-    - [链式表达式](#链式表达式)
-      - [数据过滤](#数据过滤)
-      - [数据限制](#数据限制)
-      - [数据计算](#数据计算)
 
 ## 🚀 项目简介
 
@@ -43,13 +22,24 @@ Rhythmix 是一个专为流数据处理设计的规则表达式引擎。它可�
 
 ### 基本示例
 
-以下是一个简单的示例，展示如何使用 Rhythmix
+以下是一个简单的示例，展示如何使用 Rhythmix：
+
+```
+{>1}->{count(<1,3)}->{==3}
+```
+
+> 由动图可知表达式用来表达式某个数值依次要满足 **大于1然后连续三次大于1最后等于3**
+
+![](doc/media/videos/300p60/complex_state_transition.gif)
+
+或者我们可以更加简单点：
 
 ```js
 count(>4,3)
 ```
 
-这行表达式的意思是：当值大于 4 并且满足 3 次（非连续三次）之后返回真。
+> 当值大于 4 并且满足 3 次（非连续三次）之后返回真。
+>
 
 ![count1](doc/media/videos/300p60/count1.gif)
 
@@ -61,61 +51,39 @@ String code = "count(>4,3)";
 Executor exe = Compiler.compile(code);
 
 // 构造测试数据
-SensorEvent p1 = Util.genEventData("11", "1", new Timestamp(System.currentTimeMillis()));
-SensorEvent p2 = Util.genEventData("12", "11", new Timestamp(System.currentTimeMillis()+100));
-SensorEvent p3 = Util.genEventData("13", "9", new Timestamp(System.currentTimeMillis()+200));
+RhythmixEventData p1 = new RhythmixEventData("11", "event1", "1", new Timestamp(System.currentTimeMillis()));
+RhythmixEventData p2 = new RhythmixEventData("12", "event2", "5", new Timestamp(System.currentTimeMillis() + 100));
+RhythmixEventData p3 = new RhythmixEventData("13", "event3", "2", new Timestamp(System.currentTimeMillis() + 200));
 
 // 执行表达式
-boolean res = exe.execute(p1, p2);
+boolean res = exe.execute(p1,p2,p3);
+//或者
+boolean res = exe.execute(p1);
+res = exe.execute(p2);
+res = exe.execute(p3);
 ```
 
-### 状态转换示例
+## 表达式构成
 
-检测事件值从 0 变化到 1 的情况：
-
-```java
-String code = "{==0}->{==1}";
-Executor executor = Compiler.compile(code);
-boolean res = executor.execute(rhythmixEventData);
-```
-
-对于简单的等于表达式，还可以使用更简洁的语法：
+表达式构成如下：
 
 ```
-<0,1>
+{状态单元A}->{状态单元B}->{状态单元C}
 ```
 
-一对尖括号内的 0 和 1 用逗号隔开，表示从 0 变化到 1。
+花括号 `{}` 内是所要表述的状态单元，箭头 `->` 用于连接前后状态单元，前一个状态单元满足之后就会迁移到下一个状态单元，直到最后一个状态单元也满足之后就返回true。例如： **{>1}->{count(<1,3)}->{==3}**
 
-![state_transition_0_1](doc/media/videos/300p60/state_transition_enhanced.gif)
+> 针对简单状态比如： **0到1**，可以写成: **<0,1>**这就等于 **{==0}->{==1}**
 
-## 📝 表达式语法
+每个状态单元可以使用如下表达式：
 
-### 箭头表达式
+- 比较表达式
+- 区间表达式
+- 逻辑符合表达式
+- 函数调用
+- 链式表达式
 
-箭头表达式用于表述多种状态的依次校验。语法如下：
-
-```
-{状态A}->{状态B}->{状态C}
-```
-
-花括号 `{}` 内是所要表述的状态，箭头 `->` 表示状态的迁移顺序。例如：
-
-```
-{>1}->{count(<1,3)}->{==3}
-```
-
-![](doc/media/videos/300p60/complex_state_transition.gif)
-
-这个表达式表示：当输入的数据依次满足"大于 1"、"三次（非连续）小于 1"、"等于 3"时，表达式成立并返回 true。
-
-只有当前一个状态满足后，才会继续校验下一个状态。
-
-### 状态表达式
-
-花括号内的内容称为状态表达式或状态方法，包括以下几种类型：
-
-#### 比较表达式
+### 比较表达式
 
 用于表示数据值之间的大小比较：
 
@@ -128,7 +96,73 @@ boolean res = executor.execute(rhythmixEventData);
 | `==` | 等于 | `{==3.14}->{==0.0}` 表示数据需要先等于 3.14 然后等于 0.0 |
 | `!=` | 不等于 | `{!=0.0}->{!=5.5}` 表示数据需要先不等于 0.0 然后不等于 5.5 |
 
-#### 区间表达式
+#### 实际应用示例
+
+**温度监控场景**：
+
+```js
+// 检测温度超过 30 度
+>30
+
+// 检测温度低于 10 度
+<10
+
+// 检测温度等于 25 度（精确匹配）
+==25
+
+// 检测温度不等于 0 度（排除异常读数）
+!=0
+```
+
+**生产线质量控制**：
+
+```js
+// 产品重量大于等于标准重量 100g
+>=100
+
+// 产品尺寸小于等于最大允许值 50mm
+<=50
+
+// 检测连续3个产品重量都大于 95g
+count(>95, 3)
+
+// 检测连续2个产品尺寸都小于 45mm
+count!(<45, 2)
+```
+
+**网络延迟监控**：
+
+```js
+// 响应时间大于 1000ms（1秒）
+>1000
+
+// 检测连续5次响应时间都小于 100ms
+count!(<100, 5)
+
+// 状态转换：正常响应 → 高延迟 → 恢复正常
+{<100}->{>1000}->{<200}
+```
+
+**传感器数据处理**：
+
+```js
+// 压力传感器读数等于 0（可能故障）
+==0
+
+// 湿度传感器读数不等于 -1（排除错误值）
+!=(-1)
+
+// 检测压力值连续3次大于等于 50
+count!(>=50, 3)
+
+// 复合条件：温度不等于 0 且大于 10（排除异常值并检测正常范围）
+{!=0&&>10}
+
+// 状态转换：温度从正常升高到过热状态
+{<=40}->{>80}
+```
+
+### 区间表达式
 
 用于表示数据处于某个范围内，语法借鉴了数学中的区间表示法：
 
@@ -141,7 +175,7 @@ boolean res = executor.execute(rhythmixEventData);
 
 > 📌 **提示**：左右小括号（`()`）表示大于/小于，左右中括号（`[]`）表示大于等于/小于等于。
 
-#### 逻辑表达式
+### 逻辑复合表达式
 
 用于组合多个条件，包括 `||`（或）、`&&`（与）和 `!`（非）：
 
@@ -163,16 +197,44 @@ boolean res = executor.execute(rhythmixEventData);
 
 - `!` 非操作：主要用于不等于表达式（`!=`）中
 
-#### 函数表达式
+### 函数调用
 
-- **count! (严格模式计数)** 🎯
+- #### count(条件, 次数)
+
+  **基本语法**：
+
+  ```js
+  count!(条件, 次数)
+  ```
+
+  **工作原理**：
+
+  - 当数据满足条件时，计数器递增
+  - 当数据**不满足条件**时，计数器**不变**
+  - 只有非连续满足条件达到指定次数时，函数才返回 true
+
+  **使用示例**：
+
+  **count(条件, n)**: 统计 **n 个非连续** 满足条件的数据
+
+  ```js
+  // 普通 count 函数（非严格模式）
+  count(>4, 3)
+  // 数据 5: >4 ✓ (计数=1)
+  // 数据 2: ≤4 ✗ (计数保持=1)
+  // 数据 6: >4 ✓ (计数=2)
+  // 数据 1: ≤4 ✗ (计数保持=2)
+  // 数据 7: >4 ✓ (计数=3) → 返回 true
+  ```
+
+- #### **count! (条件, 次数)** 🎯
 
   `count!` 是 `count` 函数的严格模式版本，用于检测**连续满足条件**的数据个数。与普通 `count` 函数的区别在于：
 
-  - **count(条件, n)**: 统计 **n 个非连续** 满足条件的数据
   - **count!(条件, n)**: 统计 **n 个连续** 满足条件的数据（严格模式）
-
-  **基本语法**：
+  
+**基本语法**：
+  
   ```js
   count!(条件, 次数)
   ```
@@ -201,13 +263,6 @@ boolean res = executor.execute(rhythmixEventData);
   假设数据序列为：`5, 2, 6, 1, 7, 8, 9`
 
   ```js
-  // 普通 count 函数（非严格模式）
-  count(>4, 3)
-  // 数据 5: >4 ✓ (计数=1)
-  // 数据 2: ≤4 ✗ (计数保持=1)
-  // 数据 6: >4 ✓ (计数=2)
-  // 数据 1: ≤4 ✗ (计数保持=2)
-  // 数据 7: >4 ✓ (计数=3) → 返回 true
   
   // 严格模式 count! 函数
   count!(>4, 3)
@@ -219,37 +274,36 @@ boolean res = executor.execute(rhythmixEventData);
   // 数据 8: >4 ✓ (计数=2)
   // 数据 9: >4 ✓ (计数=3) → 返回 true
   ```
-
+  
   **实际应用场景**：
-
+  
   ```js
   // 监控场景：检测连续 3 次温度超标
   count!(>80, 3)
   
-  // 质量控制：检测连续 5 个产品合格
+// 质量控制：检测连续 5 个产品合格
   count!([95,100], 5)
-  
+
   // 网络监控：检测连续 2 次响应时间过长
   count!(>1000, 2)
   
   // 组合使用：连续异常或单次严重异常
   count!(>50, 3) || count(>100, 1)
   ```
-
+  
   **与状态表达式结合**：
-
+  
   ```js
   // 状态转换：正常 → 连续异常 → 恢复
   {count!(<10, 3)}->{count!(>50, 2)}->{<5}
   
-  // 复杂状态检测
+// 复杂状态检测
   {==0}->{count!(>4, 3)}->{count!(<2, 2)}
-  ```
-
+```
 
 ### 链式表达式
 
-链式表达式用于对多个数据的集合进行处理。例如：
+链式表达式是对其他几种表达式的补充，它可以实现对数据进行过滤，限制，计算，验证四个步骤，由此实现多数据的处理，例如：
 
 ```
 filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
@@ -291,7 +345,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   实现 `FilterUDF` 接口来创建自定义过滤器：
 
   ```java
-  public class TemperatureFilterUDF implements FilterUDF {
+  public class TemperatureFilterUDF implements ChainFilterUDF {
       @Override
       public String getName() {
           return "tempFilter"; // 过滤器名称，用于表达式中调用
@@ -367,8 +421,6 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   > 💡 **提示**: 该功能的设计是为了确保在极端情况下表达式成立导致数据积累过多引起不必要的内存占用
   >
   > ⚠️ **与 window 函数的使用限制**: 不建议同时使用 limit 和 window 函数，详见 [window 函数说明](#数据限制)
-
-
 
 - **window** 🪟
 
@@ -509,7 +561,7 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
   实现 `CalculatorUDF` 接口来创建自定义计算器：
 
   ```java
-  public class MyMaxCalculator implements CalculatorUDF {
+  public class MyMaxCalculator implements ChainCalculatorUDF {
       @Override
       public String getName() {
           return "myMax"; // 计算器名称，用于表达式中调用
@@ -631,7 +683,7 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
   实现 `MeetUDF` 接口来创建自定义条件判断函数：
 
   ```java
-  public class CustomThresholdMeetUDF implements MeetUDF {
+  public class CustomThresholdMeetUDF implements ChainMeetUDF {
       @Override
       public String getName() {
           return "customThresholdMeet"; // 函数名称，用于表达式中调用
@@ -685,7 +737,7 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
   自定义条件判断函数可以实现任意复杂的判断逻辑：
 
   ```java
-  public class MultiConditionMeetUDF implements MeetUDF {
+  public class MultiConditionMeetUDF implements ChainMeetUDF {
       @Override
       public String getName() {
           return "multiConditionMeet";
@@ -734,6 +786,4 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
 > - 条件判断函数应该处理异常情况，避免影响整个表达式的执行
 > - 条件判断函数通常位于链式表达式的末尾，用于最终的结果验证
 > - 内置函数提供了常用的判断逻辑，可以直接使用无需额外配置
-
-
 ---
