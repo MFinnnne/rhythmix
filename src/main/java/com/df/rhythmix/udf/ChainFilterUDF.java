@@ -1,9 +1,7 @@
 package com.df.rhythmix.udf;
 
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,7 +15,7 @@ import java.util.List;
  * @version 1.0
  * @date 2025-07-18
  */
-public interface FilterUDF {
+public interface ChainFilterUDF {
 
     /**
      * Returns a unique name for the filter UDF that users can reference in expressions.
@@ -33,7 +31,7 @@ public interface FilterUDF {
      * @param event The EventData object to be filtered
      * @return true to keep the data, false to discard it
      */
-    default boolean filter(EventData event) {
+    default boolean filter(RhythmixEventData event) {
         return true;
     }
 
@@ -44,7 +42,7 @@ public interface FilterUDF {
      * @param events The list of EventData objects to be filtered
      * @return A new list containing only the EventData objects that passed the filter
      */
-    default List<EventData> filter(List<EventData> events) {
+    default List<RhythmixEventData> filter(List<RhythmixEventData> events) {
         return events;
     }
 }

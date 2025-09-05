@@ -4,9 +4,9 @@ import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
-import com.df.rhythmix.udf.builtin.calculator.MaxCalculator;
-import com.df.rhythmix.udf.builtin.calculator.MinCalculator;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.udf.builtin.calculator.MaxChainCalculator;
+import com.df.rhythmix.udf.builtin.calculator.MinChainCalculator;
+import com.df.rhythmix.util.RhythmixEventData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Test cases for Calculator UDF functionality with auto-import support
  */
-class CalculatorUDFTest {
+class ChainCalculatorUDFTest {
 
     @BeforeAll
     static void setUp() {
@@ -30,9 +30,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with positive integers")
     void testMyMaxCalculatorWithPositiveIntegers() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData(10),
             createEventData(3),
@@ -48,9 +48,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with negative numbers")
     void testMyMaxCalculatorWithNegativeNumbers() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(-5),
             createEventData(-10),
             createEventData(-3),
@@ -66,9 +66,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with mixed positive and negative numbers")
     void testMyMaxCalculatorWithMixedNumbers() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(-5),
             createEventData(10),
             createEventData(-3),
@@ -83,9 +83,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with decimal numbers")
     void testMyMaxCalculatorWithDecimals() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5.5),
             createEventData(10.2),
             createEventData(3.7),
@@ -101,9 +101,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with mixed integers and decimals")
     void testMyMaxCalculatorWithMixedTypes() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),      // Integer
             createEventData(10.5),   // Double
             createEventData(3),      // Integer
@@ -119,9 +119,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with string numbers")
     void testMyMaxCalculatorWithStringNumbers() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData("5"),
             createEventData("10"),
             createEventData("3"),
@@ -136,9 +136,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with mixed string and numeric values")
     void testMyMaxCalculatorWithMixedStringAndNumeric() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData("10"),
             createEventData(3.5),
@@ -153,7 +153,7 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with null input")
     void testMyMaxCalculatorWithNullInput() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
         Number result = calculator.calculate(null);
         assertEquals(0, result);
@@ -162,9 +162,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with empty list")
     void testMyMaxCalculatorWithEmptyList() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         Number result = calculator.calculate(events);
         assertEquals(0, result);
     }
@@ -172,9 +172,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with null EventData objects")
     void testMyMaxCalculatorWithNullEventData() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             null,
             createEventData(10),
@@ -189,9 +189,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with null values in EventData")
     void testMyMaxCalculatorWithNullValues() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventDataWithNullValue(),
             createEventData(10),
@@ -206,9 +206,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with invalid string values")
     void testMyMaxCalculatorWithInvalidStrings() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData("abc"),      // Invalid string
             createEventData(10),
@@ -223,9 +223,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with all invalid values")
     void testMyMaxCalculatorWithAllInvalidValues() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData("abc"),
             createEventData("xyz"),
             createEventDataWithNullValue(),
@@ -239,9 +239,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with NaN values")
     void testMyMaxCalculatorWithNaNValues() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData(Double.NaN),  // NaN value
             createEventData(10),
@@ -255,9 +255,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with infinite values")
     void testMyMaxCalculatorWithInfiniteValues() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData(Double.POSITIVE_INFINITY),
             createEventData(10),
@@ -272,9 +272,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with negative infinite values")
     void testMyMaxCalculatorWithNegativeInfiniteValues() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData(Double.NEGATIVE_INFINITY),
             createEventData(10),
@@ -288,9 +288,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with single value")
     void testMyMaxCalculatorWithSingleValue() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(createEventData(42));
+        List<RhythmixEventData> events = Arrays.asList(createEventData(42));
 
         Number result = calculator.calculate(events);
         assertEquals(42L, result);
@@ -299,9 +299,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with zero values")
     void testMyMaxCalculatorWithZeroValues() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(0),
             createEventData(-5),
             createEventData(0),
@@ -315,9 +315,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MyMaxCalculator - Test with very large numbers")
     void testMyMaxCalculatorWithLargeNumbers() {
-        MaxCalculator calculator = new MaxCalculator();
+        MaxChainCalculator calculator = new MaxChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(Long.MAX_VALUE),
             createEventData(1000000),
             createEventData(Long.MAX_VALUE - 1)
@@ -329,16 +329,16 @@ class CalculatorUDFTest {
 
     // Helper methods for creating test data
 
-    private EventData createEventData(Object value) {
-        EventData eventData = new EventData();
-        eventData.setValue(value.toString());
-        return eventData;
+    private RhythmixEventData createEventData(Object value) {
+        RhythmixEventData rhythmixEventData = new RhythmixEventData();
+        rhythmixEventData.setValue(value.toString());
+        return rhythmixEventData;
     }
 
-    private EventData createEventDataWithNullValue() {
-        EventData eventData = new EventData();
-        eventData.setValue(null);
-        return eventData;
+    private RhythmixEventData createEventDataWithNullValue() {
+        RhythmixEventData rhythmixEventData = new RhythmixEventData();
+        rhythmixEventData.setValue(null);
+        return rhythmixEventData;
     }
 
     // Test cases for MinCalculator
@@ -346,16 +346,16 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test getName method")
     void testMinCalculatorGetName() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
         assertEquals("mincalc", calculator.getName());
     }
 
     @Test
     @DisplayName("MinCalculator - Test with positive integers")
     void testMinCalculatorWithPositiveIntegers() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             createEventData(10),
             createEventData(3),
@@ -371,9 +371,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with negative numbers")
     void testMinCalculatorWithNegativeNumbers() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(-5),
             createEventData(-10),
             createEventData(-3),
@@ -389,9 +389,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with mixed positive and negative numbers")
     void testMinCalculatorWithMixedNumbers() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(-5),
             createEventData(10),
             createEventData(-3),
@@ -406,9 +406,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with decimal numbers")
     void testMinCalculatorWithDecimals() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5.5),
             createEventData(10.2),
             createEventData(3.7),
@@ -424,9 +424,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with mixed integers and decimals")
     void testMinCalculatorWithMixedTypes() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),      // Integer
             createEventData(10.5),   // Double
             createEventData(3),      // Integer
@@ -442,9 +442,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with string numbers")
     void testMinCalculatorWithStringNumbers() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData("15"),
             createEventData("10"),
             createEventData("3"),
@@ -459,9 +459,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with mixed string and numeric values")
     void testMinCalculatorWithMixedStringAndNumeric() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(5),
             createEventData("10"),
             createEventData(3.5),
@@ -476,7 +476,7 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with null input")
     void testMinCalculatorWithNullInput() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
         Number result = calculator.calculate(null);
         assertEquals(0, result);
@@ -485,9 +485,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with empty list")
     void testMinCalculatorWithEmptyList() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         Number result = calculator.calculate(events);
         assertEquals(0, result);
     }
@@ -495,9 +495,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with null EventData objects")
     void testMinCalculatorWithNullEventData() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             null,
             createEventData(3),  // Minimum
@@ -512,9 +512,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with null values in EventData")
     void testMinCalculatorWithNullValues() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             createEventDataWithNullValue(),
             createEventData(3),  // Minimum
@@ -529,9 +529,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with invalid string values")
     void testMinCalculatorWithInvalidStrings() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             createEventData("abc"),      // Invalid string
             createEventData(3),          // Minimum
@@ -546,9 +546,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with all invalid values")
     void testMinCalculatorWithAllInvalidValues() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData("abc"),
             createEventData("xyz"),
             createEventDataWithNullValue(),
@@ -562,9 +562,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with NaN values")
     void testMinCalculatorWithNaNValues() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             createEventData(Double.NaN),  // NaN value
             createEventData(3),           // Minimum
@@ -578,9 +578,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with infinite values")
     void testMinCalculatorWithInfiniteValues() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             createEventData(Double.NEGATIVE_INFINITY),  // Minimum (negative infinity)
             createEventData(3),
@@ -595,9 +595,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with positive infinite values")
     void testMinCalculatorWithPositiveInfiniteValues() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(15),
             createEventData(Double.POSITIVE_INFINITY),
             createEventData(3),  // Minimum
@@ -611,9 +611,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with single value")
     void testMinCalculatorWithSingleValue() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(createEventData(42));
+        List<RhythmixEventData> events = Arrays.asList(createEventData(42));
 
         Number result = calculator.calculate(events);
         assertEquals(42L, result);
@@ -622,9 +622,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with zero values")
     void testMinCalculatorWithZeroValues() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(0),   // Minimum
             createEventData(5),
             createEventData(0),   // Also minimum
@@ -638,9 +638,9 @@ class CalculatorUDFTest {
     @Test
     @DisplayName("MinCalculator - Test with very small numbers")
     void testMinCalculatorWithSmallNumbers() {
-        MinCalculator calculator = new MinCalculator();
+        MinChainCalculator calculator = new MinChainCalculator();
 
-        List<EventData> events = Arrays.asList(
+        List<RhythmixEventData> events = Arrays.asList(
             createEventData(Long.MIN_VALUE),  // Minimum (most negative long)
             createEventData(1000000),
             createEventData(Long.MIN_VALUE + 1)
@@ -657,7 +657,7 @@ class CalculatorUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Create test data with mixed positive and negative values
-        List<EventData> testData = Arrays.asList(
+        List<RhythmixEventData> testData = Arrays.asList(
             createEventDataWithTimestamp(15, System.currentTimeMillis()),      // Should pass filter (>0)
             createEventDataWithTimestamp(-5, System.currentTimeMillis() + 1000), // Should be filtered out (<= 0)
             createEventDataWithTimestamp(25, System.currentTimeMillis() + 2000), // Should pass filter (>0)
@@ -687,7 +687,7 @@ class CalculatorUDFTest {
         String code2 = "filter(>0).limit(3).maxcalc().meet(>50)";
         Executor executor2 = Compiler.compile(code2);
 
-        List<EventData> testData2 = Arrays.asList(
+        List<RhythmixEventData> testData2 = Arrays.asList(
             createEventDataWithTimestamp(5, System.currentTimeMillis()),
             createEventDataWithTimestamp(10, System.currentTimeMillis() + 1000),
             createEventDataWithTimestamp(15, System.currentTimeMillis() + 2000),
@@ -709,7 +709,7 @@ class CalculatorUDFTest {
         String code3 = "filter(>100).limit(5).maxcalc().meet(>0)";
         Executor executor3 = Compiler.compile(code3);
 
-        List<EventData> testData3 = Arrays.asList(
+        List<RhythmixEventData> testData3 = Arrays.asList(
             createEventDataWithTimestamp(5, System.currentTimeMillis()),
             createEventDataWithTimestamp(10, System.currentTimeMillis() + 1000),
             createEventDataWithTimestamp(15, System.currentTimeMillis() + 2000)
@@ -724,10 +724,10 @@ class CalculatorUDFTest {
 
 
     // Helper method to create EventData with timestamp
-    private EventData createEventDataWithTimestamp(Object value, long timestamp) {
-        EventData eventData = new EventData();
-        eventData.setValue(value.toString());
-        eventData.setTs(new Timestamp(timestamp));
-        return eventData;
+    private RhythmixEventData createEventDataWithTimestamp(Object value, long timestamp) {
+        RhythmixEventData rhythmixEventData = new RhythmixEventData();
+        rhythmixEventData.setValue(value.toString());
+        rhythmixEventData.setTs(new Timestamp(timestamp));
+        return rhythmixEventData;
     }
 }

@@ -29,10 +29,10 @@ public class Compiler {
     public static Executor compile(String code) throws TranslatorException {
         try {
             EnvProxy env = new EnvProxy();
-            String translatedCode = Translator.translate(code, env);
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
+            String translatedCode = Translator.translate(code, env);
             return new Executor(translatedCode, env);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);

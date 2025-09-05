@@ -1,12 +1,11 @@
 package com.df.rhythmix.udf;
 
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -18,43 +17,43 @@ import java.util.concurrent.TimeUnit;
 public class UDFRegistryTest {
 
     // Test implementation of FilterUDF
-    public static class TestFilterUDF implements FilterUDF {
+    public static class TestChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "testFilter";
         }
 
         @Override
-        public boolean filter(EventData data) {
+        public boolean filter(RhythmixEventData data) {
             return true;
         }
 
         @Override
-        public List<EventData> filter(List<EventData> dataList) {
+        public List<RhythmixEventData> filter(List<RhythmixEventData> dataList) {
             return dataList;
         }
     }
 
     // Test implementation of CalculatorUDF
-    public static class TestCalculatorUDF implements CalculatorUDF {
+    public static class TestChainCalculatorUDF implements ChainCalculatorUDF {
         @Override
         public String getName() {
             return "testCalc";
         }
 
         @Override
-        public Number calculate(List<EventData> values) {
+        public Number calculate(List<RhythmixEventData> values) {
             return 1.0;
         }
     }
 
-    private UDFRegistry<FilterUDF> filterRegistry;
-    private UDFRegistry<CalculatorUDF> calculatorRegistry;
+    private UDFRegistry<ChainFilterUDF> filterRegistry;
+    private UDFRegistry<ChainCalculatorUDF> calculatorRegistry;
 
     @BeforeEach
     void setUp() {
-        filterRegistry = new UDFRegistry<>(FilterUDF.class, "TestFilterUDF");
-        calculatorRegistry = new UDFRegistry<>(CalculatorUDF.class, "TestCalculatorUDF");
+        filterRegistry = new UDFRegistry<>(ChainFilterUDF.class, "TestFilterUDF");
+        calculatorRegistry = new UDFRegistry<>(ChainCalculatorUDF.class, "TestCalculatorUDF");
     }
 
     @AfterEach
@@ -75,8 +74,8 @@ public class UDFRegistryTest {
 
     @Test
     void testManualRegistration() {
-        TestFilterUDF filterUDF = new TestFilterUDF();
-        TestCalculatorUDF calculatorUDF = new TestCalculatorUDF();
+        TestChainFilterUDF filterUDF = new TestChainFilterUDF();
+        TestChainCalculatorUDF calculatorUDF = new TestChainCalculatorUDF();
 
         // Test FilterUDF registration
         assertTrue(filterRegistry.registerUDF(filterUDF));
@@ -101,8 +100,8 @@ public class UDFRegistryTest {
 
     @Test
     void testDuplicateRegistration() {
-        TestFilterUDF filterUDF1 = new TestFilterUDF();
-        TestFilterUDF filterUDF2 = new TestFilterUDF(); // Same name
+        TestChainFilterUDF filterUDF1 = new TestChainFilterUDF();
+        TestChainFilterUDF filterUDF2 = new TestChainFilterUDF(); // Same name
 
         assertTrue(filterRegistry.registerUDF(filterUDF1));
         assertFalse(filterRegistry.registerUDF(filterUDF2)); // Should fail
@@ -113,7 +112,7 @@ public class UDFRegistryTest {
 
     @Test
     void testGetUDF() {
-        TestFilterUDF filterUDF = new TestFilterUDF();
+        TestChainFilterUDF filterUDF = new TestChainFilterUDF();
         filterRegistry.registerUDF(filterUDF);
 
         assertEquals(filterUDF, filterRegistry.getUDF("testFilter"));
@@ -122,7 +121,7 @@ public class UDFRegistryTest {
 
     @Test
     void testIsRegistered() {
-        TestFilterUDF filterUDF = new TestFilterUDF();
+        TestChainFilterUDF filterUDF = new TestChainFilterUDF();
 
         assertFalse(filterRegistry.isRegistered("testFilter"));
         filterRegistry.registerUDF(filterUDF);
@@ -132,8 +131,8 @@ public class UDFRegistryTest {
 
     @Test
     void testGetRegisteredNames() {
-        TestFilterUDF filterUDF = new TestFilterUDF();
-        TestCalculatorUDF calculatorUDF = new TestCalculatorUDF();
+        TestChainFilterUDF filterUDF = new TestChainFilterUDF();
+        TestChainCalculatorUDF calculatorUDF = new TestChainCalculatorUDF();
 
         assertTrue(filterRegistry.getRegisteredNames().isEmpty());
         assertTrue(calculatorRegistry.getRegisteredNames().isEmpty());
@@ -155,8 +154,8 @@ public class UDFRegistryTest {
         assertEquals(0, filterRegistry.getRegisteredCount());
         assertEquals(0, calculatorRegistry.getRegisteredCount());
 
-        filterRegistry.registerUDF(new TestFilterUDF());
-        calculatorRegistry.registerUDF(new TestCalculatorUDF());
+        filterRegistry.registerUDF(new TestChainFilterUDF());
+        calculatorRegistry.registerUDF(new TestChainCalculatorUDF());
 
         assertEquals(1, filterRegistry.getRegisteredCount());
         assertEquals(1, calculatorRegistry.getRegisteredCount());
@@ -164,8 +163,8 @@ public class UDFRegistryTest {
 
     @Test
     void testClear() {
-        filterRegistry.registerUDF(new TestFilterUDF());
-        calculatorRegistry.registerUDF(new TestCalculatorUDF());
+        filterRegistry.registerUDF(new TestChainFilterUDF());
+        calculatorRegistry.registerUDF(new TestChainCalculatorUDF());
 
         assertEquals(1, filterRegistry.getRegisteredCount());
         assertEquals(1, calculatorRegistry.getRegisteredCount());
@@ -181,7 +180,7 @@ public class UDFRegistryTest {
 
     @Test
     void testGetRegisteredUDFs() {
-        TestFilterUDF filterUDF = new TestFilterUDF();
+        TestChainFilterUDF filterUDF = new TestChainFilterUDF();
         filterRegistry.registerUDF(filterUDF);
 
         assertEquals(1, filterRegistry.getRegisteredUDFs().size());
@@ -234,8 +233,8 @@ public class UDFRegistryTest {
     @Test
     void testRegistryIsolation() {
         // Test that different registry instances are isolated
-        TestFilterUDF filterUDF = new TestFilterUDF();
-        TestCalculatorUDF calculatorUDF = new TestCalculatorUDF();
+        TestChainFilterUDF filterUDF = new TestChainFilterUDF();
+        TestChainCalculatorUDF calculatorUDF = new TestChainCalculatorUDF();
 
         filterRegistry.registerUDF(filterUDF);
         calculatorRegistry.registerUDF(calculatorUDF);

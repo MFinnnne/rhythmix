@@ -1,6 +1,6 @@
 package com.df.rhythmix.udf.builtin.meet;
 
-import com.df.rhythmix.udf.MeetUDF;
+import com.df.rhythmix.udf.ChainMeetUDF;
 
 /**
  * Built-in positive meet UDF that checks if a calculated value is positive.
@@ -14,7 +14,7 @@ import com.df.rhythmix.udf.MeetUDF;
  * @author MFine
  * @version 1.0
  */
-public class PositiveMeetUDF implements MeetUDF {
+public class PositiveChainMeetUDF implements ChainMeetUDF {
     
     @Override
     public String getName() {

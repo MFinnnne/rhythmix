@@ -38,7 +38,7 @@ package com.df.rhythmix.udf;
  * @author MFine
  * @version 1.0
  */
-public interface MeetUDF {
+public interface ChainMeetUDF {
 
     /**
      * Get the name of this meet function.

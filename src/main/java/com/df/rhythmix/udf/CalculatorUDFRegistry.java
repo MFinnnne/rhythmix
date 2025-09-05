@@ -1,7 +1,6 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.config.ChainFunctionConfig;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -25,7 +24,7 @@ public class CalculatorUDFRegistry {
     /**
      * Generic UDF registry instance for CalculatorUDF
      */
-    private static final UDFRegistry<CalculatorUDF> registry = new UDFRegistry<>(CalculatorUDF.class, "CalculatorUDF");
+    private static final UDFRegistry<ChainCalculatorUDF> registry = new UDFRegistry<>(ChainCalculatorUDF.class, "ChainCalculatorUDF");
 
     /**
      * Performs auto-discovery and registration of all CalculatorUDF implementations
@@ -43,11 +42,11 @@ public class CalculatorUDFRegistry {
      * Manually register a CalculatorUDF instance. This can be used alongside
      * auto-discovery for additional CalculatorUDFs that need manual registration.
      *
-     * @param calculatorUDF The CalculatorUDF instance to register
+     * @param chainCalculatorUDF The CalculatorUDF instance to register
      * @return true if registration was successful, false if name already exists
      */
-    public static boolean registerCalculatorUDF(CalculatorUDF calculatorUDF) {
-        return registry.registerUDF(calculatorUDF);
+    public static boolean registerCalculatorUDF(ChainCalculatorUDF chainCalculatorUDF) {
+        return registry.registerUDF(chainCalculatorUDF);
     }
 
     /**
@@ -56,7 +55,7 @@ public class CalculatorUDFRegistry {
      * @param name The name of the CalculatorUDF
      * @return The CalculatorUDF instance, or null if not found
      */
-    public static CalculatorUDF getCalculatorUDF(String name) {
+    public static ChainCalculatorUDF getCalculatorUDF(String name) {
         return registry.getUDF(name);
     }
 
@@ -109,7 +108,7 @@ public class CalculatorUDFRegistry {
      *
      * @return Map of all registered CalculatorUDF instances
      */
-    public static Map<String, CalculatorUDF> getRegisteredUdfs() {
+    public static Map<String, ChainCalculatorUDF> getRegisteredUdfs() {
         return registry.getRegisteredUDFs();
     }
 }

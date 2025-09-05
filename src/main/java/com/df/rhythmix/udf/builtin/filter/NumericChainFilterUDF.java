@@ -1,7 +1,7 @@
 package com.df.rhythmix.udf.builtin.filter;
 
-import com.df.rhythmix.udf.FilterUDF;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.udf.ChainFilterUDF;
+import com.df.rhythmix.util.RhythmixEventData;
 
 /**
  * Built-in numeric filter UDF that keeps only numeric values.
@@ -13,7 +13,7 @@ import com.df.rhythmix.util.EventData;
  * @version 1.0
  * @date 2025-07-18
  */
-public class NumericFilterUDF implements FilterUDF {
+public class NumericChainFilterUDF implements ChainFilterUDF {
     
     @Override
     public String getName() {
@@ -21,7 +21,7 @@ public class NumericFilterUDF implements FilterUDF {
     }
     
     @Override
-    public boolean filter(EventData event) {
+    public boolean filter(RhythmixEventData event) {
         try {
             Double.parseDouble(event.getValue());
             return true;

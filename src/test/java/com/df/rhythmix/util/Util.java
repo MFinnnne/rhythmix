@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 
 @Slf4j
 public class Util {
-    public static EventData genEventData(String pointId, String value, Timestamp ts) {
-        return new EventData(pointId, "1", value, ts);
+    public static RhythmixEventData genEventData(String pointId, String value, Timestamp ts) {
+        return new RhythmixEventData(pointId, "1", value, ts);
     }
 
     public static Timestamp addSeconds(Timestamp oriTs, long sec) {

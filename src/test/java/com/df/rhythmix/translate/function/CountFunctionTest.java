@@ -1,6 +1,6 @@
 package com.df.rhythmix.translate.function;
 
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
@@ -21,9 +21,9 @@ class CountFunctionTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
-        EventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
         translate.execute(p2);
         translate.execute(p2);
         translate.execute(p1);
@@ -42,9 +42,9 @@ class CountFunctionTest {
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
         Executor translate = new Executor(translatedCode, env);
-        EventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
-        EventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
         translate.execute(p2);
         boolean execute2 = translate.execute(p2);
         Assertions.assertTrue(execute2);

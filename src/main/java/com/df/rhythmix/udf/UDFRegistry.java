@@ -1,7 +1,6 @@
 package com.df.rhythmix.udf;
 
 import cn.hutool.core.util.ClassUtil;
-import com.df.rhythmix.config.ChainFunctionConfig;
 import com.googlecode.aviator.AviatorEvaluator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -252,12 +251,12 @@ public class UDFRegistry<T> {
      */
     private String getUDFName(T udf) {
         try {
-            if (udf instanceof FilterUDF) {
-                return ((FilterUDF) udf).getName();
-            } else if (udf instanceof CalculatorUDF) {
-                return ((CalculatorUDF) udf).getName();
-            } else if (udf instanceof MeetUDF) {
-                return ((MeetUDF) udf).getName();
+            if (udf instanceof ChainFilterUDF) {
+                return ((ChainFilterUDF) udf).getName();
+            } else if (udf instanceof ChainCalculatorUDF) {
+                return ((ChainCalculatorUDF) udf).getName();
+            } else if (udf instanceof ChainMeetUDF) {
+                return ((ChainMeetUDF) udf).getName();
             } else {
                 // Try to call getName() method via reflection
                 return (String) udf.getClass().getMethod("getName").invoke(udf);

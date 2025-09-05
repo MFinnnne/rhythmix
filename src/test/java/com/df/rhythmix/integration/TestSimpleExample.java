@@ -14,7 +14,7 @@ import com.df.rhythmix.lib.AviatorConfig;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
-import com.df.rhythmix.util.EventData;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -41,8 +41,8 @@ public class TestSimpleExample {
         String code = "{==0}->{==1}";
         Executor executor = Compiler.compile(code);
 
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(executor.execute(p1, p2));
     }
 
@@ -54,8 +54,8 @@ public class TestSimpleExample {
     void test0To1Easy() throws TranslatorException {
         String code = "<0,1>";
         Executor executor = Compiler.compile(code);
-        EventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(executor.execute(p1, p2));
     }
 
@@ -68,8 +68,8 @@ public class TestSimpleExample {
         String code = "{==0||!=2}->{==1}";
         Executor executor = Compiler.compile(code);
 
-        EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(executor.execute(p1, p2));
     }
 
@@ -82,8 +82,8 @@ public class TestSimpleExample {
         String code = "{!=0&&!=2}->{==1}";
         Executor executor = Compiler.compile(code);
 
-        EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
-        EventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(executor.execute(p1, p2));
     }
 
@@ -111,13 +111,13 @@ public class TestSimpleExample {
         String code = "filter(>0).limit(5).sum().meet(==27)";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -134,13 +134,13 @@ public class TestSimpleExample {
         String code = "filter(>0).limit(5).sum().meet(==28.0)";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7.3", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10.2", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -158,13 +158,13 @@ public class TestSimpleExample {
         String code = "filter(>0).limit(5).avg().meet(==9.0)";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -182,13 +182,13 @@ public class TestSimpleExample {
         String code = "filter(>0.0).limit(5).avg().meet([9.3,9.4])";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7.3", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10.2", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -206,13 +206,13 @@ public class TestSimpleExample {
         String code = "filter(>0,true).limit(5).count().meet(==3)";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -232,12 +232,12 @@ public class TestSimpleExample {
         String code = "filter(>0).limit(5).stddev().meet([1.4,1.5])";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -257,13 +257,13 @@ public class TestSimpleExample {
         String code = "filter(>0.0).limit(5).stddev().meet([1.4,1.5])";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7.3", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "10.2", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 
@@ -283,7 +283,7 @@ public class TestSimpleExample {
         Executor executor = Compiler.compile(code);
 
         // 只添加一个数据点，不足以计算标准差
-        EventData event = Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event = Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis()));
         boolean result = executor.execute(event);
 
         // 由于数据点不足，应该返回false
@@ -300,14 +300,14 @@ public class TestSimpleExample {
         String code = "filter(>5).limit(5).take(0,3).sum().meet(>15)";
         Executor executor = Compiler.compile(code);
 
-        List<EventData> events = new ArrayList<>();
+        List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
         events.add(Util.genEventData("2", "7", new Timestamp(System.currentTimeMillis() + 100)));
         events.add(Util.genEventData("3", "3", new Timestamp(System.currentTimeMillis() + 200)));
         events.add(Util.genEventData("4", "8", new Timestamp(System.currentTimeMillis() + 300)));
 
         boolean result = true;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             result = executor.execute(event);
         }
 

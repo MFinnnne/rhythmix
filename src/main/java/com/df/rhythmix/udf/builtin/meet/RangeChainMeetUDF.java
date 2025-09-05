@@ -1,6 +1,6 @@
 package com.df.rhythmix.udf.builtin.meet;
 
-import com.df.rhythmix.udf.MeetUDF;
+import com.df.rhythmix.udf.ChainMeetUDF;
 
 /**
  * Built-in range meet UDF that checks if a calculated value falls within a predefined range.
@@ -14,7 +14,7 @@ import com.df.rhythmix.udf.MeetUDF;
  * @author MFine
  * @version 1.0
  */
-public class RangeMeetUDF implements MeetUDF {
+public class RangeChainMeetUDF implements ChainMeetUDF {
     
     /**
      * The default minimum value (inclusive)

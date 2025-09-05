@@ -179,6 +179,9 @@ public class AviatorConfig {
                     return EQUAL;
             }
         }
+        if (isNumericType(leftType)&&isNumericType(rightType)) {
+            return compareNumericStrings(leftStr, rightStr, leftType == ValueType.DOUBLE);
+        }
 
         // Mixed type comparisons with optimized logic
         return compareMixedTypes(leftStr, rightStr, leftType, rightType);

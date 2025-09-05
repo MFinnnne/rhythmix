@@ -3,11 +3,8 @@ package com.df.rhythmix.udf;
 import com.df.rhythmix.exception.TranslatorException;
 import com.df.rhythmix.execute.Compiler;
 import com.df.rhythmix.execute.Executor;
-import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.pebble.TemplateEngine;
-import com.df.rhythmix.udf.FilterUDFRegistry;
-import com.df.rhythmix.util.EventData;
-import com.df.rhythmix.util.EventValueType;
+import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
 import org.junit.jupiter.api.*;
 
@@ -17,7 +14,7 @@ import java.util.*;
 /**
  * Test cases for Filter UDF functionality with auto-import support
  */
-class FilterUDFTest {
+class ChainFilterUDFTest {
 
     @BeforeAll
     static void setUp() {
@@ -28,14 +25,14 @@ class FilterUDFTest {
     /**
      * Simple temperature filter UDF for testing
      */
-    static public class TemperatureFilterUDF implements FilterUDF {
+    static public class TemperatureChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "tempFilter";
         }
 
         @Override
-        public boolean filter(EventData event) {
+        public boolean filter(RhythmixEventData event) {
             try {
                 double temp = Double.parseDouble(event.getValue());
                 return temp >= 20.0 && temp <= 80.0;
@@ -48,14 +45,14 @@ class FilterUDFTest {
     /**
      * Sensor ID pattern filter UDF for testing
      */
-    static public class SensorIdFilterUDF implements FilterUDF {
+    static public class SensorIdChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "sensorFilter";
         }
 
         @Override
-        public boolean filter(EventData event) {
+        public boolean filter(RhythmixEventData event) {
             return event.getId().startsWith("temp_");
         }
     }
@@ -63,14 +60,14 @@ class FilterUDFTest {
     /**
      * Array filter UDF for testing - keeps only the last 3 events when list size > 3
      */
-    static public class TestArrayFilterUDF implements FilterUDF {
+    static public class TestArrayChainFilterUDF implements ChainFilterUDF {
         @Override
         public String getName() {
             return "arrayFilter";
         }
 
         @Override
-        public List<EventData> filter(List<EventData> events) {
+        public List<RhythmixEventData> filter(List<RhythmixEventData> events) {
             if (events.size() >= 3) {
                 return events.subList(events.size() - 3, events.size());
             }
@@ -85,10 +82,10 @@ class FilterUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - should keep temperatures between 20-80
-        EventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "15.0", new Timestamp(System.currentTimeMillis() + 100)); // Should be filtered out
-        EventData event3 = Util.genEventData("sensor3", "75.0", new Timestamp(System.currentTimeMillis() + 200));
-        EventData event4 = Util.genEventData("sensor4", "90.0", new Timestamp(System.currentTimeMillis() + 300)); // Should be filtered out
+        RhythmixEventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "15.0", new Timestamp(System.currentTimeMillis() + 100)); // Should be filtered out
+        RhythmixEventData event3 = Util.genEventData("sensor3", "75.0", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event4 = Util.genEventData("sensor4", "90.0", new Timestamp(System.currentTimeMillis() + 300)); // Should be filtered out
 
         boolean result = false;
         result = executor.execute(event1); // Keep
@@ -109,8 +106,8 @@ class FilterUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Test data - should only keep sensors with ID starting with "temp_"
-        EventData event1 = new EventData("temp_001", "sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = new EventData("humidity_001", "sensor2", "60.0", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event1 = new RhythmixEventData("temp_001", "sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = new RhythmixEventData("humidity_001", "sensor2", "60.0", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
         result = executor.execute(event1); // Keep (ID starts with "temp_")
@@ -129,9 +126,10 @@ class FilterUDFTest {
         String code1 = "filter(>20).count().meet(==2)";
         Executor executor1 = Compiler.compile(code1);
 
-        EventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "15", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "15", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+
 
         boolean result = false;
         result = executor1.execute(event1); // Keep (25 > 20)
@@ -156,8 +154,8 @@ class FilterUDFTest {
         Executor executor = Compiler.compile(code, udfEnv);
 
         // Test data
-        EventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
         result = executor.execute(event1); // Keep (temp in range)
@@ -176,13 +174,13 @@ class FilterUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Mixed sensor data with numeric values
-        EventData[] sensorEvents = {
-                new EventData("temp_001", "s1", "25", new Timestamp(System.currentTimeMillis())),        // Keep, value=25
-                new EventData("humidity_001", "s2", "60", new Timestamp(System.currentTimeMillis() + 100)), // Discard
-                new EventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200)),   // Keep, value=30
-                new EventData("pressure_001", "s4", "1013", new Timestamp(System.currentTimeMillis() + 300)), // Discard
-                new EventData("temp_003", "s5", "35", new Timestamp(System.currentTimeMillis() + 400)),   // Keep, value=35
-                new EventData("temp_004", "s6", "15", new Timestamp(System.currentTimeMillis() + 500))    // Keep, value=15
+        RhythmixEventData[] sensorEvents = {
+                new RhythmixEventData("temp_001", "s1", "25", new Timestamp(System.currentTimeMillis())),        // Keep, value=25
+                new RhythmixEventData("humidity_001", "s2", "60", new Timestamp(System.currentTimeMillis() + 100)), // Discard
+                new RhythmixEventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200)),   // Keep, value=30
+                new RhythmixEventData("pressure_001", "s4", "1013", new Timestamp(System.currentTimeMillis() + 300)), // Discard
+                new RhythmixEventData("temp_003", "s5", "35", new Timestamp(System.currentTimeMillis() + 400)),   // Keep, value=35
+                new RhythmixEventData("temp_004", "s6", "15", new Timestamp(System.currentTimeMillis() + 500))    // Keep, value=15
         };
 
         boolean result = false;
@@ -209,13 +207,13 @@ class FilterUDFTest {
         Executor executor = Compiler.compile(code);
 
         // Sensor data with temperature values
-        EventData[] sensorEvents = {
-                new EventData("temp_001", "s1", "20", new Timestamp(System.currentTimeMillis())),        // Keep, value=20
-                new EventData("humidity_001", "s2", "80", new Timestamp(System.currentTimeMillis() + 100)), // Discard
-                new EventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200)),   // Keep, value=30
-                new EventData("temp_003", "s5", "40", new Timestamp(System.currentTimeMillis() + 400)),   // Keep, value=40
-                new EventData("temp_004", "s6", "50", new Timestamp(System.currentTimeMillis() + 500)),   // Keep but limited out
-                new EventData("pressure_001", "s4", "1000", new Timestamp(System.currentTimeMillis() + 300)) // Discard
+        RhythmixEventData[] sensorEvents = {
+                new RhythmixEventData("temp_001", "s1", "20", new Timestamp(System.currentTimeMillis())),        // Keep, value=20
+                new RhythmixEventData("humidity_001", "s2", "80", new Timestamp(System.currentTimeMillis() + 100)), // Discard
+                new RhythmixEventData("temp_002", "s3", "30", new Timestamp(System.currentTimeMillis() + 200)),   // Keep, value=30
+                new RhythmixEventData("temp_003", "s5", "40", new Timestamp(System.currentTimeMillis() + 400)),   // Keep, value=40
+                new RhythmixEventData("temp_004", "s6", "50", new Timestamp(System.currentTimeMillis() + 500)),   // Keep but limited out
+                new RhythmixEventData("pressure_001", "s4", "1000", new Timestamp(System.currentTimeMillis() + 300)) // Discard
         };
 
         boolean result = false;
@@ -245,8 +243,8 @@ class FilterUDFTest {
         String code = "filter(arrayFilter()).count().meet(==2)";
         Executor executor = Compiler.compile(code);
 
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
         result = executor.execute(event1);
@@ -263,9 +261,9 @@ class FilterUDFTest {
         String code = "filter(arrayFilter()).count().meet(==3)";
         Executor executor = Compiler.compile(code);
 
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
         result = executor.execute(event1);
@@ -285,11 +283,11 @@ class FilterUDFTest {
         String code = "filter(arrayFilter()).count().meet(==3)";
         Executor executor = Compiler.compile(code);
 
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
-        EventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
-        EventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
+        RhythmixEventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
 
         boolean result = false;
         result = executor.execute(event1);
@@ -306,7 +304,7 @@ class FilterUDFTest {
 
         // Reset and test final state
         executor.resetEnv();
-        for (EventData event : new EventData[]{event1, event2, event3, event4, event5}) {
+        for (RhythmixEventData event : new RhythmixEventData[]{event1, event2, event3, event4, event5}) {
             result = executor.execute(event);
         }
         Assertions.assertTrue(result); // Should have 3 events (last 3: event3, event4, event5)
@@ -319,14 +317,14 @@ class FilterUDFTest {
         String code = "filter(arrayFilter()).sum().meet(==120)"; // 30+40+50 = 120
         Executor executor = Compiler.compile(code);
 
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
-        EventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
-        EventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
+        RhythmixEventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
 
         boolean result = false;
-        for (EventData event : new EventData[]{event1, event2, event3, event4, event5}) {
+        for (RhythmixEventData event : new RhythmixEventData[]{event1, event2, event3, event4, event5}) {
             result = executor.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
                     (result ? "MATCH" : "continue"));
@@ -342,14 +340,14 @@ class FilterUDFTest {
         String code = "filter(arrayFilter()).avg().meet(==40.0)"; // (30+40+50)/3 = 40.0
         Executor executor = Compiler.compile(code);
 
-        EventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
-        EventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
-        EventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
-        EventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
-        EventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
+        RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
+        RhythmixEventData event4 = Util.genEventData("sensor4", "40", new Timestamp(System.currentTimeMillis() + 300));
+        RhythmixEventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
 
         boolean result = false;
-        for (EventData event : new EventData[]{event1, event2, event3, event4, event5}) {
+        for (RhythmixEventData event : new RhythmixEventData[]{event1, event2, event3, event4, event5}) {
             result = executor.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
                     (result ? "MATCH" : "continue"));
@@ -365,7 +363,7 @@ class FilterUDFTest {
         String code1 = "filter(arrayFilter()).count().meet(==1)";
         Executor executor1 = Compiler.compile(code1);
 
-        EventData singleEvent = Util.genEventData("sensor1", "100", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData singleEvent = Util.genEventData("sensor1", "100", new Timestamp(System.currentTimeMillis()));
         boolean result1 = executor1.execute(singleEvent);
         Assertions.assertTrue(result1); // Should keep the single event
 
@@ -373,7 +371,7 @@ class FilterUDFTest {
         String code2 = "filter(arrayFilter()).sum().meet(==90)"; // 20+30+40 = 90 (last 3 of 4)
         Executor executor2 = Compiler.compile(code2);
 
-        EventData[] fourEvents = {
+        RhythmixEventData[] fourEvents = {
                 Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
                 Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100)),
                 Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200)),
@@ -381,7 +379,7 @@ class FilterUDFTest {
         };
 
         boolean result2 = false;
-        for (EventData event : fourEvents) {
+        for (RhythmixEventData event : fourEvents) {
             result2 = executor2.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
                     (result2 ? "MATCH" : "continue"));
@@ -401,7 +399,7 @@ class FilterUDFTest {
         String arrayCode = "filter(arrayFilter()).count().meet(==3)";
         Executor arrayExecutor = Compiler.compile(arrayCode);
 
-        EventData[] events = {
+        RhythmixEventData[] events = {
                 Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
                 Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100)),
                 Util.genEventData("sensor3", "40", new Timestamp(System.currentTimeMillis() + 200)),
@@ -411,14 +409,14 @@ class FilterUDFTest {
 
         // Test traditional filter: should keep values > 25 (30, 40, 50)
         boolean traditionalResult = false;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             traditionalResult = traditionalExecutor.execute(event);
         }
         Assertions.assertTrue(traditionalResult); // Should have 3 events > 25
 
         // Test array filter: should keep last 3 events regardless of value (40, 20, 50)
         boolean arrayResult = false;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             arrayResult = arrayExecutor.execute(event);
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
@@ -430,7 +428,7 @@ class FilterUDFTest {
 
         String arrayCode = "arrayFilter().count().meet(==3)";
         Executor arrayExecutor = Compiler.compile(arrayCode);
-        EventData[] events = {
+        RhythmixEventData[] events = {
                 Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
                 Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100)),
                 Util.genEventData("sensor3", "40", new Timestamp(System.currentTimeMillis() + 200)),
@@ -439,7 +437,7 @@ class FilterUDFTest {
         };
 
         boolean arrayResult = false;
-        for (EventData event : events) {
+        for (RhythmixEventData event : events) {
             arrayResult = arrayExecutor.execute(event);
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
@@ -447,7 +445,7 @@ class FilterUDFTest {
 
 
     @Test
-    void testFilterSimplifyModeMixedUsage()  {
+    void testFilterSimplifyModeMixedUsage() {
 
         String arrayCode = "arrayFilter().filter(>30).count().meet(==3)";
         String finalArrayCode = arrayCode;
