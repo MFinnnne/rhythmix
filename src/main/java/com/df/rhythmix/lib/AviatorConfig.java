@@ -105,9 +105,15 @@ public class AviatorConfig {
                     int compareResult = left.compare(right, map);
                     return AviatorBoolean.valueOf(operation.evaluate(compareResult));
                 }
-
-                // Optimized type-agnostic comparison
                 Object leftValue = left.getValue(map);
+               if(left.getValue(map) instanceof  String && isNumericFast(leftValue+"")){
+                   if (detectValueType(leftValue+"")==ValueType.DOUBLE){
+                       leftValue = Double.parseDouble(leftValue+"");
+                   }
+                   if (detectValueType(leftValue+"")==ValueType.INTEGER){
+                       leftValue = Integer.parseInt(leftValue+"");
+                   }
+               }
                 Object rightValue = right.getValue(map);
                 int compareResult = compareValues(leftValue, rightValue);
                 return AviatorBoolean.valueOf(operation.evaluate(compareResult));
@@ -126,8 +132,6 @@ public class AviatorConfig {
         if (leftValue == null && rightValue == null) return EQUAL;
         if (leftValue == null) return LESS;
         if (rightValue == null) return GREATER;
-
-        // Try direct numeric comparison for common numeric types
         if (leftValue instanceof Number && rightValue instanceof Number) {
             return compareNumbers((Number) leftValue, (Number) rightValue);
         }

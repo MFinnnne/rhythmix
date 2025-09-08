@@ -98,7 +98,7 @@ public class Translator {
             case RANGE_EXPR:
                 return RangeExpr.translate(astNode, context, env);
             case COMPARE_EXPR:
-                return "(" + CompareExpr.translate(astNode, context, env) + ")";
+                return  CompareExpr.translate(astNode, context, env);
             case VARIABLE:
                 // 函数调用
                 if (!astNode.getChildren().isEmpty() && astNode.getChildren(0).getType() == ASTNodeTypes.CALL_STMT) {

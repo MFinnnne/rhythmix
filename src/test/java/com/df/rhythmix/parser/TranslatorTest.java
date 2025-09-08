@@ -26,7 +26,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
-          Assertions.assertEquals("usejava.util.*;(event.value)>=1&&(event.value)<=2", translate);
+          Assertions.assertEquals("usejava.util.*;(event.value>=1&&event.value<=2)", translate);
     }
 
     @Test
@@ -35,7 +35,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value)>=1.0&&(event.value)<2.0", translate);
+        Assertions.assertEquals("usejava.util.*;(event.value>=1.0&&event.value<2.0)", translate);
     }
 
     @Test
@@ -44,7 +44,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value)>1&&(event.value)<=2", translate);
+        Assertions.assertEquals("usejava.util.*;(event.value>1&&event.value<=2)", translate);
     }
 
     @Test
@@ -53,7 +53,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code1, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value)>1&&(event.value)<2", translate);
+        Assertions.assertEquals("usejava.util.*;(event.value>1&&event.value<2)", translate);
     }
 
     @Test
@@ -146,7 +146,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value>3)", translate);
+        Assertions.assertEquals("usejava.util.*;event.value>3", translate);
     }
 
     @Test
@@ -155,7 +155,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value>=3.0)", translate);
+        Assertions.assertEquals("usejava.util.*;event.value>=3.0", translate);
     }
 
     @Test
@@ -164,7 +164,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value<3.0)", translate);
+        Assertions.assertEquals("usejava.util.*;event.value<3.0", translate);
     }
 
     @Test
@@ -173,7 +173,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value<=3)", translate);
+        Assertions.assertEquals("usejava.util.*;event.value<=3", translate);
     }
 
 
@@ -183,7 +183,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value==3.0)", translate);
+        Assertions.assertEquals("usejava.util.*;event.value==3.0", translate);
     }
 
     @Test
@@ -192,7 +192,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env).replaceAll("\\r\\n|\\s+", "");
-        Assertions.assertEquals("usejava.util.*;(event.value!=3)", translate);
+        Assertions.assertEquals("usejava.util.*;event.value!=3", translate);
     }
 
 

@@ -1,12 +1,12 @@
 {% if eventValue is not null %}
     ({% var eventValue %})
         {% else %}
-    (event.value)
+    event.value
     {% endif %}
 {{ leftSymbol }}{{ leftValue }}&&
     {% if eventValue is not null %}
     ({% var eventValue %})
 {% else %}
-    (event.value)
+    event.value
 {% endif %}
 {{ rightSymbol }}{{ rightValue }}

@@ -83,6 +83,7 @@ public class ChainFunctionConfig {
         // LIMIT_FUNC: functions that limit/control data flow
         limitFunc.addAll(Arrays.asList("limit", "take", "window"));
 
+
         // CALC_FUNC: functions that perform calculations
         calcFunc.addAll(Arrays.asList("sum", "hitRate", "count", "avg", "stddev"));
 
