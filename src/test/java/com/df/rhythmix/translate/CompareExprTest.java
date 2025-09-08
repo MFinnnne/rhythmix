@@ -60,7 +60,7 @@ class CompareExprTest {
         Assertions.assertDoesNotThrow(() -> {
             EnvProxy env = new EnvProxy();
             String translatedCode = CompareExpr.translate(tokens1, env);
-            new Executor(code,env);
+            new Executor(translatedCode,env);
         });
     }
 }

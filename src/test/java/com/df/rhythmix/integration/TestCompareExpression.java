@@ -336,7 +336,7 @@ public class TestCompareExpression {
         List<RhythmixEventData> pressureData = new ArrayList<>();
         pressureData.add(Util.genEventData("pressure1", "55.2", new Timestamp(System.currentTimeMillis())));
         pressureData.add(Util.genEventData("pressure2", "60", new Timestamp(System.currentTimeMillis() + 100)));
-        pressureData.add(Util.genEventData("pressure3", "50", new Timestamp(System.currentTimeMillis() + 200)));
+        pressureData.add(Util.genEventData("pressure3", "50.2", new Timestamp(System.currentTimeMillis() + 200)));
 
         boolean result = false;
         for (RhythmixEventData data : pressureData) {

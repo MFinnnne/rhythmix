@@ -74,7 +74,7 @@ public class RangeExpr {
                 context.put("rightSymbol", "<=");
             }
             template.evaluate(writer, context);
-            return writer.toString().replaceAll("\\r|\\n|\\s", "");
+            return "("+writer.toString().replaceAll("\\r|\\n|\\s", "")+")";
         } catch (Exception e) {
             throw new TranslatorException(e.getMessage());
         }
