@@ -26,5 +26,6 @@ COLORS = {
     "secondary": "#2ecc71",
     "accent": "#e74c3c",
     "text": "#2c3e50",
+    "subtext": "#21e7f2",
     "background": "#000000"
 }
