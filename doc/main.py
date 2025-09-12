@@ -540,13 +540,13 @@ def create_range_state_transition_demo():
 
 if __name__ == "__main__":
     # Create the multi-count state transition demonstration ({==0}->{count!(>4, 3)}->{count!(<2, 2)})
-    create_multi_count_state_transition_demo()
+    # create_multi_count_state_transition_demo()
 
     # Create the count constraint demonstration (count!([10,20], 5))
     # create_count_constraint_demo()
 
     # Create the logical AND state transition demonstration ({!=0&&!=2}->{==1})
-    # create_logical_and_state_transition_demo()
+    create_logical_and_state_transition_demo()
 
     # Create the interval state transition demonstration ({(1,3]}->{[4,7)})
     # create_interval_state_transition_demo()

@@ -60,6 +60,8 @@ res = exe.execute(p3);
 
 表达式构成如下：
 
+
+
 ```
 {状态单元A}->{状态单元B}->{状态单元C}
 ```
@@ -67,6 +69,8 @@ res = exe.execute(p3);
 花括号 `{}` 内是所要表述的状态单元，箭头 `->` 用于连接前后状态单元，前一个状态单元满足之后就会迁移到下一个状态单元，直到最后一个状态单元也满足之后就返回true。例如： **{>1}->{count(<1,3)}->{==3}**
 
 > 针对简单状态比如： **0到1**，可以写成: **<0,1>**这就等于 **{==0}->{==1}**
+>
+> ![](./doc/media/videos/300p60/state_transition_enhanced.gif)
 
 每个状态单元可以使用如下表达式：
 
@@ -89,6 +93,8 @@ res = exe.execute(p3);
 | `==` | 等于 | `{==3.14}->{==0.0}` 表示数据需要先等于 3.14 然后等于 0.0 |
 | `!=` | 不等于 | `{!=0.0}->{!=5.5}` 表示数据需要先不等于 0.0 然后不等于 5.5 |
 
+![](./doc/media/videos/300p60/range_state_transition.gif)
+
 > 📖 **更多示例**: [比较表达式实际应用示例](#比较表达式实际应用示例)
 
 ### 区间表达式
@@ -102,6 +108,8 @@ res = exe.execute(p3);
 | `[a,b)` | 大于等于 a 且小于 b | `[1,3)` 表示数据需满足大于等于 1 且小于 3, `[1.2,3.8)` 表示数据需满足大于等于 1.2 且小于 3.8 |
 | `[a,b]` | 大于等于 a 且小于等于 b | `[1,3]` 表示数据需满足大于等于 1 且小于等于 3, `[0.5,2.5]` 表示数据需满足大于等于 0.5 且小于等于 2.5 |
 
+![](./doc/media/videos/300p60/interval_state_transition.gif)
+
 > 📌 **提示**：左右小括号（`()`）表示大于/小于，左右中括号（`[]`）表示大于等于/小于等于。
 
 > 📖 **更多示例**: [区间表达式实际应用示例](#区间表达式实际应用示例)
@@ -112,21 +120,11 @@ res = exe.execute(p3);
 
 - `||` 或操作：`{==0||!=2}->{==1}` 表示数据先满足"等于 0 或不等于 2"，然后满足"等于 1"
 
-  ```java
-  @Test
-  void testOrOp() throws TranslatorException {
-      String code = "{==0||!=2}->{==1}";
-      Executor executor = Compiler.compile(code);
-  
-      EventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
-      EventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
-      Assertions.assertTrue(executor.execute(p1, p2)); // 满足该条件
-  }
-  ```
-
 - `&&` 且操作：`{!=0&&!=2}->{==1}` 表示数据先满足"不等于 0 且不等于 2"，然后满足"等于 1"
 
 - `!` 非操作：主要用于不等于表达式（`!=`）中
+
+![](./doc/media/videos/300p60/logical_and_state_transition.gif)
 
 > 📖 **更多示例**: [逻辑复合表达式实际应用示例](#逻辑复合表达式实际应用示例)
 
@@ -148,6 +146,8 @@ res = exe.execute(p3);
 
   **使用示例**：
 
+  ![](./doc/media/videos/300p60/count1.gif)
+
   **count(条件, n)**: 统计 **n 个非连续** 满足条件的数据
 
   ```js
@@ -166,7 +166,7 @@ res = exe.execute(p3);
 
   - **count!(条件, n)**: 统计 **n 个连续** 满足条件的数据（严格模式）
   
-  - 
+  ![](./doc/media/videos/300p60/count_constraint_demo.gif)
   
   **基本语法**：
   
@@ -235,6 +235,7 @@ res = exe.execute(p3);
     {==0}->{count!(>4, 3)}->{count!(<2, 2)}
     ```
   
+  ![](./doc/media/videos/300p60/multi_count_state_transition.gif)
 
 ### 链式表达式
 
@@ -1066,10 +1067,6 @@ count!([100,10000], 3)
 
 > 💡 **使用建议**：
 > - 使用括号 `()` 明确运算优先级，避免歧义
-> - 复杂逻辑可以拆分为多个简单的状态转换
-> - `&&` 操作符要求所有条件同时满足，适用于严格检查
-> - `||` 操作符只需任一条件满足，适用于异常检测
-> - 合理使用 `!=` 操作符排除异常值和无效数据
 
 ### RhythmixEventData
 
