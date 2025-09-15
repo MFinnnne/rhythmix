@@ -6,7 +6,7 @@ Configuration settings for documentation animations.
 DEFAULT_WIDTH = 900
 DEFAULT_HEIGHT = 400
 MAX_DURATION = 10  # seconds
-DEFAULT_FRAME_RATE = 60
+DEFAULT_FRAME_RATE = 30
 DEFAULT_FORMAT = "gif"
 
 # Output settings

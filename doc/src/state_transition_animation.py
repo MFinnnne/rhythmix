@@ -300,9 +300,9 @@ class StateTransitionAnimation(DocAnimation):
             subtitle_text = self._get_pair_subtitle(pair)
             if subtitle_text is not None:
                 new_subtitle = self.create_subtitle(subtitle_text, scale=0.6)
-                new_subtitle.move_to(self._subtitle_value.get_center())
+                # FIX: Recalculate the position relative to the expression group.
+                new_subtitle.next_to(expression_group, DOWN, buff=0.05)
                 self.play(Transform(self._subtitle_value, new_subtitle), run_time=self._get_runtime(0.2))
-
             # Add to recording
             self._add_record_entry(pair, recording_texts, recording_group, recording_title)
 
