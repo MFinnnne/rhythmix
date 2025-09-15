@@ -3,8 +3,8 @@ Configuration settings for documentation animations.
 """
 
 # Animation settings
-DEFAULT_WIDTH = 800
-DEFAULT_HEIGHT = 300
+DEFAULT_WIDTH = 900
+DEFAULT_HEIGHT = 400
 MAX_DURATION = 10  # seconds
 DEFAULT_FRAME_RATE = 60
 DEFAULT_FORMAT = "gif"
@@ -27,5 +27,6 @@ COLORS = {
     "accent": "#e74c3c",
     "text": "#2c3e50",
     "subtext": "#21e7f2",
+    "subTitle":"#e82ec9",
     "background": "#000000"
 }

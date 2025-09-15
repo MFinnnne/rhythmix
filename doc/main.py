@@ -1,8 +1,10 @@
 import sys
 from pathlib import Path
 from typing import List
+from config import DEFAULT_WIDTH, DEFAULT_HEIGHT, MAX_DURATION, COLORS
 
-from manim import config
+from manim import config, RIGHT
+from manim import FadeIn, FadeOut, Transform, LEFT, DOWN
 
 from config import DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_FORMAT, GIF_QUALITY, DEFAULT_FRAME_RATE
 from src.string_movement_animation import StringMovementAnimation, StringPair
@@ -18,7 +20,7 @@ Main entry point for generating documentation animations.
 
 
 def create_gif_animation(pairs: List[StringPair] = None, center_text: str = None, output_name="StringAnimation",
-                         speed_multiplier=2.0):
+                         speed_multiplier=2.0, width: int = None, height: int = None):
     """
     Create a GIF animation with specified quality and custom output name.
 
@@ -32,11 +34,16 @@ def create_gif_animation(pairs: List[StringPair] = None, center_text: str = None
     # Set up manim config for GIF output
     if pairs is None:
         pairs = []
-    config.pixel_width = DEFAULT_WIDTH
-    config.pixel_height = DEFAULT_HEIGHT
-    config.frame_rate = DEFAULT_FRAME_RATE
+    # 配置输出参数：若传入自定义宽高，则不使用质量预设（避免被强制改为 1920x1080）
     config.format = DEFAULT_FORMAT
-    config.quality = GIF_QUALITY
+    config.frame_rate = DEFAULT_FRAME_RATE
+    if width is not None or height is not None:
+        config.pixel_width = width if width is not None else DEFAULT_WIDTH
+        config.pixel_height = height if height is not None else DEFAULT_HEIGHT
+    else:
+        config.quality = GIF_QUALITY
+        config.pixel_width = DEFAULT_WIDTH
+        config.pixel_height = DEFAULT_HEIGHT
 
     # Set custom output filename
     config.output_file = output_name
@@ -66,6 +73,7 @@ def main():
         StringPair("6", "true", "6>4     +3", True)
     ]
     create_gif_animation(count_pairs, 'count(>4,3)', 'count1', speed_multiplier=2.0)  # Faster
+
 
 def create_state_transition_demo():
     """
@@ -102,8 +110,9 @@ def create_state_transition_demo():
 
 
 def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_name="StateTransitionAnimation",
-                               speed_multiplier=1.0, expression_parts=None,
-                               line_spacing=0.1, column_spacing=3.5):
+                                speed_multiplier=1.0, expression_parts=None,
+                                line_spacing=0.1, column_spacing=3.5,
+                                width: int = None, height: int = None):
     """
     Create a GIF animation with state transition highlighting.
 
@@ -121,11 +130,16 @@ def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_
     if expression_parts is None:
         expression_parts = ["{==0}", "->", "{==1}"]
 
-    config.pixel_width = DEFAULT_WIDTH
-    config.pixel_height = DEFAULT_HEIGHT
-    config.frame_rate = DEFAULT_FRAME_RATE
+    # 配置输出参数：若传入自定义宽高，则不使用质量预设（避免被强制改为 1920x1080）
     config.format = DEFAULT_FORMAT
-    config.quality = GIF_QUALITY
+    config.frame_rate = DEFAULT_FRAME_RATE
+    if width is not None or height is not None:
+        config.pixel_width = width if width is not None else DEFAULT_WIDTH
+        config.pixel_height = height if height is not None else DEFAULT_HEIGHT
+    else:
+        config.quality = GIF_QUALITY
+        config.pixel_width = DEFAULT_WIDTH
+        config.pixel_height = DEFAULT_HEIGHT
 
     # Set custom output filename
     config.output_file = output_name
@@ -134,8 +148,8 @@ def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_
     class GifStateTransitionAnimation(StateTransitionAnimation):
         def __init__(self, **kwargs):
             super().__init__(state_pairs=pairs, expression_parts=expression_parts,
-                           speed_multiplier=speed_multiplier, line_spacing=line_spacing,
-                           column_spacing=column_spacing, **kwargs)
+                             speed_multiplier=speed_multiplier, line_spacing=line_spacing,
+                             column_spacing=column_spacing, **kwargs)
 
     # Render the animation
     scene = GifStateTransitionAnimation()
@@ -144,6 +158,7 @@ def create_state_transition_gif(pairs: List[StateTransitionPair] = None, output_
     print(f"✓ Enhanced State Transition GIF created: {output_name}.{DEFAULT_FORMAT}")
     print(f"✓ Quality: {config.quality}")
     return True
+
 
 def create_complex_state_transition_demo():
     """
@@ -190,7 +205,6 @@ def create_complex_state_transition_demo():
 
     create_state_transition_gif(state_pairs, 'complex_state_transition', speed_multiplier=1.2,
                                 expression_parts=["{>1}", "->", "{count(<1,3)}", "->", "{==3}"])
-
 
 
 def create_equal_chain_state_transition_demo():
@@ -477,7 +491,7 @@ def create_multi_count_state_transition_demo():
         speed_multiplier=2,
         expression_parts=expression_parts,
         line_spacing=0.5,
-        column_spacing= 4
+        column_spacing=4
     )
 
 
@@ -584,9 +598,51 @@ def create_chain_expression_demo():
         state_pairs,
         'chain_expression_demo',
         speed_multiplier=1.0,
-        expression_parts=["filter((-5,5))", "→", "limit(5)", "→", "take(0,2)", "→", "sum()", "→", "meet(>1)"],
+        expression_parts=["filter((-5,5))", ".", "limit(5)", ".", "take(0,2)", ".", "sum()", ".", "meet(>1)"],
         line_spacing=0.3,  # Compact spacing for detailed chain information
         column_spacing=3.8  # Slightly narrower for more detailed text
+    )
+
+
+def create_chain_expression_demo_with_queue_line():
+    """
+    生成展示链式表达式（filter((-5,5)).limit(5).take(0,2).sum().meet(>1)）且在表达式下方新增
+    “Queue: [...]” 独立行的 GIF。
+    """
+
+    state_pairs = [
+        StateTransitionPair("6", "false", "6∉(-5,5)|FILTERED OUT", False, subtitle="Queue:[]"),
+        StateTransitionPair("-6", "false", "-6∉(-5,5)|FILTERED OUT", False, subtitle="Queue:[]"),
+
+        StateTransitionPair("2", "false", "2∈(-5,5)|Need 2 elements", False, subtitle="Queue:[2]"),
+        StateTransitionPair("1", "true", "1∈(-5,5)|Sum:3", True, subtitle="Queue:[2,1]"),
+
+        StateTransitionPair("-3", "true", "-3∈(-5,5)|Sum:3", True, subtitle="Queue:[2,1,-3]"),
+        StateTransitionPair("0", "true", "0∈(-5,5)|Sum:3", True, subtitle="Queue:[2,1,-3,0]"),
+        StateTransitionPair("4", "true", "4∈(-5,5)|Sum:3", True, subtitle="Queue:[2,1,-3,0,4]"),
+
+        StateTransitionPair("-1", "false", "-1∈(-5,5)|Sum:-2", False, subtitle="Queue:[1,-3,0,4,-1]"),
+        StateTransitionPair("-2", "false", "-2∈(-5,5)|Sum:-3", False, subtitle="Queue:[-3,0,4,-1,-2]"),
+
+        StateTransitionPair("3", "true", "3∈(-5,5)|Sum:4", True, subtitle="Queue:[0,4,-1,-2,3]"),
+
+        StateTransitionPair("-4", "true", "-4∈(-5,5)|Sum:3", True, subtitle="Queue:[4,-1,-2,3,-4]"),
+        StateTransitionPair("1", "false", "1∈(-5,5)|Sum:-3", False, subtitle="Queue:[-1,-2,3,-4,1]"),
+        StateTransitionPair("2", "false", "2∈(-5,5)|Sum:1", False, subtitle="Queue:[-2,3,-4,1,2]"),
+        StateTransitionPair("4", "false", "4∈(-5,5)|Sum:-1", False, subtitle="Queue:[3,-4,1,2,4]"),
+        StateTransitionPair("-1", "false", "-1∈(-5,5)|Sum:-3", False, subtitle="Queue:[-4,1,2,4,-1]"),
+        StateTransitionPair("3", "true", "3∈(-5,5)|Sum:3", True, subtitle="Queue:[1,2,4,-1,3]"),
+    ]
+
+    return create_state_transition_gif(
+        pairs=state_pairs,
+        output_name='chain_expression_demo_with_queue',
+        speed_multiplier=2.0,
+        expression_parts=["filter((-5,5))", ".", "limit(5)", ".", "take(0,2)", ".", "sum()", ".", "meet(>1)"],
+        line_spacing=0.3,
+        column_spacing=3.8,
+        width=900,
+        height=400
     )
 
 
@@ -598,7 +654,8 @@ if __name__ == "__main__":
     # create_count_constraint_demo()
 
     # Create the chain expression demonstration (filter((-5,5)).limit(5).take(0,2).sum().meet(>1))
-    create_chain_expression_demo()
+    # create_chain_expression_demo()
+    create_chain_expression_demo_with_queue_line()
 
     # Create the logical AND state transition demonstration ({!=0&&!=2}->{==1})
     # create_logical_and_state_transition_demo()

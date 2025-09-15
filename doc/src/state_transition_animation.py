@@ -19,6 +19,7 @@ class StateTransitionPair:
 
     def __init__(self, left: str, right: str = 'False', record_text: str = "",
                  recording_tag: bool = False, current_state: int = 0,
+                 subtitle: Optional[str] = None,
                  delay: float = 0.1, movement_duration: float = 0.3,
                  left_color: Optional[str] = None, right_color: Optional[str] = None, **kwargs):
         """
@@ -42,6 +43,8 @@ class StateTransitionPair:
         self.current_state = current_state  # 0 = waiting for {==0}, 1 = waiting for {==1}
         self.delay = delay
         self.movement_duration = movement_duration
+        # Optional subtitle shown under the expression (e.g., saved queue data)
+        self.subtitle = subtitle
 
         # Set default record_text if not provided
         if not record_text:
@@ -136,7 +139,14 @@ class StateTransitionAnimation(DocAnimation):
 
         # Setup the main components
         expression_group, expression_texts = self._setup_expression()
-        recording_texts, recording_group, recording_title = self._setup_record_area(expression_group)
+
+        # Setup subtitle line under the expression
+        self._subtitle_value = self._setup_subtitle(expression_group)
+
+        # Position the recording area under the subtitle line (or expression if subtitle absent)
+        anchor = self._subtitle_value if self._subtitle_value is not None else expression_group
+        recording_texts, recording_group, recording_title = self._setup_record_area(anchor)
+
         self._animate_state_transitions(expression_group, expression_texts, recording_texts, recording_group,
                                         recording_title)
         self.wait(1)
@@ -166,6 +176,20 @@ class StateTransitionAnimation(DocAnimation):
         self._highlight_expression_part(expression_texts, 0, "#FF0000")  # Yellow for initial state
 
         return expression_group, expression_texts
+
+    def _setup_subtitle(self, expression_group):
+        """
+        Create a subtitle text placeholder shown under the expression.
+
+        Returns:
+            The subtitle Text mobject (placeholder) or None
+        """
+        # Start with empty subtitle; will update per pair
+        subtitle_text = self.create_subtitle("", scale=0.6)
+        # Place closer to the expression
+        subtitle_text.next_to(expression_group, DOWN, buff=0.12)
+        self.play(FadeIn(subtitle_text), run_time=self._get_runtime(0.2))
+        return subtitle_text
 
     def _highlight_expression_part(self, expression_texts, part_index, highlight_color="#FFFF00"):
         """
@@ -205,12 +229,12 @@ class StateTransitionAnimation(DocAnimation):
             # Bring text to front
             text.z_index = 1
 
-    def _setup_record_area(self, expression_group):
+    def _setup_record_area(self, anchor_element):
         """
-        Setup recording area components under the expression.
+        Setup recording area components under the anchor element.
         
         Args:
-            expression_group: The expression group for positioning reference.
+            anchor_element: The element for positioning reference (expression or subtitle).
             
         Returns:
             Tuple of (recording_texts list, recording_group, recording_title).
@@ -221,7 +245,8 @@ class StateTransitionAnimation(DocAnimation):
         # Create a title for the recording area
         recording_title = self.create_subtitle("Evaluation Steps:", scale=0.6)
         recording_title.set_color("#888888")
-        recording_title.next_to(expression_group, DOWN * 0.5, buff=0.8)
+        # Keep close to the anchor (expression or subtitle)
+        recording_title.next_to(anchor_element, DOWN, buff=0.25)
 
         return recording_texts, recording_group, recording_title
 
@@ -270,6 +295,13 @@ class StateTransitionAnimation(DocAnimation):
 
             # Show the result
             self.play(FadeIn(right_string), run_time=self._get_runtime(0.2))
+
+            # Update subtitle line under the expression based on pair.subtitle
+            subtitle_text = self._get_pair_subtitle(pair)
+            if subtitle_text is not None:
+                new_subtitle = self.create_subtitle(subtitle_text, scale=0.6)
+                new_subtitle.move_to(self._subtitle_value.get_center())
+                self.play(Transform(self._subtitle_value, new_subtitle), run_time=self._get_runtime(0.2))
 
             # Add to recording
             self._add_record_entry(pair, recording_texts, recording_group, recording_title)
@@ -384,6 +416,28 @@ class StateTransitionAnimation(DocAnimation):
                     return 0
 
         return current_state
+
+    def _get_pair_subtitle(self, pair: StateTransitionPair) -> Optional[str]:
+        """
+        Determine the subtitle string to show under the expression for this pair.
+
+        Priority:
+        1) pair.subtitle if provided
+        2) Fallback: try to extract a concise segment (e.g., 'Queue:[...]') from record_text
+        """
+        if getattr(pair, 'subtitle', None):
+            return pair.subtitle
+
+        # Fallback extraction from record_text (search first segment before '|')
+        text = getattr(pair, 'record_text', "") or ""
+        if not text:
+            return None
+        # Split on '|' and find a token that contains 'Queue:'
+        parts = [p.strip() for p in text.split('|') if p.strip()]
+        for p in parts:
+            if p.startswith("Queue:"):
+                return p
+        return None
 
     def _add_record_entry(self, pair, recording_texts, recording_group, recording_title):
         """
