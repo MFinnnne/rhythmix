@@ -245,6 +245,8 @@ res = exe.execute(p3);
 filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
 ```
 
+![](./doc/media/videos/400p30/chain_expression_demo_with_queue.gif)
+
 这个表达式的功能如下：
 
 1. 当数据处于 -5 到 5 之间会被收集到一个集合中

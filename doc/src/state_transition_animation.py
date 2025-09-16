@@ -113,6 +113,7 @@ class StateTransitionAnimation(DocAnimation):
             line_spacing: Spacing between wrapped lines within a single text entry (default: 0.1)
             column_spacing: Width spacing between columns in multi-column layout (default: 3.5)
         """
+        self._subtitle_value = None
         if state_pairs is None:
             state_pairs = [StateTransitionPair('0', 'false')]
 
@@ -161,7 +162,7 @@ class StateTransitionAnimation(DocAnimation):
         # Create individual text objects for each part of the expression
         expression_texts = []
         for part in self.expression_parts:
-            text = self.create_title(part, scale=0.8)
+            text = self.create_title(part, scale=0.6)
             expression_texts.append(text)
 
         # Position the parts horizontally
@@ -246,7 +247,6 @@ class StateTransitionAnimation(DocAnimation):
         recording_title = self.create_subtitle("Evaluation Steps:", scale=0.6)
         recording_title.set_color("#888888")
         # Keep close to the anchor (expression or subtitle)
-        recording_title.next_to(anchor_element, DOWN, buff=0.25)
 
         return recording_texts, recording_group, recording_title
 
@@ -272,7 +272,7 @@ class StateTransitionAnimation(DocAnimation):
 
             # Create the result value
             right_string = self.create_subtitle(pair.right, scale=0.7)
-            right_string.next_to(expression_group, RIGHT, buff=1)
+            right_string.next_to(expression_group, RIGHT, buff=1.0)
 
             # Set color based on result
             from config import COLORS
@@ -284,8 +284,15 @@ class StateTransitionAnimation(DocAnimation):
 
             # Move input to evaluation position
             target_position = expression_group.get_left() + LEFT * 1.5
+            # Ensure the target position is on screen
+            screen_left_boundary = -self.camera.frame_width / 2
+            margin = 0.5
+            min_x_pos = screen_left_boundary + left_string.width / 2 + margin
+            final_x_pos = max(target_position[0], min_x_pos)
+            final_target_position = np.array([final_x_pos, target_position[1], target_position[2]])
+
             self.play(
-                left_string.animate.move_to(target_position),
+                left_string.animate.move_to(final_target_position),
                 run_time=self._get_runtime(pair.movement_duration)
             )
 
@@ -462,6 +469,7 @@ class StateTransitionAnimation(DocAnimation):
 
         # Show recording title on first entry
         if len(recording_texts) == 1:
+            recording_title.next_to(self._subtitle_value, DOWN, buff=0.25)
             self.play(FadeIn(recording_title), run_time=self._get_runtime(0.2))
 
         # Position recording texts with multi-column layout to ensure all text can be seen
