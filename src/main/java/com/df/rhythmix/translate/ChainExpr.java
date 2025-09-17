@@ -27,20 +27,58 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 @Slf4j
+/**
+ * <p>ChainExpr class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class ChainExpr {
 
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param tokens a {@link java.util.List} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.LexicalException if any.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     * @throws java.io.IOException if any.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static String translate(List<Token> tokens, EnvProxy env) throws LexicalException, TranslatorException, IOException, ParseException {
         ASTNode astNode = Expr.F(new PeekTokenIterator(tokens.stream()));
         Map<String, Object> context = new HashMap<>();
         return translate(astNode, context, env);
     }
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param tokens a {@link java.util.List} object.
+     * @param context a {@link java.util.Map} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.LexicalException if any.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     * @throws java.io.IOException if any.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static String translate(List<Token> tokens, Map<String, Object> context, EnvProxy env) throws LexicalException, TranslatorException, IOException, ParseException {
         ASTNode astNode = Expr.F(new PeekTokenIterator(tokens.stream()));
         return translate(astNode, context, env);
     }
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param context a {@link java.util.Map} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         try {
             PebbleTemplate chainTemplate = ENGINE.getTemplate("expr/chain.peb");

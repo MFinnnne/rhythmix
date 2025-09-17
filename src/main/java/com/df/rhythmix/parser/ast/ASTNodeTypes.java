@@ -1,86 +1,98 @@
 package com.df.rhythmix.parser.ast;
 
+/**
+ * Enumeration of the different types of nodes in the Abstract Syntax Tree (AST).
+ * <p>
+ * Each type corresponds to a specific grammatical construct in the Rhythmix language.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public enum ASTNodeTypes {
     /**
-     * 块
+     * A block of statements, typically enclosed in curly braces.
      */
     BLOCK,
     /**
-     * 二元表示
+     * A binary expression, involving two operands and an operator (e.g., a + b).
      */
     BINARY_EXPR,
     /**
-     * 链式调用表达式
+     * A chain expression, used for sequential data processing (e.g., filter().sum()).
      */
     CHAIN_EXPR,
 
     /**
-     * 区间表达式
+     * A range expression, defining a numeric range (e.g., (1, 10)).
      */
     RANGE_EXPR,
 
     /**
-     * 比较表达式
+     * A comparison expression (e.g., > 10).
      */
     COMPARE_EXPR,
 
     /**
-     * 箭头表达式
+     * An arrow expression, defining a sequence of states (e.g., {>1}->{<5}).
      */
     ARROW_EXPR,
 
 
     /**
-     * 匿名函数
+     * An anonymous function (lambda expression).
      */
     ARROW_FUNC,
 
     /**
-     * 一元表达式
+     * A unary expression, with a single operand and an operator (e.g., ++a, !b).
      */
     UNARY_EXPR,
     /**
-     * 变量
+     * A variable identifier.
      */
     VARIABLE,
     /**
-     * 标量
+     * A scalar literal value (e.g., number, string, boolean).
      */
     SCALAR,
     /**
-     * 如果语句
+     * An 'if' statement, for conditional execution.
      */
     IF_STMT,
     /**
-     * while语句
+     * A 'while' loop statement.
      */
     WHILE_STMT,
     /**
-     * for语句
+     * A 'for' loop statement.
      */
     FOR_STMT,
     /**
-     * 赋值语句
+     * An assignment statement (e.g., a = 5).
      */
     ASSIGN_STMT,
     /**
-     * 函数声明语句
+     * A function declaration statement.
      */
     FUNCTION_DECLARE_STMT,
 
     /**
-     * 定义语句
+     * A variable declaration statement (e.g., let a = 5).
      */
     DECLARE_STMT,
 
     /**
-     * 返回语句
+     * A 'return' statement from a function.
      */
     RETURN_STMT,
     /**
-     * 函数调用
+     * A function call statement.
      */
     CALL_STMT,
 
+    /**
+     * The root node of the program's AST.
+     */
     PROGRAM;
 }

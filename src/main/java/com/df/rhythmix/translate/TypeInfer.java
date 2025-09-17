@@ -10,6 +10,9 @@ import java.util.regex.Pattern;
 /**
  * 类型推断器
  * 用于推断一个表达式经过运算之后得类型，目前仅支持简单推断，主要用在函数参数的推断上。
+ *
+ * author MFine
+ * version $Id: $Id
  */
 public class TypeInfer {
 
@@ -19,6 +22,14 @@ public class TypeInfer {
 
     static Pattern number = Pattern.compile("-?[0-9]+(\\.[0-9]+)?");
 
+    /**
+     * <p>infer.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link com.df.rhythmix.lexer.TokenType} object.
+     * @throws com.df.rhythmix.exception.TypeInferException if any.
+     */
     public static TokenType infer(ASTNode astNode, EnvProxy env) throws TypeInferException {
         switch (astNode.getType()) {
             case BINARY_EXPR:
@@ -92,6 +103,12 @@ public class TypeInfer {
         throw new TypeInferException("类型推断错误，{}", astNode.getLabel());
     }
 
+    /**
+     * <p>isNumber.</p>
+     *
+     * @param type a {@link com.df.rhythmix.lexer.TokenType} object.
+     * @return a boolean.
+     */
     public static boolean isNumber(TokenType type) {
         return type == TokenType.FLOAT || type == TokenType.INTEGER;
     }

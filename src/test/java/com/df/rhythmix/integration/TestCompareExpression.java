@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2025-01-03 10:00:00
+ * author: MFine
+ * date: 2025-01-03 10:00:00
  * @LastEditTime: 2025-01-03 10:00:00
  * @LastEditors: MFine
  * @Description: 测试比较表达式的实际应用示例
@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author MFine
- * @version 1.0
- * @date 2025/01/03 10:00
+ * author MFine
+ * version 1.0
+ * date 2025/01/03 10:00
  * @description 测试比较表达式的实际应用示例
  * 基于README.md中'比较表达式实际应用示例'部分的内容生成测试用例
  **/

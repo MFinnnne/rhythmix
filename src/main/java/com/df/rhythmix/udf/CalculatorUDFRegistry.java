@@ -17,8 +17,8 @@ import java.util.Set;
  * <p>
  * This is now a facade over the generic UDFRegistry for backward compatibility.
  *
- * @author MFine
- * @version 2.0
+ * author MFine
+ * version 2.0
  */
 @Slf4j
 public class CalculatorUDFRegistry {

@@ -7,24 +7,29 @@ import com.df.rhythmix.util.PeekTokenIterator;
 import java.util.Stack;
 
 /**
- * @Author MFine
- * @Date 2023/12/13
- * @Description
+ * Represents an anonymous arrow function in the AST, e.g., {@code (a, b) => { ... }}.
+ *
+ * author MFine
+ * date 2023/12/13
+ * author MFine
+ * @version 1.0
+ * @since 1.0
  */
-
 public class ArrowFuncStmt extends Stmt {
 
     /**
-     *
+     * <p>Constructor for ArrowFuncStmt.</p>
      */
     protected ArrowFuncStmt() {
         super(ASTNodeTypes.ARROW_FUNC, "Anonymous function");
     }
 
     /**
-     * @param it
-     * @return {@link ASTNode}
-     * @throws ParseException
+     * Parses an arrow function of the form {@code (args) => { ... }}.
+     *
+     * @param it the token iterator
+     * @return the parsed {@link ArrowFuncStmt}
+     * @throws ParseException if syntax is invalid
      */
     public static ASTNode parse(PeekTokenIterator it) throws ParseException {
 
@@ -39,6 +44,12 @@ public class ArrowFuncStmt extends Stmt {
         return afStmt;
     }
 
+    /**
+     * Heuristically checks whether the upcoming tokens form an arrow function.
+     *
+     * @param it the token iterator
+     * @return {@code true} if an arrow function pattern is detected; {@code false} otherwise
+     */
     public static boolean isArrowFunc(PeekTokenIterator it) {
         try {
             it.record();

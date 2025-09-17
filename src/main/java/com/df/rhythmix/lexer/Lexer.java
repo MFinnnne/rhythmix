@@ -9,7 +9,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+/**
+ * The Lexer for the Rhythmix language.
+ * <p>
+ * This class is responsible for tokenizing Rhythmix source code. It reads a stream of characters
+ * and converts it into a sequence of {@link Token}s, which can then be processed by the parser.
+ * It handles basic language constructs like keywords, variables, numbers, strings, operators,
+ * and comments.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public class Lexer {
+    /**
+     * Analyzes the source code from a {@link PeekIterator} and produces a list of tokens.
+     *
+     * @param source the character stream iterator
+     * @return an {@link ArrayList} of {@link Token}s
+     * @throws LexicalException if an unexpected character or lexical error is encountered
+     */
     public ArrayList<Token> analyse(PeekIterator<Character> source) throws LexicalException {
         ArrayList<Token> tokens = new ArrayList<>();
         PeekIterator<Character> iterator = new PeekIterator<>(source, (char) 0);
@@ -35,7 +54,7 @@ public class Lexer {
                 column = 1;
                 continue;
             }
-            //删除注释
+            // 删除注释
             if (next == '/') {
                 if (lookahead == '/') {
                     position++;
@@ -179,60 +198,71 @@ public class Lexer {
         return tokens;
     }
 
-    public ArrayList<Token> analyse(Stream source) throws LexicalException {
+    /**
+     * Analyzes the source code from a {@link Stream} of characters.
+     *
+     * @param source the character stream
+     * @return an {@link ArrayList} of {@link Token}s
+     * @throws LexicalException if a lexical error occurs
+     */
+    public ArrayList<Token> analyse(Stream<Character> source) throws LexicalException {
         PeekIterator<Character> it = new PeekIterator<Character>(source, (char) 0);
         return analyse(it);
     }
 
     /**
-     * 从源代码文件加载并解析
+     * Loads and analyzes source code from a file.
+     *
+     * @param src the path to the source code file
+     * @return an {@link ArrayList} of {@link Token}s
+     * @throws FileNotFoundException if the file is not found
+     * @throws LexicalException      if a lexical error occurs during analysis
      */
     public static ArrayList<Token> fromFile(String src) throws FileNotFoundException, LexicalException {
         File file = new File(src);
         FileInputStream fileStream = new FileInputStream(file);
         InputStreamReader inputStreamReader = new InputStreamReader(fileStream, StandardCharsets.UTF_8);
 
-        BufferedReader br = new BufferedReader(inputStreamReader);
+        try (BufferedReader br = new BufferedReader(inputStreamReader)) {
+            /** 利用BufferedReader每次读取一行 */
+            Iterator<Character> it = new Iterator<Character>() {
+                private String line = null;
+                private int cursor = 0;
 
-
-        /**
-         * 利用BufferedReader每次读取一行
-         */
-        Iterator<Character> it = new Iterator<Character>() {
-            private String line = null;
-            private int cursor = 0;
-
-            private void readLine() throws IOException {
-                if (line == null || cursor == line.length()) {
-                    line = br.readLine();
-                    cursor = 0;
+                private void readLine() throws IOException {
+                    if (line == null || cursor == line.length()) {
+                        line = br.readLine();
+                        cursor = 0;
+                    }
                 }
-            }
 
-            @Override
-            public boolean hasNext() {
-                try {
-                    readLine();
-                    return line != null;
-                } catch (IOException e) {
-                    return false;
+                @Override
+                public boolean hasNext() {
+                    try {
+                        readLine();
+                        return line != null;
+                    } catch (IOException e) {
+                        return false;
+                    }
                 }
-            }
 
-            @Override
-            public Character next() {
-                try {
-                    readLine();
-                    return line != null ? line.charAt(cursor++) : null;
-                } catch (IOException e) {
-                    return null;
+                @Override
+                public Character next() {
+                    try {
+                        readLine();
+                        return line != null ? line.charAt(cursor++) : null;
+                    } catch (IOException e) {
+                        return null;
+                    }
                 }
-            }
 
-        };
+            };
 
-        PeekIterator<Character> peekIt = new PeekIterator<>(it, '\0');
-        Lexer lexer = new Lexer();
-        return lexer.analyse(peekIt);
+            PeekIterator<Character> peekIt = new PeekIterator<>(it, '\0');
+            Lexer lexer = new Lexer();
+            return lexer.analyse(peekIt);
+        } catch (IOException ioe) {
+            throw new LexicalException("I/O error while reading source file: " + ioe.getMessage());
+        }
     }
 }

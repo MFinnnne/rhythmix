@@ -31,8 +31,8 @@
 
     <developers>
         <developer>
-            <name>mfine</name>
-            <email>lxemyf@gmail.com</email>
+            <name>MFine</name>
+            <email>MFinef@gmail.com</email>
             <timezone>+8</timezone>
         </developer>
     </developers>
@@ -128,11 +128,28 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Gpg Signature -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.6</version>
+                <configuration>
+                    <executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</executable>
+                    <keyname>io.github.mfinnnne</keyname>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -142,24 +159,17 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- 新方式的配置，将组件部署到OSSRH并将其发布到Central Repository-->
+            <!--   central发布插件    -->
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <version>0.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>central</publishingServerId>
+                    <publishingServerId>Rhythmix</publishingServerId>
                     <tokenAuth>true</tokenAuth>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>${serverId}</id>
-            <url>https://central.sonatype.com/</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>

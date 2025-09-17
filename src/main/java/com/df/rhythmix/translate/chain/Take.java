@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-06 22:28:02
  * @LastEditors: MFine
  * @Description: 
@@ -19,9 +19,23 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>Take class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class Take {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/take.peb");
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             Writer writer = new StringWriter();

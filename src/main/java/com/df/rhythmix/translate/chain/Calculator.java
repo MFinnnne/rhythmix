@@ -15,6 +15,12 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>Calculator class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class Calculator {
 
     public static class Sum {

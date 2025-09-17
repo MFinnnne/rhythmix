@@ -35,8 +35,8 @@ package com.df.rhythmix.udf;
  * }
  * </pre>
  *
- * @author MFine
- * @version 1.0
+ * author MFine
+ * version 1.0
  */
 public interface ChainMeetUDF {
 

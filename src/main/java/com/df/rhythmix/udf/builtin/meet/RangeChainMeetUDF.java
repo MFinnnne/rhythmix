@@ -5,14 +5,14 @@ import com.df.rhythmix.udf.ChainMeetUDF;
 /**
  * Built-in range meet UDF that checks if a calculated value falls within a predefined range.
  * This will be auto-discovered and registered at startup.
- * 
+ *
  * Usage in expressions: rangeMeet()
- * 
+ *
  * This meet function checks if the calculated value is between 5 and 50 (inclusive).
  * It's useful for validating that results fall within acceptable bounds.
- * 
- * @author MFine
- * @version 1.0
+ *
+ * author MFine
+ * version 1.0
  */
 public class RangeChainMeetUDF implements ChainMeetUDF {
     
@@ -26,11 +26,13 @@ public class RangeChainMeetUDF implements ChainMeetUDF {
      */
     private static final double DEFAULT_MAX = 50.0;
     
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return "rangeMeet";
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean meet(Number calculatedValue) {
 

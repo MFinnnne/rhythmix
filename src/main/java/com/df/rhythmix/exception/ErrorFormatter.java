@@ -1,11 +1,15 @@
 package com.df.rhythmix.exception;
 
 /**
- * Utility class for formatting exceptions with position information in a Rust-like style.
- * Provides detailed error messages with source code snippets and position indicators.
+ * Utility class that formats {@link RhythmixException} instances with position information
+ * in a Rust-style, including source code context and caret indicators.
+ * <p>
+ * The formatter renders a short, user-friendly error message with optional filename and
+ * surrounding source lines to aid debugging.
  *
  * @author MFine
  * @version 1.0
+ * @since 1.0
  */
 public class ErrorFormatter {
 
@@ -75,13 +79,20 @@ public class ErrorFormatter {
 
     /**
      * Formats a RhythmixException with position information using default filename.
+     *
+     * @param exception a {@link com.df.rhythmix.exception.RhythmixException} object.
+     * @param sourceCode a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
      */
     public static String formatError(RhythmixException exception, String sourceCode) {
         return formatError(exception, sourceCode, null);
     }
 
     /**
-     * Extracts a short error message for the pointer line.
+     * Extracts a concise error message for the pointer line.
+     *
+     * @param fullMessage the full error message to shorten; may be {@code null}
+     * @return a shortened, single-line message suitable for inline display; never {@code null}
      */
     private static String getShortErrorMessage(String fullMessage) {
         if (fullMessage == null) return "";

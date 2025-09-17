@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-06 22:37:55
  * @LastEditors: MFine
  * @Description: 
@@ -16,6 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * <p>MutExpr class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class MutExpr {
 
 
@@ -24,7 +30,7 @@ public class MutExpr {
      *
      * @param tokens 符号集合
      * @return 翻译得到的代码
-     * @throws TranslatorException 翻译错误
+     * @throws com.df.rhythmix.exception.TranslatorException 翻译错误
      */
     public static List<Token> translateMutExpr(List<Token> tokens) throws TranslatorException {
         PeekTokenIterator it = new PeekTokenIterator(tokens.stream());

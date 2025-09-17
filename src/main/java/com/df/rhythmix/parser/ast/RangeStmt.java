@@ -11,9 +11,18 @@ import java.util.List;
 import java.util.Stack;
 
 @Slf4j
+/**
+ * <p>RangeStmt class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class RangeStmt extends Stmt {
 
 
+    /**
+     * <p>Constructor for RangeStmt.</p>
+     */
     protected RangeStmt() {
         super(ASTNodeTypes.RANGE_EXPR, "range expr");
     }
@@ -26,6 +35,13 @@ public class RangeStmt extends Stmt {
             Arrays.asList("*", "/")
     );
 
+    /**
+     * <p>parser.</p>
+     *
+     * @param it a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static ASTNode parser(PeekTokenIterator it) throws ParseException {
         try {
             boolean isRange = isRangeStmt(it);
@@ -87,6 +103,12 @@ public class RangeStmt extends Stmt {
         }
     }
 
+    /**
+     * <p>isRangeStmt.</p>
+     *
+     * @param iterator a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return a boolean.
+     */
     public static boolean isRangeStmt(PeekTokenIterator iterator) {
         Stack<Token> stack = new Stack<>();
         boolean condition = false;

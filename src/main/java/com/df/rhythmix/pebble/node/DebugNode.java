@@ -12,17 +12,31 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+/**
+ * <p>DebugNode class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class DebugNode extends AbstractRenderableNode {
 
     private final List<String> template;
     private final List<String> args;
 
+    /**
+     * <p>Constructor for DebugNode.</p>
+     *
+     * @param template a {@link java.util.List} object.
+     * @param args a {@link java.util.List} object.
+     * @param lineNumber a int.
+     */
     public DebugNode(List<String> template, List<String> args, int lineNumber) {
         super(lineNumber);
         this.args = args;
         this.template = template;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         if (TemplateEngine.isDebugMode()) {
@@ -63,6 +77,7 @@ public class DebugNode extends AbstractRenderableNode {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void accept(NodeVisitor visitor) {
         visitor.visit(this);

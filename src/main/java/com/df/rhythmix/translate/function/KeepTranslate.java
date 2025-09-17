@@ -17,19 +17,28 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>KeepTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class KeepTranslate implements FunctionTranslate {
 
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getName() {
         return List.of("keep");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         return translate(astNode, env);
     }
 
+    /** {@inheritDoc} */
     public String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             PebbleTemplate template = ENGINE.getTemplate("expr/keep.peb");
@@ -69,6 +78,7 @@ public class KeepTranslate implements FunctionTranslate {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
         List<ASTNodeTypes> types = ParserUtils.toBFSASTType(astNode);

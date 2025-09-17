@@ -5,12 +5,20 @@ import com.df.rhythmix.util.RhythmixEventData;
 
 import java.util.List;
 
+/**
+ * <p>MinChainCalculator class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class MinChainCalculator implements ChainCalculatorUDF {
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return "mincalc";
     }
 
+    /** {@inheritDoc} */
     @Override
     public Number calculate(List<RhythmixEventData> values) {
         // Handle null or empty input

@@ -8,9 +8,21 @@ import lombok.Getter;
 
 import java.util.*;
 
+/**
+ * <p>ChainExprSyntaxCheck class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class ChainExprSyntaxCheck {
 
 
+    /**
+     * <p>check.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static void check(ASTNode astNode) throws TranslatorException {
         List<ASTNode> nodes = ParserUtils.getAllCallStmtNode(astNode);
 

@@ -11,9 +11,9 @@ import java.util.List;
  * determine whether to keep or discard EventData based on custom logic.
  * Supports both individual event filtering and batch list filtering.
  *
- * @author MFine
- * @version 1.0
- * @date 2025-07-18
+ * author MFine
+ * version 1.0
+ * date 2025-07-18
  */
 public interface ChainFilterUDF {
 

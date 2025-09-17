@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2025-01-03 12:00:00
+ * author: MFine
+ * date: 2025-01-03 12:00:00
  * @LastEditTime: 2025-01-03 12:00:00
  * @LastEditors: MFine
  * @Description: 测试链式表达式的实际应用示例
@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author MFine
- * @version 1.0
- * @date 2025/01/03 12:00
+ * author MFine
+ * version 1.0
+ * date 2025/01/03 12:00
  * @description 测试链式表达式的实际应用示例
  * 基于README.md中'链式表达式'部分的内容生成测试用例
  * 包含整数和浮点数混合的测试场景，测试filter->limit->calculate->meet的完整链式流程

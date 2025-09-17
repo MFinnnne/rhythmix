@@ -10,15 +10,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+/**
+ * Represents an expression in the AST.
+ * <p>
+ * This is a central class in the parser that handles a wide variety of expression types,
+ * including binary and unary operations, function calls, and complex nested structures.
+ * It uses a Pratt-style parser with a precedence table to handle operator precedence correctly.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public class Expr extends ASTNode {
 
     static PriorityTable table = new PriorityTable();
 
 
+    /**
+     * <p>Constructor for Expr.</p>
+     */
     public Expr() {
         super();
     }
 
+    /**
+     * <p>Constructor for Expr.</p>
+     *
+     * @param type a {@link com.df.rhythmix.parser.ast.ASTNodeTypes} object.
+     * @param lexeme a {@link com.df.rhythmix.lexer.Token} object.
+     */
     public Expr(ASTNodeTypes type, Token lexeme) {
         super();
         this.type = type;
@@ -27,7 +47,7 @@ public class Expr extends ASTNode {
     }
 
 
-    // left: E(k) -> E(k) op(k) E(k+1) | E(k+1)
+    // left: E(k) -> E(k) op(k) E(k+1) | E(k+1) op(k) E(k)
     // right:
     // E(k) -> E(K+1)E_(k)
     //    var e = new Expr();e.left = E(k+1);e.op = op(K);e.right=E(k+1)E_(k)
@@ -36,6 +56,15 @@ public class Expr extends ASTNode {
     //  E(t)->F E_(k)|U E_(k)
     //  E_(t)-> op(t) E(t)E_(t) | ε
     //
+    /**
+     * Top-level entry point for parsing an expression with a given precedence level.
+     * This is part of the Pratt parser implementation.
+     *
+     * @param k a int.
+     * @param it a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static ASTNode E(int k, PeekTokenIterator it) throws ParseException {
         if (k < table.size() - 1) {
             return combine(it, () -> E(k + 1, it), () -> E_(k, it));
@@ -47,6 +76,13 @@ public class Expr extends ASTNode {
         }
     }
 
+    /**
+     * Parses unary expressions and other high-precedence constructs.
+     *
+     * @param it a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static ASTNode U(PeekTokenIterator it) throws ParseException {
         Token token = it.peek();
         String value = token.getValue();
@@ -97,6 +133,13 @@ public class Expr extends ASTNode {
         return expr;
     }
 
+    /**
+     * Parses factors, which are the highest-precedence elements like variables, literals, and function calls.
+     *
+     * @param it a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static ASTNode F(PeekTokenIterator it) throws ParseException {
         ASTNode parse = Factor.parse(it);
         Token lookahead = it.peek();
@@ -179,17 +222,41 @@ public class Expr extends ASTNode {
         return expr;
     }
 
+    /**
+     * Main entry point for parsing an expression from a token stream with default precedence.
+     *
+     * @param tokenIt a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static ASTNode parse(PeekTokenIterator tokenIt) throws ParseException {
         Expr.table = new PriorityTable();
         return E(0, tokenIt);
     }
 
 
+    /**
+     * Parses an expression using a custom precedence table.
+     *
+     * @param tokenIt a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @param table a {@link com.df.rhythmix.util.PriorityTable} object.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static ASTNode parse(PeekTokenIterator tokenIt, PriorityTable table) throws ParseException {
         Expr.table = table;
         return E(0, tokenIt);
     }
 
+    /**
+     * Parses an expression and validates that it does not contain certain forbidden sub-expression types.
+     *
+     * @param tokenIt a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @param table a {@link com.df.rhythmix.util.PriorityTable} object.
+     * @param forbidChildExpr a {@link java.util.List} of forbidden {@link ASTNodeTypes}.
+     * @return a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @throws com.df.rhythmix.exception.ParseException if a forbidden sub-expression is found.
+     */
     public static ASTNode parse(PeekTokenIterator tokenIt, PriorityTable table, List<ASTNodeTypes> forbidChildExpr) throws ParseException {
         Expr.table = table;
         ASTNode expr = E(0, tokenIt);

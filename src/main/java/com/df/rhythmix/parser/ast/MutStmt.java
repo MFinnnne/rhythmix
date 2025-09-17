@@ -10,13 +10,35 @@ import com.df.rhythmix.util.PeekTokenIterator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Parses a mutation/state-transition expression and rewrites it into an arrow expression.
+ * <p>
+ * Mutation expressions have the form {@code <a,b,c> > <x,y>} and are translated by
+ * {@link com.df.rhythmix.translate.MutExpr} into an equivalent arrow expression which is then
+ * parsed by {@link ArrowStmt}.
+ *
+ * author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public class MutStmt extends Stmt {
 
+    /**
+     * <p>Constructor for MutStmt.</p>
+     */
     protected MutStmt() {
         super(ASTNodeTypes.ARROW_EXPR, "arrow expr");
     }
 
 
+    /**
+     * Parses a mutation expression and returns an equivalent {@link ArrowStmt} result.
+     * If the upcoming tokens are not a mutation, returns {@code null}.
+     *
+     * @param it the token iterator
+     * @return the translated arrow statement, or {@code null} if not a mutation expression
+     * @throws ParseException if translation fails or a syntax error is encountered
+     */
     public static ASTNode parse(PeekTokenIterator it) throws ParseException {
         if (isMutStmt(it)) {
             List<Token> tokens = new ArrayList<>();
@@ -37,6 +59,13 @@ public class MutStmt extends Stmt {
         return null;
     }
 
+    /**
+     * Checks whether the upcoming tokens match the mutation expression pattern.
+     * Uses a temporary recording/rewind on the iterator.
+     *
+     * @param it the token iterator
+     * @return {@code true} if a mutation expression is detected; {@code false} otherwise
+     */
     public static boolean isMutStmt(PeekTokenIterator it) {
         try {
             it.record();

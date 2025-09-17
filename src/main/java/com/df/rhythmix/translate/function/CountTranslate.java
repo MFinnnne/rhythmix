@@ -16,20 +16,29 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>CountTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class CountTranslate implements FunctionTranslate {
 
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getName() {
         return List.of("count", "count!");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         Map<String,Object> context = new HashMap<>();
         return translate(astNode, context,env);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode,Map<String,Object> context, EnvProxy env) throws TranslatorException {
         try {
@@ -59,6 +68,7 @@ public class CountTranslate implements FunctionTranslate {
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
         List<ASTNodeTypes> types = ParserUtils.toBFSASTType(astNode);

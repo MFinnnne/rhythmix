@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2025-01-03 10:30:00
+ * author: MFine
+ * date: 2025-01-03 10:30:00
  * @LastEditTime: 2025-01-03 10:30:00
  * @LastEditors: MFine
  * @Description: 测试区间表达式的实际应用示例
@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author MFine
- * @version 1.0
- * @date 2025/01/03 10:30
+ * author MFine
+ * version 1.0
+ * date 2025/01/03 10:30
  * @description 测试区间表达式的实际应用示例
  * 基于README.md中'区间表达式实际应用示例'部分的内容生成测试用例
  * 包含整数和浮点数混合的测试场景

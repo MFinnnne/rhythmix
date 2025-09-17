@@ -5,12 +5,20 @@ import com.df.rhythmix.util.RhythmixEventData;
 
 import java.util.List;
 
+/**
+ * <p>MaxChainCalculator class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class MaxChainCalculator implements ChainCalculatorUDF {
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return "maxcalc";
     }
 
+    /** {@inheritDoc} */
     @Override
     public Number calculate(List<RhythmixEventData> values) {
         if (values == null || values.isEmpty()) {

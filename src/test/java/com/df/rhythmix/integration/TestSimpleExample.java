@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-12-26 23:48:56
+ * author: MFine
+ * date: 2024-12-26 23:48:56
  * @LastEditTime: 2025-03-10 23:20:35
  * @LastEditors: MFine
  * @Description: 测试简单表达式和链式表达式的功能
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author MFine
- * @version 1.0
- * @date 2024/12/26 23:48
+ * author MFine
+ * version 1.0
+ * date 2024/12/26 23:48
  * @description 测试简单表达式和链式表达式的功能
  **/
 public class TestSimpleExample {
