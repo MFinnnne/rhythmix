@@ -42,7 +42,7 @@ public class RhythmixExecutor {
         return originalEnv;
     }
 
-    public boolean execute(Object event) {
+    public synchronized boolean execute(Object event) {
         this.envProxy.rawPut("event", event);
         Expression expr = AviatorFunctionUtil.getExpr(code);
         Object res = expr.execute(envProxy.getEnv());
@@ -58,7 +58,7 @@ public class RhythmixExecutor {
         this.envProxy.getEnv().putAll(this.getOriginalEnv());
     }
 
-    public boolean execute(Object... events) {
+    public synchronized boolean execute(Object... events) {
         boolean res = false;
         Expression expr = AviatorFunctionUtil.getExpr(code);
         for (Object event : events) {
