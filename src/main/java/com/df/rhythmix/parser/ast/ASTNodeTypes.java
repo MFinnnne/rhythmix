@@ -34,7 +34,7 @@ public enum ASTNodeTypes {
     COMPARE_EXPR,
 
     /**
-     * An arrow expression, defining a sequence of states (e.g., {>1}->{<5}).
+     * An arrow expression, defining a sequence of states.
      */
     ARROW_EXPR,
 

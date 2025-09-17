@@ -20,7 +20,18 @@ import java.util.List;
 @Data
 public abstract class ASTNode {
 
-
+	/**
+	 * The list of all child nodes.
+	 * <p>
+	 * This list contains all direct children of this AST node in the parse tree.
+	 * Children are ordered according to their appearance in the source code during
+	 * parsing. The list is mutable and can be modified during AST construction
+	 * and transformation phases.
+	 * <p>
+	 * For leaf nodes (nodes with no children), this list will be empty but never null.
+	 * 
+	 * @see ASTNode
+	 */
     protected List<ASTNode> children = new ArrayList<>();
 
 	/**
