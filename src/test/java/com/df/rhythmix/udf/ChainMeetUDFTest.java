@@ -115,7 +115,7 @@ class ChainMeetUDFTest {
 
     @Test
     @DisplayName("Test built-in PositiveMeetUDF - positive value checking")
-    void testBuiltInPositiveMeetUDF() throws TranslatorException {
+    void testPositiveMeetUDF() throws TranslatorException {
         // Test built-in positiveMeet (value > 0)
         String code = "filter(>-100).sum().positiveMeet()";
         RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);

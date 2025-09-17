@@ -1,6 +1,12 @@
-# 🎵 Rhythmix
 
-![Version](https://img.shields.io/badge/版本-1.0.0-blue)
+
+<div align="center">
+<img src="./doc/img/logo.png" alt="logo" style="zoom:50%;" />
+</div>
+
+
+
+# 🎵 Rhythmix
 ![License](https://img.shields.io/badge/许可证-MIT-green)
 
 > **Rhythmix**（可以理解为"节奏混合"）是一个简单而强大的流数据处理规则表达式引擎。它能够在流数据中找出符合特定规律（节奏）的数据，就像按照某种节奏运作一样。
@@ -59,8 +65,6 @@ res = exe.execute(p3);
 ## 表达式构成
 
 表达式构成如下：
-
-
 
 ```
 {状态单元A}->{状态单元B}->{状态单元C}
@@ -726,6 +730,8 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
 > - 内置函数提供了常用的判断逻辑，可以直接使用无需额外配置
 
 ---
+
+
 
 ## 附录
 
