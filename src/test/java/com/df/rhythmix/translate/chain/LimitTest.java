@@ -1,10 +1,10 @@
 package com.df.rhythmix.translate.chain;
 
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -24,15 +24,15 @@ class LimitTest {
         String code = "filter(((1,7]||>10)&&!=5).window(2).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p5 = Util.genEventData("1", "8", new Timestamp(System.currentTimeMillis()));
-        executor.execute(p5);
-        executor.execute(p3);
-        executor.execute(p2);
-        executor.execute(p4);
+        rhythmixExecutor.execute(p5);
+        rhythmixExecutor.execute(p3);
+        rhythmixExecutor.execute(p2);
+        rhythmixExecutor.execute(p4);
     }
 
     @Test
@@ -41,15 +41,15 @@ class LimitTest {
         String code = "filter(((1,7]||>10)&&!=5).window(100ms).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis() + 50));
         RhythmixEventData p4 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis() + 110));
-        boolean execute = executor.execute(p2);
+        boolean execute = rhythmixExecutor.execute(p2);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p3);
+        boolean execute1 = rhythmixExecutor.execute(p3);
         Assertions.assertFalse(execute1);
-        boolean execute2 = executor.execute(p4);
+        boolean execute2 = rhythmixExecutor.execute(p4);
         Assertions.assertTrue(execute2);
     }
 
@@ -81,13 +81,13 @@ class LimitTest {
         String code = "filter((-5,5)).limit(2).take(-3,-1).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         Assertions.assertDoesNotThrow(()->{
-            executor.execute(p1);
-            executor.execute(p2);
-            executor.execute(p2);
+            rhythmixExecutor.execute(p1);
+            rhythmixExecutor.execute(p2);
+            rhythmixExecutor.execute(p2);
 
         });
     }

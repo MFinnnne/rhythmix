@@ -3,6 +3,8 @@ package com.df.rhythmix.udf;
 import com.df.rhythmix.config.ChainFunctionConfig;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -109,6 +111,18 @@ public class CalculatorUDFRegistry {
      * @return Map of all registered CalculatorUDF instances
      */
     public static Map<String, ChainCalculatorUDF> getRegisteredUdfs() {
-        return registry.getRegisteredUDFs();
+        Map<String, ChainCalculatorUDF> map = new HashMap<>();
+        registry.getRegisteredUDFs().forEach((k, v) -> {
+
+            Class<? extends ChainCalculatorUDF> clazz = v.getClass();
+            try {
+                ChainCalculatorUDF chainCalculatorUDF = clazz.getDeclaredConstructor().newInstance();
+                map.put(k, chainCalculatorUDF);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return map;
     }
 }

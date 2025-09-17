@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 
 @Slf4j
-public class Compiler {
+public class RhythmixCompiler {
     static {
         Register.importFunction();
     }
@@ -26,14 +26,14 @@ public class Compiler {
      * @return Compiled executor
      * @throws TranslatorException if compilation fails
      */
-    public static Executor compile(String code) throws TranslatorException {
+    public static RhythmixExecutor compile(String code) throws TranslatorException {
         try {
             EnvProxy env = new EnvProxy();
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
             String translatedCode = Translator.translate(code, env);
-            return new Executor(translatedCode, env);
+            return new RhythmixExecutor(translatedCode, env);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);
             log.error(formattedError);
@@ -49,7 +49,7 @@ public class Compiler {
      * @return Compiled executor
      * @throws TranslatorException if compilation fails
      */
-    public static Executor compile(String code, HashMap<String, Object> udfEnv) throws TranslatorException {
+    public static RhythmixExecutor compile(String code, HashMap<String, Object> udfEnv) throws TranslatorException {
         try {
             EnvProxy env = new EnvProxy();
             env.rawPutAll(udfEnv);
@@ -57,7 +57,7 @@ public class Compiler {
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
-            return new Executor(translatedCode, env);
+            return new RhythmixExecutor(translatedCode, env);
         } catch (RhythmixException e) {
             // Use ErrorFormatter.formatError() to display the error with source code context
             String formattedError = ErrorFormatter.formatError(e, code);
@@ -76,8 +76,8 @@ public class Compiler {
      */
     public static CompilationResult compileWithDetailedErrors(String code, HashMap<String, Object> udfEnv) {
         try {
-            Executor executor = udfEnv != null ? compile(code, udfEnv) : compile(code);
-            return CompilationResult.success(executor);
+            RhythmixExecutor rhythmixExecutor = udfEnv != null ? compile(code, udfEnv) : compile(code);
+            return CompilationResult.success(rhythmixExecutor);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);
             return CompilationResult.failure(e, formattedError);
@@ -89,18 +89,18 @@ public class Compiler {
      */
     public static class CompilationResult {
         private final boolean success;
-        private final Executor executor;
+        private final RhythmixExecutor rhythmixExecutor;
         private final RhythmixException exception;
 
-        private CompilationResult(boolean success, Executor executor, RhythmixException exception,
+        private CompilationResult(boolean success, RhythmixExecutor rhythmixExecutor, RhythmixException exception,
                                   String formattedError, String detailedErrorReport) {
             this.success = success;
-            this.executor = executor;
+            this.rhythmixExecutor = rhythmixExecutor;
             this.exception = exception;
         }
 
-        public static CompilationResult success(Executor executor) {
-            return new CompilationResult(true, executor, null, null, null);
+        public static CompilationResult success(RhythmixExecutor rhythmixExecutor) {
+            return new CompilationResult(true, rhythmixExecutor, null, null, null);
         }
 
         public static CompilationResult failure(RhythmixException exception, String formattedError, String detailedErrorReport) {
@@ -111,11 +111,11 @@ public class Compiler {
             return new CompilationResult(false, null, exception, null, detailedErrorReport);
         }
 
-        public Executor getExecutor() {
+        public RhythmixExecutor getExecutor() {
             if (!success) {
                 throw new IllegalStateException("Compilation failed, no executor available");
             }
-            return executor;
+            return rhythmixExecutor;
         }
 
         public RhythmixException getException() {

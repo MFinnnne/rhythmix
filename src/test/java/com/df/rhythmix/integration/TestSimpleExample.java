@@ -8,8 +8,8 @@
 package com.df.rhythmix.integration;
 
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Compiler;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixCompiler;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.lib.AviatorConfig;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
@@ -39,11 +39,11 @@ public class TestSimpleExample {
     @DisplayName("测试状态从0到1的转换")
     void test0To1() throws TranslatorException {
         String code = "{==0}->{==1}";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
-        Assertions.assertTrue(executor.execute(p1, p2));
+        Assertions.assertTrue(rhythmixExecutor.execute(p1, p2));
     }
 
     /**
@@ -53,10 +53,10 @@ public class TestSimpleExample {
     @DisplayName("测试简化语法<0,1>实现状态从0到1的转换")
     void test0To1Easy() throws TranslatorException {
         String code = "<0,1>";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
-        Assertions.assertTrue(executor.execute(p1, p2));
+        Assertions.assertTrue(rhythmixExecutor.execute(p1, p2));
     }
 
     /**
@@ -66,11 +66,11 @@ public class TestSimpleExample {
     @DisplayName("测试或操作符||的功能")
     void testOrOp() throws TranslatorException {
         String code = "{==0||!=2}->{==1}";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
-        Assertions.assertTrue(executor.execute(p1, p2));
+        Assertions.assertTrue(rhythmixExecutor.execute(p1, p2));
     }
 
     /**
@@ -80,11 +80,11 @@ public class TestSimpleExample {
     @DisplayName("测试与操作符&&的功能")
     void testAndOp() throws TranslatorException {
         String code = "{!=0&&!=2}->{==1}";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("2", "1", new Timestamp(System.currentTimeMillis()));
-        Assertions.assertTrue(executor.execute(p1, p2));
+        Assertions.assertTrue(rhythmixExecutor.execute(p1, p2));
     }
 
     /**
@@ -109,7 +109,7 @@ public class TestSimpleExample {
     @DisplayName("测试整数序列求和")
     void testSumWithIntegers() throws TranslatorException {
         String code = "filter(>0).limit(5).sum().meet(==27)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
@@ -118,7 +118,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -132,7 +132,7 @@ public class TestSimpleExample {
     @DisplayName("测试浮点数序列求和")
     void testSumWithFloats() throws TranslatorException {
         String code = "filter(>0).limit(5).sum().meet(==28.0)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
@@ -141,7 +141,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -156,7 +156,7 @@ public class TestSimpleExample {
     void testAvgWithIntegers() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter(>0).limit(5).avg().meet(==9.0)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
@@ -165,7 +165,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -180,7 +180,7 @@ public class TestSimpleExample {
     void testAvgWithFloats() throws TranslatorException {
         // 由于浮点数精度问题，使用近似值比较
         String code = "filter(>0.0).limit(5).avg().meet([9.3,9.4])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
@@ -189,7 +189,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -204,7 +204,7 @@ public class TestSimpleExample {
     void testCount() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter(>0,true).limit(5).count().meet(==3)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
@@ -213,7 +213,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -230,7 +230,7 @@ public class TestSimpleExample {
         TemplateEngine.enableDebugModel(true);
 
         String code = "filter(>0).limit(5).stddev().meet([1.4,1.5])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
@@ -238,7 +238,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -255,7 +255,7 @@ public class TestSimpleExample {
 
         // 由于标准差计算可能有精度差异，使用区间表达式
         String code = "filter(>0.0).limit(5).stddev().meet([1.4,1.5])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis())));
@@ -264,7 +264,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);
@@ -280,11 +280,11 @@ public class TestSimpleExample {
         TemplateEngine.enableDebugModel(true);
 
         String code = "filter(>0).limit(5).stddev().meet([1.4,1.5])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         // 只添加一个数据点，不足以计算标准差
         RhythmixEventData event = Util.genEventData("1", "10.5", new Timestamp(System.currentTimeMillis()));
-        boolean result = executor.execute(event);
+        boolean result = rhythmixExecutor.execute(event);
 
         // 由于数据点不足，应该返回false
         Assertions.assertFalse(result);
@@ -298,7 +298,7 @@ public class TestSimpleExample {
     @DisplayName("测试组合计算功能")
     void testCombinedCalculations() throws TranslatorException {
         String code = "filter(>5).limit(5).take(0,3).sum().meet(>15)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> events = new ArrayList<>();
         events.add(Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis())));
@@ -308,7 +308,7 @@ public class TestSimpleExample {
 
         boolean result = true;
         for (RhythmixEventData event : events) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
 
         Assertions.assertTrue(result);

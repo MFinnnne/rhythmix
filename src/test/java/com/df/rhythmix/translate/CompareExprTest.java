@@ -1,9 +1,9 @@
 package com.df.rhythmix.translate;
 
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.util.Util;
@@ -22,7 +22,7 @@ class CompareExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = CompareExpr.translate(tokens, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         RhythmixEventData p2 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
@@ -36,7 +36,7 @@ class CompareExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = CompareExpr.translate(tokens, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         RhythmixEventData pointData = Util.genEventData("1", "2.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         RhythmixEventData p2 = Util.genEventData("1", "0.0", new Timestamp(System.currentTimeMillis()));
@@ -51,7 +51,7 @@ class CompareExprTest {
         Assertions.assertThrows(TranslatorException.class, () -> {
             EnvProxy env = new EnvProxy();
             String translatedCode = CompareExpr.translate(tokens, env);
-            Executor compile = new Executor(translatedCode,env);
+            RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         });
 
         String code1 = "=='3.0'";
@@ -60,7 +60,7 @@ class CompareExprTest {
         Assertions.assertDoesNotThrow(() -> {
             EnvProxy env = new EnvProxy();
             String translatedCode = CompareExpr.translate(tokens1, env);
-            new Executor(translatedCode,env);
+            new RhythmixExecutor(translatedCode,env);
         });
     }
 }

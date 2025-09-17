@@ -8,13 +8,11 @@
 package com.df.rhythmix.integration;
 
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Compiler;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixCompiler;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
-import com.googlecode.aviator.AviatorEvaluator;
-import io.pebbletemplates.pebble.template.PebbleTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +40,7 @@ public class TestChainExpression {
     @DisplayName("基础链式表达式 - filter->limit->take->sum->meet")
     void testBasicChainExpression() throws TranslatorException {
         String code = "filter((-5,5)).limit(5).take(0,2).sum().meet(>1)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         // 添加一些数据，包括整数和浮点数
@@ -55,7 +53,7 @@ public class TestChainExpression {
         boolean result = false;
         List<Boolean> results = new ArrayList<>();
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
             results.add(result);
         }
 
@@ -70,7 +68,7 @@ public class TestChainExpression {
     @DisplayName("基础链式表达式 - 简单过滤和求和")
     void testSimpleFilterSumMeet() throws TranslatorException {
         String code = "filter(>0).sum().meet(>10)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "5.5", new Timestamp(System.currentTimeMillis())));      // 浮点数5.5 > 0
@@ -81,7 +79,7 @@ public class TestChainExpression {
         boolean result = false;
         List<Boolean> results = new ArrayList<>();
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
             results.add(result);
         }
 
@@ -96,7 +94,7 @@ public class TestChainExpression {
     @DisplayName("基础链式表达式 - 无过滤的平均值计算")
     void testNoFilterAverageMeet() throws TranslatorException {
         String code = "limit(3).avg().meet(>5)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "8.5", new Timestamp(System.currentTimeMillis())));      // 浮点数8.5
@@ -106,7 +104,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 限制3个数据：[8.5, 6, 4.2]，平均值=(8.5+6+4.2)/3=6.23，6.23>5，应该返回true
@@ -122,7 +120,7 @@ public class TestChainExpression {
     @DisplayName("数据过滤 - 复杂逻辑组合过滤")
     void testComplexFilterLogic() throws TranslatorException {
         String code = "filter(((1,7]||>10)&&!=5).sum().meet(>15)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "3.5", new Timestamp(System.currentTimeMillis())));      // 浮点数3.5，在(1,7]且!=5，通过
@@ -134,7 +132,7 @@ public class TestChainExpression {
         boolean result = false;
         List<Boolean> results = new ArrayList<>();
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
             results.add(result);
         }
 
@@ -149,7 +147,7 @@ public class TestChainExpression {
     @DisplayName("数据过滤 - 区间过滤")
     void testRangeFilter() throws TranslatorException {
         String code = "filter([10.5,20.5]).count().meet(>=3)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "15", new Timestamp(System.currentTimeMillis())));        // 整数15，在[10.5,20.5]
@@ -160,7 +158,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[15, 18.7, 12.3]，计数=3，3>=3，应该返回true
@@ -174,7 +172,7 @@ public class TestChainExpression {
     @DisplayName("数据过滤 - 负数过滤")
     void testNegativeNumberFilter() throws TranslatorException {
         String code = "filter(>=0).maxcalc().meet(>5)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "-3.5", new Timestamp(System.currentTimeMillis())));     // 浮点数-3.5，被过滤
@@ -184,7 +182,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[8, 6.7]，最大值=8，8>5，应该返回true
@@ -200,7 +198,7 @@ public class TestChainExpression {
     @DisplayName("数据限制和选取 - limit限制数据数量")
     void testDataLimit() throws TranslatorException {
         String code = "limit(3).sum().meet(>10)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "5.5", new Timestamp(System.currentTimeMillis())));      // 浮点数5.5
@@ -211,7 +209,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 限制前3个数据：[5.5, 3, 4.2]，求和=12.7，12.7>10，应该返回true
@@ -226,7 +224,7 @@ public class TestChainExpression {
     void testDataTake() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "take(1,3).avg().meet(>5)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "2.5", new Timestamp(System.currentTimeMillis())));      // 索引0，不选取
@@ -235,7 +233,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 选取索引1-3的数据：[8, 6.5, 7.2]，平均值=(8+6.5+7.2)/3=7.23，7.23>5，应该返回true
@@ -249,7 +247,7 @@ public class TestChainExpression {
     @DisplayName("数据限制和选取 - filter和take组合使用")
     void testFilterTakeCombination() throws TranslatorException {
         String code = "filter(>0).take(1,3).mincalc().meet(<5)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "-2", new Timestamp(System.currentTimeMillis())));       // 整数-2，被过滤
@@ -261,13 +259,13 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence.subList(0,4)) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后：[8.5, 3, 6.2, 4, 7]，选取索引1-3：[3, 6.2, 4]，最小值=3，3<5，应该返回true
         Assertions.assertTrue(result);
         for (RhythmixEventData data : dataSequence.subList(4,dataSequence.size())) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         Assertions.assertFalse(result);
@@ -282,7 +280,7 @@ public class TestChainExpression {
     @DisplayName("数据计算 - 求和计算")
     void testSumCalculation() throws TranslatorException {
         String code = "filter(>0).sum().meet([10,20])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "3.5", new Timestamp(System.currentTimeMillis())));      // 浮点数3.5
@@ -292,7 +290,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[3.5, 5, 2.8]，求和=11.3，11.3在[10,20]，应该返回true
@@ -307,7 +305,7 @@ public class TestChainExpression {
     void testAverageCalculation() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter([1,10]).window(3).avg().meet(>5)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "8.5", new Timestamp(System.currentTimeMillis())));      // 浮点数8.5，在[1,10]
@@ -317,7 +315,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[8.5, 6, 3.2]，平均值=(8.5+6+3.2)/3=5.9，5.9>5，应该返回true
@@ -331,7 +329,7 @@ public class TestChainExpression {
     @DisplayName("数据计算 - 最大值计算")
     void testMaxCalculation() throws TranslatorException {
         String code = "filter(!=0).maxcalc().meet(>=8)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "5.5", new Timestamp(System.currentTimeMillis())));      // 浮点数5.5，!=0
@@ -340,7 +338,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[5.5, 8, 3.7]，最大值=8，8>=8，应该返回true
@@ -354,7 +352,7 @@ public class TestChainExpression {
     @DisplayName("数据计算 - 最小值计算")
     void testMinCalculation() throws TranslatorException {
         String code = "filter(>0).mincalc().meet(<=3)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "5.8", new Timestamp(System.currentTimeMillis())));      // 浮点数5.8，>0
@@ -363,7 +361,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[5.8, 2, 7.3]，最小值=2，2<=3，应该返回true
@@ -377,7 +375,7 @@ public class TestChainExpression {
     @DisplayName("数据计算 - 计数计算")
     void testCountCalculation() throws TranslatorException {
         String code = "filter((5,15)).count().meet(>=3)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "8.5", new Timestamp(System.currentTimeMillis())));      // 浮点数8.5，在(5,15)
@@ -388,7 +386,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[8.5, 10, 12.7]，计数=3，3>=3，应该返回true
@@ -404,7 +402,7 @@ public class TestChainExpression {
     @DisplayName("条件判断 - 基础meet大于判断")
     void testBasicMeetGreaterThan() throws TranslatorException {
         String code = "filter(>0).sum().meet(>100)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "45.5", new Timestamp(System.currentTimeMillis())));     // 浮点数45.5
@@ -413,7 +411,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[45.5, 60, 8.7]，求和=114.2，114.2>100，应该返回true
@@ -427,7 +425,7 @@ public class TestChainExpression {
     @DisplayName("条件判断 - meet区间范围判断")
     void testMeetRangeCondition() throws TranslatorException {
         String code = "filter(!=0).avg().meet([5,15])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "8.5", new Timestamp(System.currentTimeMillis())));      // 浮点数8.5
@@ -437,7 +435,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[8.5, 12, 6.3]，平均值=(8.5+12+6.3)/3=8.93，8.93在[5,15]，应该返回true
@@ -451,7 +449,7 @@ public class TestChainExpression {
     @DisplayName("条件判断 - meet复杂逻辑组合判断")
     void testMeetComplexLogicCondition() throws TranslatorException {
         String code = "filter(>0).maxcalc().meet(>10&&<20)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> dataSequence = new ArrayList<>();
         dataSequence.add(Util.genEventData("data1", "15.5", new Timestamp(System.currentTimeMillis())));     // 浮点数15.5
@@ -461,7 +459,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : dataSequence) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后的数据：[15.5, 8, 12.7]，最大值=15.5，15.5>10且15.5<20，应该返回true
@@ -477,7 +475,7 @@ public class TestChainExpression {
     @DisplayName("实际应用场景 - 温度监控系统")
     void testTemperatureMonitoringScenario() throws TranslatorException {
         String code = "filter((-100,100)).limit(5).avg().meet([20,30])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> temperatureData = new ArrayList<>();
         temperatureData.add(Util.genEventData("temp1", "25.5", new Timestamp(System.currentTimeMillis())));      // 浮点数25.5，正常温度
@@ -489,7 +487,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : temperatureData) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后：[25.5, 22, 28.3, 26]，限制5个（实际4个），平均值=(25.5+22+28.3+26)/4=25.45，25.45在[20,30]，应该返回true
@@ -503,7 +501,7 @@ public class TestChainExpression {
     @DisplayName("实际应用场景 - 网络性能监控")
     void testNetworkPerformanceMonitoringScenario() throws TranslatorException {
         String code = "filter([0,1000)).take(0,3).maxcalc().meet(<500)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> responseData = new ArrayList<>();
         responseData.add(Util.genEventData("response1", "150.5", new Timestamp(System.currentTimeMillis())));     // 浮点数150.5ms，正常
@@ -513,7 +511,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : responseData) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后：[150.5, 300, 450.8, 200]，取前3个：[150.5, 300, 450.8]，最大值=450.8，450.8<500，应该返回true
@@ -527,7 +525,7 @@ public class TestChainExpression {
     @DisplayName("实际应用场景 - 生产质量控制")
     void testProductionQualityControlScenario() throws TranslatorException {
         String code = "filter([95,105]).limit(10).sum().meet(>500)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> productData = new ArrayList<>();
         productData.add(Util.genEventData("product1", "98.5", new Timestamp(System.currentTimeMillis())));      // 浮点数98.5g，合格
@@ -540,7 +538,7 @@ public class TestChainExpression {
 
         boolean result = false;
         for (RhythmixEventData data : productData) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
         }
 
         // 过滤后：[98.5, 102, 97.8, 100, 99.2, 103.5]，求和=600.0，600.0>500，应该返回true
@@ -556,7 +554,7 @@ public class TestChainExpression {
     @DisplayName("混合数据类型 - 高精度浮点数与整数混合链式表达式")
     void testHighPrecisionMixedChainExpression() throws TranslatorException {
         String code = "filter([99.95,100.05]).take(1,4).avg().meet(>99.98)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> precisionData = new ArrayList<>();
         precisionData.add(Util.genEventData("precision1", "99.90", new Timestamp(System.currentTimeMillis())));     // 浮点数99.90，不在范围，被过滤
@@ -569,7 +567,7 @@ public class TestChainExpression {
         boolean result = false;
         List<Boolean> results = new ArrayList<>();
         for (RhythmixEventData data : precisionData) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
             results.add(result);
         }
 
@@ -584,7 +582,7 @@ public class TestChainExpression {
     @DisplayName("混合数据类型 - 边界值混合链式表达式")
     void testBoundaryValueMixedChainExpression() throws TranslatorException {
         String code = "filter(>25.5).limit(4).mincalc().meet(<=30)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> boundaryData = new ArrayList<>();
         boundaryData.add(Util.genEventData("boundary1", "25.5", new Timestamp(System.currentTimeMillis())));      // 浮点数25.5，==25.5，被过滤
@@ -597,7 +595,7 @@ public class TestChainExpression {
         boolean result = false;
         List<Boolean> results = new ArrayList<>();
         for (RhythmixEventData data : boundaryData) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
             results.add(result);
         }
 
@@ -612,7 +610,7 @@ public class TestChainExpression {
     @DisplayName("混合数据类型 - 复杂多步骤链式表达式")
     void testComplexMultiStepChainExpression() throws TranslatorException {
         String code = "filter((-100,100)).limit(8).take(2,6).sum().meet([50,200])";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         List<RhythmixEventData> complexData = new ArrayList<>();
         complexData.add(Util.genEventData("complex1", "150", new Timestamp(System.currentTimeMillis())));       // 整数150，超出范围，被过滤 false
@@ -628,7 +626,7 @@ public class TestChainExpression {
         boolean result = false;
         List<Boolean> results = new ArrayList<>();
         for (RhythmixEventData data : complexData) {
-            result = executor.execute(data);
+            result = rhythmixExecutor.execute(data);
             results.add(result);
         }
 

@@ -1,10 +1,7 @@
 package com.df.rhythmix.execute;
 
 import com.df.rhythmix.lib.AviatorConfig;
-import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.translate.EnvProxy;
-import com.df.rhythmix.udf.CalculatorUDFRegistry;
-import com.df.rhythmix.udf.FilterUDFRegistry;
 import com.df.rhythmix.util.AviatorFunctionUtil;
 import com.googlecode.aviator.Expression;
 import lombok.*;
@@ -13,7 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 @AllArgsConstructor
-public class Executor {
+public class RhythmixExecutor {
 
     @Getter
     private String code;
@@ -25,10 +22,10 @@ public class Executor {
     @Setter
     private HashMap<String, Object> originalEnv = new HashMap<>();
 
-    public Executor() {
+    public RhythmixExecutor() {
     }
 
-    public Executor(String code, EnvProxy env) {
+    public RhythmixExecutor(String code, EnvProxy env) {
         this.code = code;
         this.envProxy = env;
 

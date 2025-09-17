@@ -1125,7 +1125,7 @@ RhythmixEventData data = RhythmixEventData.builder()
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `id` | String | 否 | 数据唯一标识符，未指定时自动生成 |
+| `id` | String | 是 | 数据唯一标识符 |
 | `name` | String | 是 | 事件/数据名称，用于标识数据类型 |
 | `value` | String | 是 | **核心字段**，表达式计算的主要数据值 |
 | `ts` | Timestamp | 是 | 时间戳，用于时间窗口和状态转换 |
@@ -1148,8 +1148,8 @@ RhythmixEventData tempData = new RhythmixEventData(
 
 // 使用表达式检测温度
 String expression = ">30";
-Executor executor = Compiler.compile(expression);
-boolean isHot = executor.execute(tempData); // false，因为 28.5 不大于 30
+Executor rhythmixExecutor = Compiler.compile(expression);
+boolean isHot = rhythmixExecutor.execute(tempData); // false，因为 28.5 不大于 30
 ```
 
 **生产线数据监控**：
@@ -1164,8 +1164,8 @@ List<RhythmixEventData> products = Arrays.asList(
 
 // 检测连续3个产品重量都大于95g
 String expression = "count!(>95, 3)";
-Executor executor = Compiler.compile(expression);
-boolean allQualified = executor.execute(products.toArray(new RhythmixEventData[0])); // true
+Executor rhythmixExecutor = Compiler.compile(expression);
+boolean allQualified = rhythmixExecutor.execute(products.toArray(new RhythmixEventData[0])); // true
 ```
 
 **网络延迟监控**：
@@ -1189,8 +1189,8 @@ RhythmixEventData[] responses = {
 
 // 检测状态转换：正常响应 → 高延迟
 String expression = "{<500}->{>1000}";
-Executor executor = Compiler.compile(expression);
-boolean hasLatencySpike = executor.execute(responses); // true
+Executor rhythmixExecutor = Compiler.compile(expression);
+boolean hasLatencySpike = rhythmixExecutor.execute(responses); // true
 ```
 
 #### 重要提示

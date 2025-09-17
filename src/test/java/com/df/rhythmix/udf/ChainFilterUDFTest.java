@@ -1,8 +1,8 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Compiler;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixCompiler;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
@@ -79,7 +79,7 @@ class ChainFilterUDFTest {
     @DisplayName("测试简单的温度过滤UDF")
     void testSimpleTemperatureFilterUDF() throws TranslatorException {
         String code = "filter(tempFilter()).count().meet(==2)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         // Test data - should keep temperatures between 20-80
         RhythmixEventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
@@ -88,13 +88,13 @@ class ChainFilterUDFTest {
         RhythmixEventData event4 = Util.genEventData("sensor4", "90.0", new Timestamp(System.currentTimeMillis() + 300)); // Should be filtered out
 
         boolean result = false;
-        result = executor.execute(event1); // Keep
+        result = rhythmixExecutor.execute(event1); // Keep
         Assertions.assertFalse(result); // Not enough events yet
 
-        result = executor.execute(event2); // Discard (temp < 20)
+        result = rhythmixExecutor.execute(event2); // Discard (temp < 20)
         Assertions.assertFalse(result); // Still not enough events
 
-        result = executor.execute(event3); // Keep
+        result = rhythmixExecutor.execute(event3); // Keep
         Assertions.assertTrue(result); // Should have 2 valid events now
     }
 
@@ -103,19 +103,19 @@ class ChainFilterUDFTest {
     void testSensorIdFilterUDF() throws TranslatorException {
         // Use auto-imported sensorFilter - no manual registration needed
         String code = "filter(sensorFilter()).count().meet(==1)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         // Test data - should only keep sensors with ID starting with "temp_"
         RhythmixEventData event1 = new RhythmixEventData("temp_001", "sensor1", "25.5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = new RhythmixEventData("humidity_001", "sensor2", "60.0", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
-        result = executor.execute(event1); // Keep (ID starts with "temp_")
+        result = rhythmixExecutor.execute(event1); // Keep (ID starts with "temp_")
         Assertions.assertTrue(result); // Should have 1 valid event
 
         // Reset for next test
-        executor.resetEnv();
-        result = executor.execute(event2); // Discard (ID doesn't start with "temp_")
+        rhythmixExecutor.resetEnv();
+        result = rhythmixExecutor.execute(event2); // Discard (ID doesn't start with "temp_")
         Assertions.assertFalse(result); // Should have 0 valid events
     }
 
@@ -124,7 +124,7 @@ class ChainFilterUDFTest {
     void testUDFWithTraditionalFilter() throws TranslatorException {
         // Test traditional comparison expression still works
         String code1 = "filter(>20).count().meet(==2)";
-        Executor executor1 = Compiler.compile(code1);
+        RhythmixExecutor rhythmixExecutor1 = RhythmixCompiler.compile(code1);
 
         RhythmixEventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "15", new Timestamp(System.currentTimeMillis() + 100));
@@ -132,13 +132,13 @@ class ChainFilterUDFTest {
 
 
         boolean result = false;
-        result = executor1.execute(event1); // Keep (25 > 20)
+        result = rhythmixExecutor1.execute(event1); // Keep (25 > 20)
         Assertions.assertFalse(result); // Not enough events yet
 
-        result = executor1.execute(event2); // Discard (15 <= 20)
+        result = rhythmixExecutor1.execute(event2); // Discard (15 <= 20)
         Assertions.assertFalse(result); // Still not enough events
 
-        result = executor1.execute(event3); // Keep (30 > 20)
+        result = rhythmixExecutor1.execute(event3); // Keep (30 > 20)
         Assertions.assertTrue(result); // Should have 2 valid events now
     }
 
@@ -151,17 +151,17 @@ class ChainFilterUDFTest {
 
         // Compile expression with both regular UDF and auto-imported filter UDF
         String code = "filter(tempFilter()).sum().meet(>threshold)";
-        Executor executor = Compiler.compile(code, udfEnv);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code, udfEnv);
 
         // Test data
         RhythmixEventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
-        result = executor.execute(event1); // Keep (temp in range)
+        result = rhythmixExecutor.execute(event1); // Keep (temp in range)
         Assertions.assertFalse(result); // Sum not > threshold yet
 
-        result = executor.execute(event2); // Keep (temp in range)
+        result = rhythmixExecutor.execute(event2); // Keep (temp in range)
         Assertions.assertTrue(result); // Sum (25+30=55) > threshold (50)
     }
 
@@ -171,7 +171,7 @@ class ChainFilterUDFTest {
     void testSensorIdFilterWithChainFunctionsSum() throws TranslatorException {
         // Use auto-imported sensorFilter - no manual registration needed
         String code = "filter(sensorFilter()).sum().meet(>100)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         // Mixed sensor data with numeric values
         RhythmixEventData[] sensorEvents = {
@@ -186,7 +186,7 @@ class ChainFilterUDFTest {
         boolean result = false;
         int tempSum = 0;
         for (int i = 0; i < sensorEvents.length; i++) {
-            result = executor.execute(sensorEvents[i]);
+            result = rhythmixExecutor.execute(sensorEvents[i]);
             if (sensorEvents[i].getId().startsWith("temp_")) {
                 tempSum += Integer.parseInt(sensorEvents[i].getValue());
             }
@@ -204,7 +204,7 @@ class ChainFilterUDFTest {
     void testSensorIdFilterWithChainFunctionsLimitAvg() throws TranslatorException {
         // Use auto-imported sensorFilter - no manual registration needed
         String code = "filter(sensorFilter()).limit(3).avg().meet([25,35])"; // Average should be between 25-35
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         // Sensor data with temperature values
         RhythmixEventData[] sensorEvents = {
@@ -220,7 +220,7 @@ class ChainFilterUDFTest {
         int tempCount = 0;
         int tempSum = 0;
         for (int i = 0; i < sensorEvents.length; i++) {
-            result = executor.execute(sensorEvents[i]);
+            result = rhythmixExecutor.execute(sensorEvents[i]);
             if (sensorEvents[i].getId().startsWith("temp_")) {
                 if (tempCount < 3) { // Only first 3 temp sensors due to limit
                     tempSum += Integer.parseInt(sensorEvents[i].getValue());
@@ -241,16 +241,16 @@ class ChainFilterUDFTest {
     void testArrayFilterWithLessThanThreeEvents() throws TranslatorException {
         // Test with 2 events - should keep both
         String code = "filter(arrayFilter()).count().meet(==2)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
 
         boolean result = false;
-        result = executor.execute(event1);
+        result = rhythmixExecutor.execute(event1);
         Assertions.assertFalse(result); // Not enough events yet
 
-        result = executor.execute(event2);
+        result = rhythmixExecutor.execute(event2);
         Assertions.assertTrue(result); // Should have 2 events (both kept)
     }
 
@@ -259,20 +259,20 @@ class ChainFilterUDFTest {
     void testArrayFilterWithExactlyThreeEvents() throws TranslatorException {
         // Test with exactly 3 events - should keep all 3
         String code = "filter(arrayFilter()).count().meet(==3)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
         RhythmixEventData event3 = Util.genEventData("sensor3", "30", new Timestamp(System.currentTimeMillis() + 200));
 
         boolean result = false;
-        result = executor.execute(event1);
+        result = rhythmixExecutor.execute(event1);
         Assertions.assertFalse(result); // Not enough events yet
 
-        result = executor.execute(event2);
+        result = rhythmixExecutor.execute(event2);
         Assertions.assertFalse(result); // Still not enough events
 
-        result = executor.execute(event3);
+        result = rhythmixExecutor.execute(event3);
         Assertions.assertTrue(result); // Should have 3 events (all kept)
     }
 
@@ -281,7 +281,7 @@ class ChainFilterUDFTest {
     void testArrayFilterWithMoreThanThreeEvents() throws TranslatorException {
         // Test with 5 events - should only keep the last 3
         String code = "filter(arrayFilter()).count().meet(==3)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
@@ -290,22 +290,22 @@ class ChainFilterUDFTest {
         RhythmixEventData event5 = Util.genEventData("sensor5", "50", new Timestamp(System.currentTimeMillis() + 400));
 
         boolean result = false;
-        result = executor.execute(event1);
+        result = rhythmixExecutor.execute(event1);
         Assertions.assertFalse(result);
 
-        result = executor.execute(event2);
+        result = rhythmixExecutor.execute(event2);
         Assertions.assertFalse(result);
 
-        result = executor.execute(event3);
+        result = rhythmixExecutor.execute(event3);
         Assertions.assertTrue(result); // Should have 3 events, but let's continue to test the filtering
 
-        result = executor.execute(event4);
+        result = rhythmixExecutor.execute(event4);
         Assertions.assertFalse(result); // Should still have 3 events (last 3: event2, event3, event4)
 
         // Reset and test final state
-        executor.resetEnv();
+        rhythmixExecutor.resetEnv();
         for (RhythmixEventData event : new RhythmixEventData[]{event1, event2, event3, event4, event5}) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
         }
         Assertions.assertTrue(result); // Should have 3 events (last 3: event3, event4, event5)
     }
@@ -315,7 +315,7 @@ class ChainFilterUDFTest {
     void testArrayFilterWithSumFunction() throws TranslatorException {
         // Test array filter with sum - should sum only the last 3 values
         String code = "filter(arrayFilter()).sum().meet(==120)"; // 30+40+50 = 120
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
@@ -325,7 +325,7 @@ class ChainFilterUDFTest {
 
         boolean result = false;
         for (RhythmixEventData event : new RhythmixEventData[]{event1, event2, event3, event4, event5}) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
                     (result ? "MATCH" : "continue"));
         }
@@ -338,7 +338,7 @@ class ChainFilterUDFTest {
     void testArrayFilterWithAvgFunction() throws TranslatorException {
         // Test array filter with avg - should average only the last 3 values
         String code = "filter(arrayFilter()).avg().meet(==40.0)"; // (30+40+50)/3 = 40.0
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData event1 = Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData event2 = Util.genEventData("sensor2", "20", new Timestamp(System.currentTimeMillis() + 100));
@@ -348,7 +348,7 @@ class ChainFilterUDFTest {
 
         boolean result = false;
         for (RhythmixEventData event : new RhythmixEventData[]{event1, event2, event3, event4, event5}) {
-            result = executor.execute(event);
+            result = rhythmixExecutor.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
                     (result ? "MATCH" : "continue"));
         }
@@ -361,15 +361,15 @@ class ChainFilterUDFTest {
     void testArrayFilterEdgeCases() throws TranslatorException {
         // Test with single event
         String code1 = "filter(arrayFilter()).count().meet(==1)";
-        Executor executor1 = Compiler.compile(code1);
+        RhythmixExecutor rhythmixExecutor1 = RhythmixCompiler.compile(code1);
 
         RhythmixEventData singleEvent = Util.genEventData("sensor1", "100", new Timestamp(System.currentTimeMillis()));
-        boolean result1 = executor1.execute(singleEvent);
+        boolean result1 = rhythmixExecutor1.execute(singleEvent);
         Assertions.assertTrue(result1); // Should keep the single event
 
         // Test with exactly 4 events to verify transition from 3 to 3 (last 3)
         String code2 = "filter(arrayFilter()).sum().meet(==90)"; // 20+30+40 = 90 (last 3 of 4)
-        Executor executor2 = Compiler.compile(code2);
+        RhythmixExecutor rhythmixExecutor2 = RhythmixCompiler.compile(code2);
 
         RhythmixEventData[] fourEvents = {
                 Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
@@ -380,7 +380,7 @@ class ChainFilterUDFTest {
 
         boolean result2 = false;
         for (RhythmixEventData event : fourEvents) {
-            result2 = executor2.execute(event);
+            result2 = rhythmixExecutor2.execute(event);
             System.out.println("After event " + event.getId() + " (value=" + event.getValue() + "): " +
                     (result2 ? "MATCH" : "continue"));
         }
@@ -394,10 +394,10 @@ class ChainFilterUDFTest {
         // This test verifies that arrayFilter works independently and doesn't interfere with traditional filters
         // We'll use a separate expression to test traditional filtering still works
         String traditionalCode = "filter(>25).count().meet(==3)";
-        Executor traditionalExecutor = Compiler.compile(traditionalCode);
+        RhythmixExecutor traditionalRhythmixExecutor = RhythmixCompiler.compile(traditionalCode);
 
         String arrayCode = "filter(arrayFilter()).count().meet(==3)";
-        Executor arrayExecutor = Compiler.compile(arrayCode);
+        RhythmixExecutor arrayRhythmixExecutor = RhythmixCompiler.compile(arrayCode);
 
         RhythmixEventData[] events = {
                 Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
@@ -410,14 +410,14 @@ class ChainFilterUDFTest {
         // Test traditional filter: should keep values > 25 (30, 40, 50)
         boolean traditionalResult = false;
         for (RhythmixEventData event : events) {
-            traditionalResult = traditionalExecutor.execute(event);
+            traditionalResult = traditionalRhythmixExecutor.execute(event);
         }
         Assertions.assertTrue(traditionalResult); // Should have 3 events > 25
 
         // Test array filter: should keep last 3 events regardless of value (40, 20, 50)
         boolean arrayResult = false;
         for (RhythmixEventData event : events) {
-            arrayResult = arrayExecutor.execute(event);
+            arrayResult = arrayRhythmixExecutor.execute(event);
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
 
@@ -427,7 +427,7 @@ class ChainFilterUDFTest {
     void testFilterSimplifyMode() throws TranslatorException {
 
         String arrayCode = "arrayFilter().count().meet(==3)";
-        Executor arrayExecutor = Compiler.compile(arrayCode);
+        RhythmixExecutor arrayRhythmixExecutor = RhythmixCompiler.compile(arrayCode);
         RhythmixEventData[] events = {
                 Util.genEventData("sensor1", "10", new Timestamp(System.currentTimeMillis())),
                 Util.genEventData("sensor2", "30", new Timestamp(System.currentTimeMillis() + 100)),
@@ -438,7 +438,7 @@ class ChainFilterUDFTest {
 
         boolean arrayResult = false;
         for (RhythmixEventData event : events) {
-            arrayResult = arrayExecutor.execute(event);
+            arrayResult = arrayRhythmixExecutor.execute(event);
         }
         Assertions.assertTrue(arrayResult); // Should have 3 events (last 3)
     }
@@ -450,21 +450,21 @@ class ChainFilterUDFTest {
         String arrayCode = "arrayFilter().filter(>30).count().meet(==3)";
         String finalArrayCode = arrayCode;
         Assertions.assertThrows(TranslatorException.class, () -> {
-            Compiler.compile(finalArrayCode);
+            RhythmixCompiler.compile(finalArrayCode);
         });
 
         arrayCode = "filter(>30).arrayFilter().count().meet(==3)";
         String finalArrayCode1 = arrayCode;
         Assertions.assertThrows(TranslatorException.class, () -> {
-            Compiler.compile(finalArrayCode1);
+            RhythmixCompiler.compile(finalArrayCode1);
         });
 
         Assertions.assertThrows(TranslatorException.class, () -> {
-            Compiler.compile("filter(>30).filter([1,7]).count().meet(==3)");
+            RhythmixCompiler.compile("filter(>30).filter([1,7]).count().meet(==3)");
         });
 
         Assertions.assertThrows(TranslatorException.class, () -> {
-            Compiler.compile("arrayFilter().sensorFilter().count().meet(==3)");
+            RhythmixCompiler.compile("arrayFilter().sensorFilter().count().meet(==3)");
         });
     }
 

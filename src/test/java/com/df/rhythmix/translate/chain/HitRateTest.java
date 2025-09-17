@@ -1,7 +1,7 @@
 package com.df.rhythmix.translate.chain;
 
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -20,15 +20,15 @@ public class HitRateTest {
         String code = "hitRate((1,5)).meet((>=0.5))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        boolean execute2 = executor.execute(p1);
+        boolean execute2 = rhythmixExecutor.execute(p1);
         Assertions.assertTrue(execute2);
-        boolean execute1 = executor.execute(p2);
+        boolean execute1 = rhythmixExecutor.execute(p2);
         Assertions.assertFalse(execute1);
-        boolean execute = executor.execute(p3);
+        boolean execute = rhythmixExecutor.execute(p3);
         Assertions.assertFalse(execute);
     }
 }
