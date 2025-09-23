@@ -8,7 +8,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <description>一个简单的规则表达式</description>
+    <description>A simple regular expression</description>
     <url>https://github.com/MFinnnne/rhythmix</url>
 
     <properties>
@@ -17,7 +17,6 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- 服务id 也就是setting.xml中的servers.server.id -->
         <serverId>central</serverId>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -32,18 +31,15 @@
     <developers>
         <developer>
             <name>MFine</name>
-            <email>MFinef@gmail.com</email>
+            <email>lxemyf@gmail.com</email>
             <timezone>+8</timezone>
         </developer>
     </developers>
 
 
     <scm>
-        <!-- 项目URL -->
         <url>https://github.com/MFinnnne/rhythmix</url>
-        <!-- 项目URL.git -->
         <connection>scm:git:https://github.com/MFinnnne/rhythmix.git</connection>
-        <!-- 项目URL.git -->
         <developerConnection>scm:git:https://github.com/MFinnnne/rhythmix.git</developerConnection>
     </scm>
 
