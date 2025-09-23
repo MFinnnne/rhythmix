@@ -26,15 +26,14 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
-@Slf4j
 /**
  * <p>ChainExpr class.</p>
  *
  * author MFine
  * version $Id: $Id
  */
+@Slf4j
 public class ChainExpr {
-
 
     /**
      * <p>translate.</p>

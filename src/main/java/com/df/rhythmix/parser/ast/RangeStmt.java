@@ -10,13 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
-@Slf4j
 /**
  * <p>RangeStmt class.</p>
  *
  * author MFine
  * version $Id: $Id
  */
+@Slf4j
 public class RangeStmt extends Stmt {
 
 

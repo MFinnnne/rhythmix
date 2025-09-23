@@ -22,20 +22,22 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 /**
- * <p>Window class.</p>
+ * Translates the "window" function in a chain expression.
+ * This function groups data into windows, which can be defined by a fixed number of items (tumbling window)
+ * or by a time duration (time window).
  *
- * author MFine
- * version $Id: $Id
+ * @author MFine
+ * @version $Id: $Id
  */
 public class Window {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/window.peb");
 
     /**
-     * <p>translate.</p>
+     * Translates a window expression ASTNode into its string representation.
      *
-     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
-     * @return a {@link java.lang.String} object.
+     * @param astNode The ASTNode representing the window expression. It can specify a window by size or by time.
+     * @param env     The environment proxy.
+     * @return The translated string representation of the window expression.
      * @throws com.df.rhythmix.exception.TranslatorException if any.
      */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {

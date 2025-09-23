@@ -17,15 +17,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 /**
  * <p>FunctionExpr class.</p>
  *
  * author MFine
  * version $Id: $Id
  */
+@Slf4j
 public class FunctionExpr {
 
+    /**
+     * The map of function name to function translate
+     */
     private static final Map<String, FunctionTranslate> FUNCTION_TRANSLATE_MAP = new HashMap<>();
 
     static {

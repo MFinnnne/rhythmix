@@ -52,7 +52,7 @@ public class CountTranslate implements FunctionTranslate {
             }
             context.put("funcName", funcName);
             ASTNode state = args.get(0);
-            if (!argsCheck(state)) {
+            if (argsCheck(state)) {
                 throw new TranslatorException("{} function's first parameter must be a state parameter", astNode.getLexeme(), funcName);
             }
             String code = Translator.translate(state, context, env);
@@ -74,7 +74,7 @@ public class CountTranslate implements FunctionTranslate {
         List<ASTNodeTypes> types = ParserUtils.toBFSASTType(astNode);
 
         return types.stream()
-                .noneMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
+                .anyMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
     }
 
 }

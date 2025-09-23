@@ -20,20 +20,21 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 /**
- * <p>Take class.</p>
+ * Translates the "take" function in a chain expression.
+ * This function allows for taking a slice of the data stream by specifying a start and optional end index.
  *
- * author MFine
- * version $Id: $Id
+ * @author MFine
+ * @version $Id: $Id
  */
 public class Take {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/take.peb");
 
     /**
-     * <p>translate.</p>
+     * Translates a take expression ASTNode into its string representation.
      *
-     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
-     * @return a {@link java.lang.String} object.
+     * @param astNode The ASTNode representing the take expression, which includes start and optional end indices.
+     * @param env     The environment proxy.
+     * @return The translated string representation of the take expression.
      * @throws com.df.rhythmix.exception.TranslatorException if any.
      */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {

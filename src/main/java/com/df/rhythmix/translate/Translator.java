@@ -24,13 +24,13 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 
-@Slf4j
 /**
  * <p>Translator class.</p>
  *
  * author MFine
  * version $Id: $Id
  */
+@Slf4j
 public class Translator {
 
 

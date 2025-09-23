@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
-@Data
 /**
  * <p>RhythmixEventData class.</p>
  *
@@ -20,6 +19,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class RhythmixEventData {
 
     /**

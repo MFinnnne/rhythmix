@@ -24,23 +24,24 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 /**
- * <p>Filter class.</p>
+ * Translates the "filter" function in a chain expression.
+ * This can handle both standard filter operations and user-defined filter functions (UDFs).
  *
- * author MFine
- * version $Id: $Id
+ * @author MFine
+ * @version $Id: $Id
  */
 public class Filter {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/filter.peb");
 
     /**
-     * <p>translate.</p>
+     * Translates a filter expression ASTNode that uses a User-Defined Function (UDF) into its string representation.
      *
      * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
      * @param udfName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws com.df.rhythmix.exception.TranslatorException if any.
-     * @throws java.io.IOException if any.
+     * @throws java.io.IOException                         if any.
      */
     public static String translate(ASTNode astNode, EnvProxy env, String udfName) throws TranslatorException, IOException {
 
@@ -55,10 +56,10 @@ public class Filter {
     }
 
     /**
-     * <p>translate.</p>
+     * Translates a filter expression ASTNode into its string representation.
      *
      * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
      * @return a {@link java.lang.String} object.
      * @throws com.df.rhythmix.exception.TranslatorException if any.
      */
@@ -68,10 +69,10 @@ public class Filter {
     }
 
     /**
-     * <p>translate.</p>
+     * Translates a filter expression ASTNode into its string representation using the provided context.
      *
      * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
      * @param context a {@link java.util.Map} object.
      * @return a {@link java.lang.String} object.
      * @throws com.df.rhythmix.exception.TranslatorException if any.

@@ -26,8 +26,6 @@ public class MutExpr {
 
 
     /**
-     * 会将 <0,1>转换为 {0}=>{1}
-     *
      * @param tokens 符号集合
      * @return 翻译得到的代码
      * @throws com.df.rhythmix.exception.TranslatorException 翻译错误

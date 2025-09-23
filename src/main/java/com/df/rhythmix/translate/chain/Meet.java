@@ -15,19 +15,21 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 /**
- * <p>Meet class.</p>
+ * Translates the "meet" function in a chain expression.
+ * This function checks if the incoming data meets a certain condition.
+ * It can be used with a standard condition or a User-Defined Function (UDF).
  *
- * author MFine
- * version $Id: $Id
+ * @author MFine
+ * @version $Id: $Id
  */
 public class Meet {
 
     /**
-     * <p>translate.</p>
+     * Translates a meet expression ASTNode into its string representation.
      *
      * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
-     * @param isUDF a boolean.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param isUDF   a boolean indicating whether a User-Defined Function is used for the condition.
      * @return a {@link java.lang.String} object.
      * @throws com.df.rhythmix.exception.TranslatorException if any.
      */
@@ -54,10 +56,10 @@ public class Meet {
     }
 
     /**
-     * <p>translate.</p>
+     * Translates a meet expression ASTNode into its string representation, assuming no UDF is used.
      *
      * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
-     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
      * @return a {@link java.lang.String} object.
      * @throws com.df.rhythmix.exception.TranslatorException if any.
      */

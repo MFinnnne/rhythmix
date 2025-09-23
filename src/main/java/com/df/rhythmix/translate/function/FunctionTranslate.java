@@ -22,18 +22,40 @@ public interface FunctionTranslate {
      */
     List<String> getName();
 
+    /**
+     * @param astNode Abstract Syntax Tree Node
+     * @param context the context
+     * @param env the environment
+     * @return the translated string
+     * @throws TranslatorException if the translation fails
+     */
     default String translate(ASTNode astNode, Map<String,Object> context, EnvProxy env) throws TranslatorException{
         return null;
     }
 
+    /**
+     * @param astNode the ASTNode to translate
+     * @param env the environment
+     * @return the translated string
+     * @throws TranslatorException if the translation fails
+     */
     default String translate(ASTNode astNode, EnvProxy env) throws TranslatorException{
         return null;
     }
 
+    /**
+     * @param astNode the ASTNode to translate
+     * @return the translated string
+     */
     default String translate(ASTNode astNode) {
         return null;
     }
 
+    /**
+     * Checks if the ASTNode is valid
+     * @param astNode the ASTNode to check
+     * @return true if the ASTNode is valid, false otherwise
+     */
     boolean argsCheck(ASTNode astNode);
 
 }

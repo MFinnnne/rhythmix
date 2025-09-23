@@ -61,6 +61,6 @@ public class DelayTranslate implements FunctionTranslate {
     /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
-        return false;
+        return true;
     }
 }

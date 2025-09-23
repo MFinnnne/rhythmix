@@ -16,16 +16,27 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 /**
- * <p>Calculator class.</p>
+ * Provides translators for calculator functions in a chain expression, such as sum, avg, etc.
  *
- * author MFine
- * version $Id: $Id
+ * @author MFine
+ * @version $Id: $Id
  */
 public class Calculator {
 
+    /**
+     * Translates the "sum" function in a chain expression.
+     */
     public static class Sum {
         private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/sum.peb");
 
+        /**
+         * Translates the given ASTNode into a string representation of the sum function.
+         *
+         * @param astNode The ASTNode to be translated.
+         * @param env     The environment proxy.
+         * @return The translated string.
+         * @throws TranslatorException if the translation fails.
+         */
         public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
 
             try {
@@ -44,9 +55,20 @@ public class Calculator {
         }
     }
 
+    /**
+     * Translates the "avg" function in a chain expression.
+     */
     public static class Avg {
         private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/avg.peb");
 
+        /**
+         * Translates the given ASTNode into a string representation of the avg function.
+         *
+         * @param astNode The ASTNode to be translated.
+         * @param env     The environment proxy.
+         * @return The translated string.
+         * @throws TranslatorException if the translation fails.
+         */
         public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
 
             try {
@@ -66,9 +88,20 @@ public class Calculator {
     }
 
 
+    /**
+     * Translates the "stddev" function in a chain expression.
+     */
     public static class Stddev {
         private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/stddev.peb");
 
+        /**
+         * Translates the given ASTNode into a string representation of the stddev function.
+         *
+         * @param astNode The ASTNode to be translated.
+         * @param env     The environment proxy.
+         * @return The translated string.
+         * @throws TranslatorException if the translation fails.
+         */
         public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
 
             try {
@@ -87,9 +120,20 @@ public class Calculator {
         }
     }
 
+    /**
+     * Translates the "count" function in a chain expression.
+     */
     public static class Count {
         private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/count.peb");
 
+        /**
+         * Translates the given ASTNode into a string representation of the count function.
+         *
+         * @param astNode The ASTNode to be translated.
+         * @param env     The environment proxy.
+         * @return The translated string.
+         * @throws TranslatorException if the translation fails.
+         */
         public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
 
             try {
@@ -108,8 +152,19 @@ public class Calculator {
         }
     }
 
+    /**
+     * Translates the "hitRate" function in a chain expression.
+     */
     public static class HitRate {
 
+        /**
+         * Translates the given ASTNode into a string representation of the hitRate function.
+         *
+         * @param astNode The ASTNode to be translated.
+         * @param env     The environment proxy.
+         * @return The translated string.
+         * @throws TranslatorException if the translation fails.
+         */
         public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
             try {
                 PebbleTemplate template = ENGINE.getTemplate("expr/chain/hitRate.peb");
@@ -129,7 +184,18 @@ public class Calculator {
         }
     }
 
+    /**
+     * Translates a custom function in a chain expression.
+     */
     public static class Custom {
+        /**
+         * Translates the given ASTNode into a string representation of the custom function.
+         *
+         * @param astNode The ASTNode to be translated.
+         * @param env     The environment proxy.
+         * @return The translated string.
+         * @throws TranslatorException if the translation fails.
+         */
         public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
             try {
 

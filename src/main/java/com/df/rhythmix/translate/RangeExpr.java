@@ -33,7 +33,7 @@ public class RangeExpr {
 
 
     /**
-     * Range expression [1,9] >1&&<9
+     * Range expression [1,9]
      *
      * @param tokens tokens
      * @return String     Translated Aviator code

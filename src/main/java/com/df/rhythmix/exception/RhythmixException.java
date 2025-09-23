@@ -19,6 +19,10 @@ import java.util.List;
  */
 public abstract class RhythmixException extends Exception {
 
+    /**
+     * The detail message of the exception.
+     */
+    @Getter
     protected String msg;
     /**
      * -- GETTER --

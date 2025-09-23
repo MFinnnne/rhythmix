@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.util.HashMap;
 
-@Setter
 /**
  * <p>EnvProxy class.</p>
  *
@@ -14,6 +13,7 @@ import java.util.HashMap;
  * version $Id: $Id
  */
 @Getter
+@Setter
 public class EnvProxy{
 
 
