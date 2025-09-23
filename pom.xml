@@ -5,19 +5,18 @@
     <artifactId>rhythmix</artifactId>
     <name>rhythmix</name>
     <groupId>io.github.mfinnnne</groupId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <description>一个简单的规则表达式</description>
+    <description>A simple regular expression</description>
     <url>https://github.com/MFinnnne/rhythmix</url>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- 服务id 也就是setting.xml中的servers.server.id -->
         <serverId>central</serverId>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -31,7 +30,7 @@
 
     <developers>
         <developer>
-            <name>mfine</name>
+            <name>MFine</name>
             <email>lxemyf@gmail.com</email>
             <timezone>+8</timezone>
         </developer>
@@ -39,11 +38,8 @@
 
 
     <scm>
-        <!-- 项目URL -->
         <url>https://github.com/MFinnnne/rhythmix</url>
-        <!-- 项目URL.git -->
         <connection>scm:git:https://github.com/MFinnnne/rhythmix.git</connection>
-        <!-- 项目URL.git -->
         <developerConnection>scm:git:https://github.com/MFinnnne/rhythmix.git</developerConnection>
     </scm>
 
@@ -78,7 +74,6 @@
             <version>2.0.9</version>
             <scope>provided</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -104,7 +99,6 @@
 
     <build>
         <plugins>
-            <!-- 编译插件，设置源码以及编译的jdk版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -114,7 +108,6 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-            <!-- Source -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -128,29 +121,27 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9.1</version>
-                <configuration>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            <!-- Javadoc -->
-            <!-- Gpg Signature -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.6</version>
+                <configuration>
+                    <executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</executable>
+                    <keyname>mfinnnne</keyname>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -160,24 +151,16 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- 新方式的配置，将组件部署到OSSRH并将其发布到Central Repository-->
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <version>0.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>central</publishingServerId>
+                    <publishingServerId>Rhythmix</publishingServerId>
                     <tokenAuth>true</tokenAuth>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>${serverId}</id>
-            <url>https://central.sonatype.com/</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>

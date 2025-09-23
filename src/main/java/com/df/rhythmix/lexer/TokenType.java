@@ -1,21 +1,44 @@
 package com.df.rhythmix.lexer;
 
+/**
+ * Enumeration of token types used in the Rhythmix language.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public enum TokenType {
-    // 关键字
+    /**
+     * A reserved keyword, such as 'if', 'let', 'func'.
+     */
     KEYWORD("keyword"),
-    // 变量
+    /**
+     * An identifier for a variable.
+     */
     VARIABLE("var"),
-    // 操作符
+    /**
+     * An operator, such as '+', '-', '==', '->'.
+     */
     OPERATOR("operator"),
-    // 括号
+    /**
+     * A bracket or parenthesis, such as '(', ')', '{', '}'.
+     */
     BRACKET("bracket"),
-    // 字符串
+    /**
+     * A string literal, enclosed in quotes.
+     */
     STRING("string"),
-    // 浮点数
+    /**
+     * A floating-point number literal.
+     */
     FLOAT("float"),
-    // 布尔型
+    /**
+     * A boolean literal, 'true' or 'false'.
+     */
     BOOLEAN("boolean"),
-    // 整型
+    /**
+     * An integer literal.
+     */
     INTEGER("integer");
 
     private String title;
@@ -24,6 +47,11 @@ public enum TokenType {
         this.title = title;
     }
 
+    /**
+     * Gets the descriptive title of the token type.
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public String getTitle() {
         return title;
     }

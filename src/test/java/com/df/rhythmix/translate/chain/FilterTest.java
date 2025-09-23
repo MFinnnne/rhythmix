@@ -1,10 +1,10 @@
 package com.df.rhythmix.translate.chain;
 
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -22,18 +22,18 @@ class FilterTest {
         String code = "filter(>3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        executor.execute(p1);
-        executor.execute(p2);
-        boolean execute = executor.execute(p3);
+        rhythmixExecutor.execute(p1);
+        rhythmixExecutor.execute(p2);
+        boolean execute = rhythmixExecutor.execute(p3);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p4);
+        boolean execute1 = rhythmixExecutor.execute(p4);
         Assertions.assertTrue(execute1);
-        boolean execute2 = executor.execute(p4);
+        boolean execute2 = rhythmixExecutor.execute(p4);
         Assertions.assertTrue(execute2);
     }
 
@@ -43,17 +43,17 @@ class FilterTest {
         String code = "filter(>=3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        executor.execute(p1);
-        executor.execute(p2);
-        boolean execute = executor.execute(p3);
+        rhythmixExecutor.execute(p1);
+        rhythmixExecutor.execute(p2);
+        boolean execute = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute);
-        executor.execute(p4);
-        executor.execute(p4);
+        rhythmixExecutor.execute(p4);
+        rhythmixExecutor.execute(p4);
     }
 
     @Test
@@ -62,21 +62,21 @@ class FilterTest {
         String code = "filter(<3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p5 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p4);
+        boolean execute = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p1);
+        boolean execute1 = rhythmixExecutor.execute(p1);
         Assertions.assertFalse(execute1);
-        boolean execute2 = executor.execute(p2);
+        boolean execute2 = rhythmixExecutor.execute(p2);
         Assertions.assertFalse(execute2);
-        boolean execute3 = executor.execute(p3);
+        boolean execute3 = rhythmixExecutor.execute(p3);
         Assertions.assertFalse(execute3);
-        boolean execute4 = executor.execute(p5);
+        boolean execute4 = rhythmixExecutor.execute(p5);
         Assertions.assertTrue(execute4);
     }
 
@@ -86,19 +86,19 @@ class FilterTest {
         String code = "filter(<=3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p4);
+        boolean execute = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p1);
+        boolean execute1 = rhythmixExecutor.execute(p1);
         Assertions.assertFalse(execute1);
-        executor.execute(p2);
-        boolean execute2 = executor.execute(p3);
+        rhythmixExecutor.execute(p2);
+        boolean execute2 = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute2);
-        executor.execute(p4);
+        rhythmixExecutor.execute(p4);
     }
 
 
@@ -108,14 +108,14 @@ class FilterTest {
         String code = "filter(==3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p4);
+        boolean execute = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p3);
+        boolean execute1 = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute1);
     }
 
@@ -125,12 +125,12 @@ class FilterTest {
         String code = "filter(!=3).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p3);
+        boolean execute = rhythmixExecutor.execute(p3);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p4);
+        boolean execute1 = rhythmixExecutor.execute(p4);
         Assertions.assertTrue(execute1);
     }
 
@@ -141,12 +141,12 @@ class FilterTest {
         String code = "filter((1,4)).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p4);
+        boolean execute = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p3);
+        boolean execute1 = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute1);
     }
 
@@ -156,15 +156,15 @@ class FilterTest {
         String code = "filter((1,4]).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p4);
+        boolean execute = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p3);
+        boolean execute1 = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute1);
-        boolean execute2 = executor.execute(p2);
+        boolean execute2 = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute2);
     }
 
@@ -175,18 +175,18 @@ class FilterTest {
         String code = "filter(((1,7]||>10)&&!=5).sum().meet(>1)";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p5 = Util.genEventData("1", "8", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p5);
+        boolean execute = rhythmixExecutor.execute(p5);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p3);
+        boolean execute1 = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute1);
-        boolean execute2 = executor.execute(p2);
+        boolean execute2 = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute2);
-        boolean execute3 = executor.execute(p4);
+        boolean execute3 = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute3);
     }
 
@@ -196,23 +196,23 @@ class FilterTest {
         String code = "filter((1,6)).sum().meet(>1)||filter(>9).sum().meet((12,30))";
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
-        Executor executor = new Executor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p5 = Util.genEventData("1", "8", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p6 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
-        boolean execute = executor.execute(p5);
+        boolean execute = rhythmixExecutor.execute(p5);
         Assertions.assertFalse(execute);
-        boolean execute1 = executor.execute(p3);
+        boolean execute1 = rhythmixExecutor.execute(p3);
         Assertions.assertTrue(execute1);
-        boolean execute2 = executor.execute(p2);
+        boolean execute2 = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute2);
-        boolean execute3 = executor.execute(p4);
+        boolean execute3 = rhythmixExecutor.execute(p4);
         Assertions.assertTrue(execute3);
-        boolean execute4 = executor.execute(p6);
+        boolean execute4 = rhythmixExecutor.execute(p6);
         Assertions.assertFalse(execute4);
-        boolean execute5 = executor.execute(p6);
+        boolean execute5 = rhythmixExecutor.execute(p6);
         Assertions.assertTrue(execute5);
     }
 }

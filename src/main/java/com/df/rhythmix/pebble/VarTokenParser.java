@@ -10,13 +10,18 @@ import io.pebbletemplates.pebble.tokenParser.TokenParser;
 
 /**
  * 使用方法：{%debug "变量1:{},变量2：{}",var1,var2 %}
+ *
+ * author MFine
+ * version $Id: $Id
  */
 public class VarTokenParser implements TokenParser {
+    /** {@inheritDoc} */
     @Override
     public String getTag() {
         return "var";
     }
 
+    /** {@inheritDoc} */
     @Override
     public RenderableNode parse(Token token, Parser parser) {
         TokenStream stream = parser.getStream();

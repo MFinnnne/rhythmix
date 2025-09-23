@@ -1,8 +1,8 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Compiler;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixCompiler;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.lib.Register;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.RhythmixEventData;
@@ -49,7 +49,7 @@ class ChainFilterUDFAutoImportTest {
     void testAutoImportedTempFilter() throws TranslatorException {
         // Use auto-imported tempFilter without manual registration
         String code = "filter(tempFilter()).count().meet(==2)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         
         // Test data - tempFilter should keep temperatures between -50 and 100
         RhythmixEventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));      // Keep
@@ -58,13 +58,13 @@ class ChainFilterUDFAutoImportTest {
         RhythmixEventData event4 = Util.genEventData("sensor4", "150.0", new Timestamp(System.currentTimeMillis() + 300)); // Discard (> 100)
         
         boolean result = false;
-        result = executor.execute(event1); // Keep
+        result = rhythmixExecutor.execute(event1); // Keep
         Assertions.assertFalse(result); // Not enough events yet
         
-        result = executor.execute(event2); // Discard
+        result = rhythmixExecutor.execute(event2); // Discard
         Assertions.assertFalse(result); // Still not enough events
         
-        result = executor.execute(event3); // Keep
+        result = rhythmixExecutor.execute(event3); // Keep
         Assertions.assertTrue(result); // Should have 2 valid temperatures now
     }
 
@@ -73,7 +73,7 @@ class ChainFilterUDFAutoImportTest {
     void testAutoImportedNumericFilter() throws TranslatorException {
         // Use auto-imported numericFilter without manual registration
         String code = "filter(numericFilter()).count().meet(==2)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         
         // Test data - numericFilter should keep only numeric values
         RhythmixEventData event1 = Util.genEventData("sensor1", "25.5", new Timestamp(System.currentTimeMillis()));      // Keep (numeric)
@@ -82,13 +82,13 @@ class ChainFilterUDFAutoImportTest {
         RhythmixEventData event4 = Util.genEventData("sensor4", "error", new Timestamp(System.currentTimeMillis() + 300));  // Discard (non-numeric)
         
         boolean result = false;
-        result = executor.execute(event1); // Keep
+        result = rhythmixExecutor.execute(event1); // Keep
         Assertions.assertFalse(result); // Not enough events yet
         
-        result = executor.execute(event2); // Discard
+        result = rhythmixExecutor.execute(event2); // Discard
         Assertions.assertFalse(result); // Still not enough events
         
-        result = executor.execute(event3); // Keep
+        result = rhythmixExecutor.execute(event3); // Keep
         Assertions.assertTrue(result); // Should have 2 valid numeric values now
     }
 
@@ -97,7 +97,7 @@ class ChainFilterUDFAutoImportTest {
     void testAutoImportedPositiveFilter() throws TranslatorException {
         // Use auto-imported positiveFilter without manual registration
         String code = "filter(positiveFilter()).sum().meet(>50)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         
         // Test data - positiveFilter should keep only positive values
         RhythmixEventData event1 = Util.genEventData("sensor1", "25", new Timestamp(System.currentTimeMillis()));      // Keep (positive)
@@ -106,13 +106,13 @@ class ChainFilterUDFAutoImportTest {
         RhythmixEventData event4 = Util.genEventData("sensor4", "0", new Timestamp(System.currentTimeMillis() + 300));    // Discard (zero)
         
         boolean result = false;
-        result = executor.execute(event1); // Keep (25)
+        result = rhythmixExecutor.execute(event1); // Keep (25)
         Assertions.assertFalse(result); // Sum not > 50 yet
         
-        result = executor.execute(event2); // Discard (-10)
+        result = rhythmixExecutor.execute(event2); // Discard (-10)
         Assertions.assertFalse(result); // Sum still not > 50
         
-        result = executor.execute(event3); // Keep (30)
+        result = rhythmixExecutor.execute(event3); // Keep (30)
         Assertions.assertTrue(result); // Sum (25+30=55) > 50
     }
 

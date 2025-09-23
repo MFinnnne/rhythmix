@@ -1,9 +1,9 @@
 package com.df.rhythmix.translate;
 
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.util.Util;
@@ -23,7 +23,7 @@ class RangeExprTest {
 
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         
         RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
@@ -38,7 +38,7 @@ class RangeExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
@@ -55,7 +55,7 @@ class RangeExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         RhythmixEventData pointData = Util.genEventData("1", "2.0", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         RhythmixEventData p3 = Util.genEventData("1", "3.0", new Timestamp(System.currentTimeMillis()));
@@ -71,7 +71,7 @@ class RangeExprTest {
         EnvProxy env = new EnvProxy();
         env.rawPut("MAX",10);
         String translatedCode = Translator.translate(code, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
@@ -89,7 +89,7 @@ class RangeExprTest {
         ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
         EnvProxy env = new EnvProxy();
         String translatedCode = RangeExpr.translate(tokens, env);
-        Executor compile = new Executor(translatedCode,env);
+        RhythmixExecutor compile = new RhythmixExecutor(translatedCode,env);
         RhythmixEventData pointData = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(compile.execute(pointData));
         RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));

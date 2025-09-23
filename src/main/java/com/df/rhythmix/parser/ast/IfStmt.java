@@ -6,11 +6,28 @@ import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.util.PeekTokenIterator;
 
 
+/**
+ * Represents an 'if' statement in the AST, including optional 'else' and 'else if' clauses.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public class IfStmt extends Stmt {
+    /**
+     * <p>Constructor for IfStmt.</p>
+     */
     protected IfStmt() {
         super( ASTNodeTypes.IF_STMT, "if");
     }
 
+    /**
+     * Parses an 'if' statement, along with any 'else' or 'else if' clauses.
+     *
+     * @param it a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return an {@link ASTNode} representing the full conditional statement.
+     * @throws com.df.rhythmix.exception.ParseException if the syntax is incorrect.
+     */
     public static ASTNode parse( PeekTokenIterator it) throws ParseException {
         Token token = it.nextMatch("if");
         it.nextMatch("(");
@@ -28,6 +45,13 @@ public class IfStmt extends Stmt {
         return ifStmt;
     }
 
+    /**
+     * Parses the tail of an 'if' statement, which can be an 'else' block or an 'else if' statement.
+     *
+     * @param it a {@link com.df.rhythmix.util.PeekTokenIterator} object.
+     * @return an {@link ASTNode} for the 'else' or 'else if' part, or {@code null} if there is none.
+     * @throws com.df.rhythmix.exception.ParseException if the syntax is incorrect.
+     */
     public static ASTNode tail( PeekTokenIterator it) throws ParseException {
         if (!it.hasNext() || !it.peek().getValue().equals("else")) {
             return null;

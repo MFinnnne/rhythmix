@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * @author MFine
- * @version 1.0
- * @date 2021/10/26 0:07
+ * author MFine
+ * version 1.0
+ * date 2021/10/26 0:07
  **/
 class StmtTest {
 

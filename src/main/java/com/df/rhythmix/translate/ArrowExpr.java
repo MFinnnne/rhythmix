@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-06 22:28:48
  * @LastEditors: MFine
  * @Description: 
@@ -26,15 +26,41 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>ArrowExpr class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class ArrowExpr {
 
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param tokens a {@link java.util.List} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.LexicalException if any.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     * @throws java.io.IOException if any.
+     * @throws com.df.rhythmix.exception.ParseException if any.
+     */
     public static String translate(List<Token> tokens, EnvProxy env) throws LexicalException, TranslatorException, IOException, ParseException {
         ASTNode astNode = ArrowStmt.parse(new PeekTokenIterator(tokens.stream()));
         return translate(astNode, env);
     }
 
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param context a {@link java.util.Map} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         try {
             try {
@@ -68,6 +94,14 @@ public class ArrowExpr {
         }
     }
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             Map<String, Object> context = new HashMap<>();

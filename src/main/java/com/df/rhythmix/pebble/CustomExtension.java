@@ -11,17 +11,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * <p>CustomExtension class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class CustomExtension implements Extension {
+    /** {@inheritDoc} */
     @Override
     public Map<String, Filter> getFilters() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Map<String, Test> getTests() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Map<String, Function> getFunctions() {
         Map<String, Function> functions = new HashMap<>();
@@ -35,6 +44,7 @@ public class CustomExtension implements Extension {
         return functions;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<TokenParser> getTokenParsers() {
         List<TokenParser> parsers = new ArrayList<>();
@@ -45,16 +55,19 @@ public class CustomExtension implements Extension {
         return parsers;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<BinaryOperator> getBinaryOperators() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<UnaryOperator> getUnaryOperators() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Map<String, Object> getGlobalVariables() {
         Map<String, Object> map = new HashMap<>();
@@ -62,11 +75,13 @@ public class CustomExtension implements Extension {
         return map;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<NodeVisitorFactory> getNodeVisitors() {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AttributeResolver> getAttributeResolver() {
         return null;

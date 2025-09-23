@@ -6,12 +6,16 @@ import java.util.*;
 
 /**
  * Singleton configuration class for chain expression function lists.
- * This class manages the dynamic configuration of function categories and call tree relationships.
- *
- * Thread-safe singleton implementation using double-checked locking pattern.
+ * <p>
+ * This class manages the dynamic configuration of function categories (start, end, limit, calc)
+ * and their valid call sequences through a call tree. It ensures that chain expressions are
+ * constructed correctly by defining which functions can follow others.
+ * <p>
+ * This class is implemented as a thread-safe singleton using a double-checked locking pattern.
  *
  * @author MFine
  * @version 1.0
+ * @since 1.0
  */
 @Getter
 public class ChainFunctionConfig {
@@ -56,18 +60,20 @@ public class ChainFunctionConfig {
     }
 
     /**
-     * Reset the singleton instance (mainly for testing purposes).
-     * This method is synchronized to ensure thread safety.
+     * Resets the singleton instance. This method is primarily used for testing purposes
+     * to ensure a clean state between tests. It is synchronized to maintain thread safety.
      */
     public static synchronized void resetInstance() {
         instance = null;
     }
 
     /**
-     * Create a new instance with custom configuration (for testing or special cases).
-     * This bypasses the singleton pattern and should be used carefully.
+     * Creates a new instance with a default configuration.
+     * <p>
+     * This method bypasses the singleton pattern and is intended for special cases or testing
+     * where a distinct configuration instance is required.
      *
-     * @return a new ChainFunctionConfig instance
+     * @return a new {@link com.df.rhythmix.config.ChainFunctionConfig} instance with default settings.
      */
     public static ChainFunctionConfig createNewInstance() {
         return new ChainFunctionConfig();
@@ -117,7 +123,7 @@ public class ChainFunctionConfig {
         }
     }
 
-      /**
+    /**
      * Update startFunc by adding one or more function names.
      * Thread-safe method using synchronization.
      *
@@ -133,7 +139,15 @@ public class ChainFunctionConfig {
         buildCallTree();
     }
 
-    public synchronized  void addCalcFunc(String... functionNames) {
+    /**
+     * Adds one or more function names to the list of calculation functions.
+     * If a function name already exists in the list, it will not be added again.
+     * After adding the function(s), the call tree is rebuilt to reflect the changes.
+     * This method is synchronized to ensure thread safety.
+     *
+     * @param functionNames one or more function names to add.
+     */
+    public synchronized void addCalcFunc(String... functionNames) {
         for (String funcName : functionNames) {
             if (!this.calcFunc.contains(funcName)) {
                 this.calcFunc.add(funcName);
@@ -143,7 +157,15 @@ public class ChainFunctionConfig {
         buildCallTree();
     }
 
-    public synchronized  void  addEndFunc(String... functionNames) {
+    /**
+     * Adds one or more function names to the list of end functions.
+     * If a function name already exists in the list, it will not be added again.
+     * After adding the function(s), the call tree is rebuilt to reflect the changes.
+     * This method is synchronized to ensure thread safety.
+     *
+     * @param functionNames one or more function names to add.
+     */
+    public synchronized void addEndFunc(String... functionNames) {
         for (String funcName : functionNames) {
             if (!this.endFunc.contains(funcName)) {
                 this.endFunc.add(funcName);

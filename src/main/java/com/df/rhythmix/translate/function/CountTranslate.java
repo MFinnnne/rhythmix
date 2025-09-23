@@ -16,20 +16,29 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>CountTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class CountTranslate implements FunctionTranslate {
 
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getName() {
         return List.of("count", "count!");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         Map<String,Object> context = new HashMap<>();
         return translate(astNode, context,env);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode,Map<String,Object> context, EnvProxy env) throws TranslatorException {
         try {
@@ -43,7 +52,7 @@ public class CountTranslate implements FunctionTranslate {
             }
             context.put("funcName", funcName);
             ASTNode state = args.get(0);
-            if (!argsCheck(state)) {
+            if (argsCheck(state)) {
                 throw new TranslatorException("{} function's first parameter must be a state parameter", astNode.getLexeme(), funcName);
             }
             String code = Translator.translate(state, context, env);
@@ -59,12 +68,13 @@ public class CountTranslate implements FunctionTranslate {
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
         List<ASTNodeTypes> types = ParserUtils.toBFSASTType(astNode);
 
         return types.stream()
-                .noneMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
+                .anyMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
     }
 
 }

@@ -12,10 +12,24 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * Translates the "collect" function in a chain expression.
+ *
+ * @author MFine
+ * @version $Id: $Id
+ */
 public class Collect {
 
     private static final PebbleTemplate COLLECT = ENGINE.getTemplate("expr/chain/collect.peb");
 
+    /**
+     * Translates a collect expression ASTNode into its string representation.
+     *
+     * @param astNode The ASTNode representing the collect expression.
+     * @param env     The environment proxy.
+     * @return The translated string representation of the collect expression.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             Writer writer = new StringWriter();

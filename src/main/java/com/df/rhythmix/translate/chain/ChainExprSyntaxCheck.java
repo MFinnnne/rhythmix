@@ -8,9 +8,23 @@ import lombok.Getter;
 
 import java.util.*;
 
+/**
+ * Performs syntax checking for chain expressions.
+ * This class ensures that the sequence of functions in a chain expression is valid
+ * according to the configured rules (e.g., start functions, end functions, and allowed transitions).
+ *
+ * @author MFine
+ * @version $Id: $Id
+ */
 public class ChainExprSyntaxCheck {
 
 
+    /**
+     * Checks the syntax of a chain expression represented by an ASTNode.
+     *
+     * @param astNode The root ASTNode of the chain expression.
+     * @throws com.df.rhythmix.exception.TranslatorException if any syntax violation is found.
+     */
     public static void check(ASTNode astNode) throws TranslatorException {
         List<ASTNode> nodes = ParserUtils.getAllCallStmtNode(astNode);
 

@@ -1,8 +1,8 @@
 package com.df.rhythmix.translate.function;
 
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.translate.EnvProxy;
 import com.df.rhythmix.translate.Translator;
@@ -20,7 +20,7 @@ class CountFunctionTest {
         String code = "count!(>4,3)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        Executor translate = new Executor(translatedCode, env);
+        RhythmixExecutor translate = new RhythmixExecutor(translatedCode, env);
         RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
@@ -41,7 +41,7 @@ class CountFunctionTest {
         String code = "count!(>4,3)||count(>10,2)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        Executor translate = new Executor(translatedCode, env);
+        RhythmixExecutor translate = new RhythmixExecutor(translatedCode, env);
         RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis()));
@@ -56,7 +56,7 @@ class CountFunctionTest {
     void countStrictResetsOnFailure() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        Executor ex = new Executor(Translator.translate("count!(>4,3)", env), env);
+        RhythmixExecutor ex = new RhythmixExecutor(Translator.translate("count!(>4,3)", env), env);
         long t = System.currentTimeMillis();
         boolean r;
         r = ex.execute(Util.genEventData("1", "5", new Timestamp(t)));
@@ -77,7 +77,7 @@ class CountFunctionTest {
     void countStrictExactNThenReset() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        Executor ex = new Executor(Translator.translate("count!(>10,2)", env), env);
+        RhythmixExecutor ex = new RhythmixExecutor(Translator.translate("count!(>10,2)", env), env);
         long t = System.currentTimeMillis();
         boolean r;
         r = ex.execute(Util.genEventData("1", "11", new Timestamp(t)));
@@ -92,7 +92,7 @@ class CountFunctionTest {
     void countStrictWithRangeExpr() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        Executor ex = new Executor(Translator.translate("count!([10,20],3)", env), env);
+        RhythmixExecutor ex = new RhythmixExecutor(Translator.translate("count!([10,20],3)", env), env);
         long t = System.currentTimeMillis();
         boolean r;
         r = ex.execute(Util.genEventData("1", "15", new Timestamp(t)));
@@ -109,7 +109,7 @@ class CountFunctionTest {
     void countStrictWithOrCombination() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
-        Executor ex = new Executor(Translator.translate("count!(>4,3)||count!(<0,2)", env), env);
+        RhythmixExecutor ex = new RhythmixExecutor(Translator.translate("count!(>4,3)||count!(<0,2)", env), env);
         long t = System.currentTimeMillis();
         boolean r;
         r = ex.execute(Util.genEventData("1", "-1", new Timestamp(t)));

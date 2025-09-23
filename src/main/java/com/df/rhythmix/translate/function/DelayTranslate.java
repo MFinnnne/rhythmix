@@ -14,14 +14,22 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>DelayTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class DelayTranslate implements FunctionTranslate {
 
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getName() {
         return List.of("delay");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, Map<String,Object> context,EnvProxy env) throws TranslatorException {
         try {
@@ -50,8 +58,9 @@ public class DelayTranslate implements FunctionTranslate {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
-        return false;
+        return true;
     }
 }

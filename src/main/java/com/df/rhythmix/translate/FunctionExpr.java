@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-06 22:39:09
  * @LastEditors: MFine
  * @Description: 
@@ -17,9 +17,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * <p>FunctionExpr class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 @Slf4j
 public class FunctionExpr {
 
+    /**
+     * The map of function name to function translate
+     */
     private static final Map<String, FunctionTranslate> FUNCTION_TRANSLATE_MAP = new HashMap<>();
 
     static {
@@ -44,16 +53,39 @@ public class FunctionExpr {
         });
     }
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @return a {@link java.lang.String} object.
+     */
     public static String translate(ASTNode astNode) {
         String funcName = astNode.getLabel();
         return FUNCTION_TRANSLATE_MAP.get(funcName).translate(astNode);
     }
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode,EnvProxy env) throws TranslatorException {
         String funcName =  astNode.getLabel();
         return FUNCTION_TRANSLATE_MAP.get(funcName).translate(astNode, env);
     }
 
+    /**
+     * <p>translate.</p>
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param context a {@link java.util.Map} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, Map<String,Object> context,EnvProxy env) throws TranslatorException {
         String funcName =  astNode.getLabel();
         return FUNCTION_TRANSLATE_MAP.get(funcName).translate(astNode,context, env);

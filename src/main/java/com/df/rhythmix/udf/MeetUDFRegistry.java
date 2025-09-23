@@ -15,8 +15,8 @@ import java.util.Set;
  * <p>
  * This is a facade over the generic UDFRegistry for backward compatibility.
  *
- * @author MFine
- * @version 1.0
+ * author MFine
+ * version 1.0
  */
 @Slf4j
 public class MeetUDFRegistry {
