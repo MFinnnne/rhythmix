@@ -148,7 +148,7 @@
                 <version>1.6</version>
                 <configuration>
                     <executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</executable>
-                    <keyname>io.github.mfinnnne</keyname>
+                    <keyname>mfinnnne</keyname>
                 </configuration>
                 <executions>
                     <execution>
