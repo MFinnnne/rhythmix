@@ -57,7 +57,7 @@ Rhythmix 是一个专为流数据处理设计的规则表达式引擎。它可�
 ```java
 // 编译表达式
 String code = "count(>4,3)";
-Executor exe = Compiler.compile(code);
+RhythmixExecutor exe = RhythmixCompiler.compile(code);
 
 // 构造测试数据
 RhythmixEventData p1 = new RhythmixEventData("11", "event1", "1", new Timestamp(System.currentTimeMillis()));
@@ -1168,7 +1168,7 @@ RhythmixEventData tempData = new RhythmixEventData(
 
 // 使用表达式检测温度
 String expression = ">30";
-Executor rhythmixExecutor = Compiler.compile(expression);
+RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(expression);
 boolean isHot = rhythmixExecutor.execute(tempData); // false，因为 28.5 不大于 30
 ```
 
@@ -1184,7 +1184,7 @@ List<RhythmixEventData> products = Arrays.asList(
 
 // 检测连续3个产品重量都大于95g
 String expression = "count!(>95, 3)";
-Executor rhythmixExecutor = Compiler.compile(expression);
+RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(expression);
 boolean allQualified = rhythmixExecutor.execute(products.toArray(new RhythmixEventData[0])); // true
 ```
 
@@ -1209,7 +1209,7 @@ RhythmixEventData[] responses = {
 
 // 检测状态转换：正常响应 → 高延迟
 String expression = "{<500}->{>1000}";
-Executor rhythmixExecutor = Compiler.compile(expression);
+RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(expression);
 boolean hasLatencySpike = rhythmixExecutor.execute(responses); // true
 ```
 
