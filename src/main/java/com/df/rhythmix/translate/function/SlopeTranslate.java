@@ -14,19 +14,28 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>SlopeTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class SlopeTranslate implements FunctionTranslate {
 
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getName() {
         return List.of("slope");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         return translate(astNode, env);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
 
@@ -78,8 +87,9 @@ public class SlopeTranslate implements FunctionTranslate {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
-        return false;
+        return true;
     }
 }

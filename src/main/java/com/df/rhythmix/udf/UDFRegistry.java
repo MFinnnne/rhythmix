@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * It supports any UDF interface type through generics.
  *
  * @param <T> The UDF interface type (e.g., FilterUDF, CalculatorUDF)
- * @author MFine
- * @version 1.0
+ * author MFine
+ * version 1.0
  */
 @Slf4j
 public class UDFRegistry<T> {

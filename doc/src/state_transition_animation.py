@@ -9,6 +9,7 @@ import os
 from dataclasses import dataclass
 from typing import List, Optional
 from src.animation_base import DocAnimation
+from config import DEFAULT_WIDTH, DEFAULT_HEIGHT, MAX_DURATION, COLORS
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -16,8 +17,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 class StateTransitionPair:
     """Represents a data pair for state transition animation with state information."""
 
-    def __init__(self, left: str, right: str = 'False', record_text: str = "", 
+    def __init__(self, left: str, right: str = 'False', record_text: str = "",
                  recording_tag: bool = False, current_state: int = 0,
+                 subtitle: Optional[str] = None,
                  delay: float = 0.1, movement_duration: float = 0.3,
                  left_color: Optional[str] = None, right_color: Optional[str] = None, **kwargs):
         """
@@ -41,6 +43,8 @@ class StateTransitionPair:
         self.current_state = current_state  # 0 = waiting for {==0}, 1 = waiting for {==1}
         self.delay = delay
         self.movement_duration = movement_duration
+        # Optional subtitle shown under the expression (e.g., saved queue data)
+        self.subtitle = subtitle
 
         # Set default record_text if not provided
         if not record_text:
@@ -97,24 +101,33 @@ class StateTransitionAnimation(DocAnimation):
     4. Recording area showing the evaluation history
     """
 
-    def __init__(self, state_pairs=None, expression_parts=None, speed_multiplier=1.0, **kwargs):
+    def __init__(self, state_pairs=None, expression_parts=None, speed_multiplier=1.0,
+                 line_spacing=0.1, column_spacing=3.5, **kwargs):
         """
         Initialize StateTransitionAnimation.
-        
+
         Args:
             state_pairs: List of StateTransitionPair objects
             expression_parts: List of expression parts (e.g., ["{==0}", "->", "{==1}"])
             speed_multiplier: Speed control (1.0=normal, 0.5=half speed, 2.0=double speed)
+            line_spacing: Spacing between wrapped lines within a single text entry (default: 0.1)
+            column_spacing: Width spacing between columns in multi-column layout (default: 3.5)
         """
+        self._subtitle_value = None
         if state_pairs is None:
             state_pairs = [StateTransitionPair('0', 'false')]
-        
+
         if expression_parts is None:
             expression_parts = ["{==0}", "->", "{==1}"]
 
         self.state_pairs = state_pairs
         self.expression_parts = expression_parts
         self.speed_multiplier = speed_multiplier
+
+        # Layout configuration parameters
+        self.line_spacing = line_spacing  # Spacing between wrapped lines
+        self.column_spacing = column_spacing  # Width between columns
+
         super().__init__(**kwargs)
 
     def _get_runtime(self, base_time):
@@ -127,8 +140,16 @@ class StateTransitionAnimation(DocAnimation):
 
         # Setup the main components
         expression_group, expression_texts = self._setup_expression()
-        recording_texts, recording_group, recording_title = self._setup_record_area(expression_group)
-        self._animate_state_transitions(expression_group, expression_texts, recording_texts, recording_group, recording_title)
+
+        # Setup subtitle line under the expression
+        self._subtitle_value = self._setup_subtitle(expression_group)
+
+        # Position the recording area under the subtitle line (or expression if subtitle absent)
+        anchor = self._subtitle_value if self._subtitle_value is not None else expression_group
+        recording_texts, recording_group, recording_title = self._setup_record_area(anchor)
+
+        self._animate_state_transitions(expression_group, expression_texts, recording_texts, recording_group,
+                                        recording_title)
         self.wait(1)
 
     def _setup_expression(self):
@@ -141,14 +162,14 @@ class StateTransitionAnimation(DocAnimation):
         # Create individual text objects for each part of the expression
         expression_texts = []
         for part in self.expression_parts:
-            text = self.create_title(part, scale=0.8)
+            text = self.create_title(part, scale=0.6)
             expression_texts.append(text)
-        
+
         # Position the parts horizontally
         expression_group = VGroup(*expression_texts)
         expression_group.arrange(RIGHT, buff=0.2)
-        expression_group.move_to(UP * 1.2)
-        
+        expression_group.move_to(UP * 2.0)
+
         # Show the expression
         self.play(FadeIn(expression_group), run_time=self._get_runtime(0.5))
 
@@ -156,6 +177,20 @@ class StateTransitionAnimation(DocAnimation):
         self._highlight_expression_part(expression_texts, 0, "#FF0000")  # Yellow for initial state
 
         return expression_group, expression_texts
+
+    def _setup_subtitle(self, expression_group):
+        """
+        Create a subtitle text placeholder shown under the expression.
+
+        Returns:
+            The subtitle Text mobject (placeholder) or None
+        """
+        # Start with empty subtitle; will update per pair
+        subtitle_text = self.create_subtitle("", scale=0.6)
+        # Place closer to the expression
+        subtitle_text.next_to(expression_group, DOWN, buff=0.12)
+        self.play(FadeIn(subtitle_text), run_time=self._get_runtime(0.2))
+        return subtitle_text
 
     def _highlight_expression_part(self, expression_texts, part_index, highlight_color="#FFFF00"):
         """
@@ -195,27 +230,28 @@ class StateTransitionAnimation(DocAnimation):
             # Bring text to front
             text.z_index = 1
 
-    def _setup_record_area(self, expression_group):
+    def _setup_record_area(self, anchor_element):
         """
-        Setup recording area components under the expression.
+        Setup recording area components under the anchor element.
         
         Args:
-            expression_group: The expression group for positioning reference.
+            anchor_element: The element for positioning reference (expression or subtitle).
             
         Returns:
             Tuple of (recording_texts list, recording_group, recording_title).
         """
         recording_texts = []
         recording_group = VGroup()
-        
+
         # Create a title for the recording area
         recording_title = self.create_subtitle("Evaluation Steps:", scale=0.6)
         recording_title.set_color("#888888")
-        recording_title.next_to(expression_group, DOWN * 0.5, buff=0.8)
-        
+        # Keep close to the anchor (expression or subtitle)
+
         return recording_texts, recording_group, recording_title
 
-    def _animate_state_transitions(self, expression_group, expression_texts, recording_texts, recording_group, recording_title):
+    def _animate_state_transitions(self, expression_group, expression_texts, recording_texts, recording_group,
+                                   recording_title):
         """
         Animate the state transitions with dynamic highlighting.
 
@@ -233,26 +269,33 @@ class StateTransitionAnimation(DocAnimation):
             left_string = self.create_subtitle(pair.left, scale=0.6)
             left_string.next_to(expression_group, LEFT * 20)
             left_string.set_color('blue')
-            
+
             # Create the result value
             right_string = self.create_subtitle(pair.right, scale=0.7)
-            right_string.next_to(expression_group, RIGHT, buff=1)
-            
+            right_string.next_to(expression_group, RIGHT, buff=1.0)
+
             # Set color based on result
             from config import COLORS
             color_value = COLORS.get(pair.right_color, pair.right_color)
             right_string.set_color(color_value)
-            
+
             # Show the input value
             self.play(FadeIn(left_string), run_time=self._get_runtime(0.2))
-            
+
             # Move input to evaluation position
             target_position = expression_group.get_left() + LEFT * 1.5
+            # Ensure the target position is on screen
+            screen_left_boundary = -self.camera.frame_width / 2
+            margin = 0.5
+            min_x_pos = screen_left_boundary + left_string.width / 2 + margin
+            final_x_pos = max(target_position[0], min_x_pos)
+            final_target_position = np.array([final_x_pos, target_position[1], target_position[2]])
+
             self.play(
-                left_string.animate.move_to(target_position),
+                left_string.animate.move_to(final_target_position),
                 run_time=self._get_runtime(pair.movement_duration)
             )
-            
+
             # Update highlighting based on current state and input
             # Use the current state (before processing this input) to determine which part to highlight
             self._update_state_highlighting(expression_texts, pair, current_state)
@@ -260,13 +303,20 @@ class StateTransitionAnimation(DocAnimation):
             # Show the result
             self.play(FadeIn(right_string), run_time=self._get_runtime(0.2))
 
+            # Update subtitle line under the expression based on pair.subtitle
+            subtitle_text = self._get_pair_subtitle(pair)
+            if subtitle_text is not None:
+                new_subtitle = self.create_subtitle(subtitle_text, scale=0.6)
+                # FIX: Recalculate the position relative to the expression group.
+                new_subtitle.next_to(expression_group, DOWN, buff=0.05)
+                self.play(Transform(self._subtitle_value, new_subtitle), run_time=self._get_runtime(0.2))
             # Add to recording
             self._add_record_entry(pair, recording_texts, recording_group, recording_title)
 
             # Update current state to the predefined state from the pair
             # This represents the state AFTER processing this input
             current_state = pair.current_state
-            
+
             # Clean up for next iteration (except for the last pair)
             if i < len(self.state_pairs) - 1:
                 self.play(
@@ -374,6 +424,28 @@ class StateTransitionAnimation(DocAnimation):
 
         return current_state
 
+    def _get_pair_subtitle(self, pair: StateTransitionPair) -> Optional[str]:
+        """
+        Determine the subtitle string to show under the expression for this pair.
+
+        Priority:
+        1) pair.subtitle if provided
+        2) Fallback: try to extract a concise segment (e.g., 'Queue:[...]') from record_text
+        """
+        if getattr(pair, 'subtitle', None):
+            return pair.subtitle
+
+        # Fallback extraction from record_text (search first segment before '|')
+        text = getattr(pair, 'record_text', "") or ""
+        if not text:
+            return None
+        # Split on '|' and find a token that contains 'Queue:'
+        parts = [p.strip() for p in text.split('|') if p.strip()]
+        for p in parts:
+            if p.startswith("Queue:"):
+                return p
+        return None
+
     def _add_record_entry(self, pair, recording_texts, recording_group, recording_title):
         """
         Add a single record entry to the recording area.
@@ -384,21 +456,22 @@ class StateTransitionAnimation(DocAnimation):
             recording_group: VGroup for recording elements
             recording_title: The recording title object
         """
-        # Add this pair to the recording
-        record_text = self.create_subtitle(pair.get_combined_text(), scale=0.7)
-        
+        # Add this pair to the recording with text wrapping
+        record_text = self._create_wrapped_subtitle(pair.get_combined_text(), scale=0.7, max_width=25)
+
         # Set color based on status
         status_color = "secondary" if pair.recording_tag else "accent"
         from config import COLORS
         color_value = COLORS.get(status_color, status_color)
         record_text.set_color(color_value)
-        
+
         recording_texts.append(record_text)
-        
+
         # Show recording title on first entry
         if len(recording_texts) == 1:
+            recording_title.next_to(self._subtitle_value, DOWN, buff=0.25)
             self.play(FadeIn(recording_title), run_time=self._get_runtime(0.2))
-        
+
         # Position recording texts with multi-column layout to ensure all text can be seen
         # Use horizontal layout if we have many entries to save vertical space
         max_vertical_entries = 3  # Maximum entries in a single column (reduced for wrapped text)
@@ -409,8 +482,9 @@ class StateTransitionAnimation(DocAnimation):
             # Vertical layout for first few entries
             prev_text = recording_texts[-2]
             # Calculate spacing based on whether previous text was wrapped
-            prev_height = prev_text.height if hasattr(prev_text, 'height') else 0.5
-            spacing = max(0.4, prev_height * 0.3)  # Dynamic spacing based on text height
+            prev_height = self._get_text_height(prev_text)
+            spacing = 0.4
+            # spacing = max(0.4, prev_height + 0.2)  # Dynamic spacing based on text height
             record_text.next_to(prev_text, DOWN, buff=spacing)
         else:
             # Horizontal layout for additional entries
@@ -422,8 +496,8 @@ class StateTransitionAnimation(DocAnimation):
             else:
                 # Continue in current column
                 prev_text = recording_texts[-2]
-                prev_height = prev_text.height if hasattr(prev_text, 'height') else 0.5
-                spacing = max(0.4, prev_height * 0.3)
+                prev_height = self._get_text_height(prev_text)
+                spacing = 0.4
                 record_text.next_to(prev_text, DOWN, buff=spacing)
 
         # Add to recording group and show
@@ -432,8 +506,8 @@ class StateTransitionAnimation(DocAnimation):
 
     def _reposition_recording_texts_centered(self, recording_texts, recording_title, max_vertical_entries):
         """
-        Reposition all recording texts to keep them centered when adding new columns.
-        Adapted from string_movement_animation.py to handle wrapped text properly.
+        Reposition recording texts with scrolling behavior - old texts slide left and disappear,
+        new texts always remain visible and readable.
 
         Args:
             recording_texts: List of recording text mobjects.
@@ -443,47 +517,227 @@ class StateTransitionAnimation(DocAnimation):
         total_entries = len(recording_texts)
         total_columns = (total_entries - 1) // max_vertical_entries + 1
 
-        # Calculate the total width needed for all columns (wider for wrapped text)
-        column_width = 3.5  # Increased width per column for wrapped text
-        total_width = total_columns * column_width
+        # Screen boundary constants (Manim coordinate system)
+        SCREEN_LEFT_BOUNDARY = -7.0   # Left edge of visible screen
+        SCREEN_RIGHT_BOUNDARY = 7.0   # Right edge of visible screen
+        USABLE_WIDTH = SCREEN_RIGHT_BOUNDARY - SCREEN_LEFT_BOUNDARY  # Total usable width
+        MARGIN = 0.5  # Safety margin from screen edges
 
-        # Calculate starting position to center all columns
-        start_x = recording_title.get_center()[0] - (total_width / 2) + (column_width / 2)
+        # Calculate effective usable width with margins
+        effective_width = USABLE_WIDTH - (2 * MARGIN)
 
-        # Reposition all existing texts
-        for i, text in enumerate(recording_texts[:-1]):  # Exclude the current text being added
-            column = i // max_vertical_entries
-            row = i % max_vertical_entries
+        # Always use full column width - no compression!
+        column_width = self.column_spacing
 
-            # Calculate position for this text
-            x_pos = start_x + column * column_width
-            # Increased vertical spacing for wrapped text
-            text_height = text.height if hasattr(text, 'height') else 0.5
-            base_offset = 0.4
-            row_spacing = max(0.8, text_height * 0.4)  # Dynamic row spacing
-            y_pos = recording_title.get_bottom()[1] - base_offset - (row * row_spacing)
+        # Calculate how many columns can fit within screen boundaries with full width
+        max_visible_columns = int(effective_width / column_width)
 
-            # Move the text to new position
-            text.move_to([x_pos, y_pos, 0])
+        # Check if we need scrolling (sliding) behavior
+        needs_scrolling = total_columns > max_visible_columns
 
-        # Position the new text (last in the list)
-        new_text = recording_texts[-1]
-        new_column = (total_entries - 1) // max_vertical_entries
-        new_row = (total_entries - 1) % max_vertical_entries
+        if needs_scrolling:
+            # SLIDING MODE: All texts shift left, new text appears on the right
 
-        new_x_pos = start_x + new_column * column_width
-        # Calculate y position for new text with proper spacing
-        if new_row == 0:
-            new_y_pos = recording_title.get_bottom()[1] - 0.4
-        else:
-            # Find the text above this one to calculate proper spacing
-            prev_text_index = (total_entries - 1) - 1
-            if prev_text_index >= 0:
-                prev_text = recording_texts[prev_text_index]
-                prev_height = prev_text.height if hasattr(prev_text, 'height') else 0.5
-                spacing = max(0.8, prev_height * 0.4)
-                new_y_pos = prev_text.get_bottom()[1] - spacing
-            else:
+            # Define the rightmost visible position
+            rightmost_x = SCREEN_RIGHT_BOUNDARY - MARGIN - (column_width / 2)
+
+            # Shift all existing texts left by one column width
+            texts_to_animate = []
+            for text in recording_texts[:-1]:  # Exclude the new text being added
+                current_pos = text.get_center()
+                new_x = current_pos[0] - column_width  # Shift left by one column
+                new_pos = [new_x, current_pos[1], current_pos[2]]
+                texts_to_animate.append((text, new_pos))
+
+            # Position new text at the rightmost visible position
+            new_text = recording_texts[-1]
+            new_row = (total_entries - 1) % max_vertical_entries
+
+            # Calculate y position for new text
+            if new_row == 0:
                 new_y_pos = recording_title.get_bottom()[1] - 0.4
+            else:
+                # Find a text in the same row from a previous column to get proper spacing
+                text_height = self._get_text_height(new_text)
+                row_spacing = max(1.1, text_height + 0.3)
+                new_y_pos = recording_title.get_bottom()[1] - 0.4 - (new_row * row_spacing)
 
-        new_text.move_to([new_x_pos, new_y_pos, 0])
+            new_text.move_to([rightmost_x, new_y_pos, 0])
+
+        else:
+            # NORMAL MODE: All columns fit, center them normally
+            total_width = total_columns * column_width
+            center_x = recording_title.get_center()[0]
+            start_x = center_x - (total_width / 2) + (column_width / 2)
+
+            texts_to_animate = []
+            for i, text in enumerate(recording_texts[:-1]):  # Exclude the current text being added
+                column = i // max_vertical_entries
+                row = i % max_vertical_entries
+
+                x_pos = start_x + column * column_width
+
+                # Increased vertical spacing for wrapped text
+                text_height = self._get_text_height(text)
+                base_offset = 0.4
+                row_spacing = max(1.1, text_height + 0.3)
+                y_pos = recording_title.get_bottom()[1] - base_offset - (row * row_spacing)
+
+                # Store current position for smooth animation
+                current_pos = text.get_center()
+                new_pos = [x_pos, y_pos, 0]
+
+                # Only animate if position actually changed
+                if abs(current_pos[0] - new_pos[0]) > 0.1 or abs(current_pos[1] - new_pos[1]) > 0.1:
+                    texts_to_animate.append((text, new_pos))
+                else:
+                    text.move_to(new_pos)
+
+            # Position the new text normally
+            new_text = recording_texts[-1]
+            new_column = (total_entries - 1) // max_vertical_entries
+            new_row = (total_entries - 1) % max_vertical_entries
+            new_x_pos = start_x + new_column * column_width
+
+            # Calculate y position for new text
+            if new_row == 0:
+                new_y_pos = recording_title.get_bottom()[1] - 0.4
+            else:
+                prev_text_in_column_index = new_column * max_vertical_entries + (new_row - 1)
+                if prev_text_in_column_index < len(recording_texts) - 1:
+                    prev_text = recording_texts[prev_text_in_column_index]
+                    prev_height = self._get_text_height(prev_text)
+                    spacing = max(1.1, prev_height + 0.3)
+                    new_y_pos = prev_text.get_bottom()[1] - spacing
+                else:
+                    new_y_pos = recording_title.get_bottom()[1] - 0.4 - (new_row * 1.1)
+
+            new_text.move_to([new_x_pos, new_y_pos, 0])
+
+
+
+        # Perform smooth sliding animation for texts that moved
+        if texts_to_animate:
+            animations = []
+            for text, new_pos in texts_to_animate:
+                animations.append(text.animate.move_to(new_pos))
+
+            # Play all sliding animations simultaneously
+            if animations:
+                self.play(*animations, run_time=self._get_runtime(0.3))
+
+        # Optional: Print debug info about scrolling behavior
+        if needs_scrolling:
+            hidden_columns = total_columns - max_visible_columns
+            print(f"📜 Sliding: All texts shifted left, {hidden_columns} oldest column(s) off-screen, new text appears on right")
+
+    def _create_wrapped_subtitle(self, text, scale=0.7, max_width=25):
+        """
+        Create a subtitle with automatic text wrapping using '|' as line break indicator.
+        The second line will be smaller than the first line.
+
+        Args:
+            text: The text to display (may contain '|' for manual line breaks)
+            scale: Scale factor for the first line text
+            max_width: Maximum characters per line before automatic wrapping (ignored if '|' is present)
+
+        Returns:
+            Text or VGroup: Single Text object for short text, VGroup for wrapped text
+        """
+        # Check if text contains manual line break indicator '|'
+        if '|' in text:
+            # Manual line break using '|'
+            lines = text.split('|')
+            lines = [line.strip() for line in lines if line.strip()]  # Remove empty lines and whitespace
+        else:
+            # Automatic wrapping for long text
+            if len(text) <= max_width:
+                # Text is short enough, no wrapping needed
+                return self.create_subtitle(text, scale=scale)
+
+            # Text is too long, need to wrap it automatically
+            lines = self._wrap_text(text, max_width)
+
+        # Create Text objects for each line with different scales
+        text_objects = []
+        for i, line in enumerate(lines):
+            if i == 0:
+                # First line: use original scale
+                line_text = self.create_subtitle(line, scale=scale)
+            else:
+                # Second and subsequent lines: use smaller scale (80% of original)
+                smaller_scale = scale * 0.7
+                line_text = Text(line, color=COLORS["subtext"]).scale(smaller_scale)
+            text_objects.append(line_text)
+
+        # Arrange lines vertically
+        if len(text_objects) > 1:
+            # Create a VGroup to hold all lines
+            wrapped_group = VGroup(*text_objects)
+            wrapped_group.arrange(DOWN * 0.3, buff=self.line_spacing)  # Configurable buffer between lines
+            return wrapped_group
+        else:
+            return text_objects[0]
+
+    def _wrap_text(self, text, max_width):
+        """
+        Wrap text to multiple lines at word boundaries.
+
+        Args:
+            text: The text to wrap
+            max_width: Maximum characters per line
+
+        Returns:
+            List[str]: List of wrapped lines
+        """
+        if len(text) <= max_width:
+            return [text]
+
+        words = text.split(' ')
+        lines = []
+        current_line = ""
+
+        for word in words:
+            # Check if adding this word would exceed the max width
+            test_line = current_line + (" " if current_line else "") + word
+
+            if len(test_line) <= max_width:
+                current_line = test_line
+            else:
+                # Adding this word would exceed max width
+                if current_line:
+                    # Save the current line and start a new one
+                    lines.append(current_line)
+                    current_line = word
+                else:
+                    # Single word is longer than max_width, force break it
+                    if len(word) > max_width:
+                        # Break the long word
+                        while len(word) > max_width:
+                            lines.append(word[:max_width])
+                            word = word[max_width:]
+                        current_line = word
+                    else:
+                        current_line = word
+
+        # Add the last line if it has content
+        if current_line:
+            lines.append(current_line)
+
+        return lines
+
+    def _get_text_height(self, text_obj):
+        """
+        Get the height of a text object, handling both Text and VGroup objects.
+
+        Args:
+            text_obj: Text or VGroup object
+
+        Returns:
+            float: Height of the text object
+        """
+        if hasattr(text_obj, 'height'):
+            return text_obj.height
+        else:
+            # Fallback for objects without height attribute
+            return 0.5

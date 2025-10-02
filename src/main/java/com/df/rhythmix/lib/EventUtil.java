@@ -4,14 +4,37 @@ import cn.hutool.core.bean.BeanUtil;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
+import com.df.rhythmix.util.RhythmixEventData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for handling event data within Rhythmix.
+ * <p>
+ * This class provides helper methods for processing lists of event objects,
+ * specifically for converting them into a list of {@link Token}s that represent
+ * the event values.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 public class EventUtil {
     private static final Lexer LEXER = new Lexer();
+    /**
+     * Converts a list of event objects into a list of value tokens.
+     * <p>
+     * Each object in the input list is expected to be a bean (like {@link RhythmixEventData})
+     * with a "value" property. This method extracts the value, tokenizes it, and returns the first
+     * token from the result.
+     *
+     * @param values a list of event objects
+     * @return a list of first {@link Token}s representing each event's value
+     * @throws RuntimeException if lexical analysis of any value fails
+     */
     public static List<Token> event2ValueToken(List<Object> values){
 
         return values.stream().map(item -> {

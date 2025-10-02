@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-06-02 00:01:31
  * @LastEditors: MFine
  * @Description: 
@@ -32,11 +32,8 @@ public class BaseTest {
     }
 
     @Test
-    void test2() {
-        int a = 5;
-        if ((a<=7&&a>1)||a>10&&a!=5){
-            System.out.println("ok");
-        }
-        System.out.println(Double.parseDouble("10"));
+    void someFailingTest() {
+        System.out.println(System.getProperty("java.class.path"));
+        // ... rest of your test
     }
 }

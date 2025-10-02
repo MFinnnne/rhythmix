@@ -11,8 +11,8 @@ import com.df.rhythmix.udf.ChainMeetUDF;
  * This meet function checks if the calculated value is greater than or equal to 10.
  * It's useful for basic threshold validation in chain expressions.
  *
- * @author MFine
- * @version 1.0
+ * author MFine
+ * version 1.0
  */
 public class ThresholdChainMeetUDF implements ChainMeetUDF {
 
@@ -21,11 +21,13 @@ public class ThresholdChainMeetUDF implements ChainMeetUDF {
      */
     private static final double DEFAULT_THRESHOLD = 10.0;
 
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return "thresholdMeet";
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean meet(Number calculatedValue) {
 

@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-06 22:28:02
  * @LastEditors: MFine
  * @Description: 
@@ -19,9 +19,24 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * Translates the "take" function in a chain expression.
+ * This function allows for taking a slice of the data stream by specifying a start and optional end index.
+ *
+ * @author MFine
+ * @version $Id: $Id
+ */
 public class Take {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/take.peb");
 
+    /**
+     * Translates a take expression ASTNode into its string representation.
+     *
+     * @param astNode The ASTNode representing the take expression, which includes start and optional end indices.
+     * @param env     The environment proxy.
+     * @return The translated string representation of the take expression.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             Writer writer = new StringWriter();

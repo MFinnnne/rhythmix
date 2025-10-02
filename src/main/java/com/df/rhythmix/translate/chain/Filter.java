@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-03-11 00:15:47
  * @LastEditors: MFine
  * @Description:
@@ -23,9 +23,26 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * Translates the "filter" function in a chain expression.
+ * This can handle both standard filter operations and user-defined filter functions (UDFs).
+ *
+ * @author MFine
+ * @version $Id: $Id
+ */
 public class Filter {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/filter.peb");
 
+    /**
+     * Translates a filter expression ASTNode that uses a User-Defined Function (UDF) into its string representation.
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param udfName a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     * @throws java.io.IOException                         if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env, String udfName) throws TranslatorException, IOException {
 
         Writer writer = new StringWriter();
@@ -38,11 +55,28 @@ public class Filter {
         return writer.toString();
     }
 
+    /**
+     * Translates a filter expression ASTNode into its string representation.
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         Map<String, Object> context = new HashMap<>();
         return translate(astNode, env, context);
     }
 
+    /**
+     * Translates a filter expression ASTNode into its string representation using the provided context.
+     *
+     * @param astNode a {@link com.df.rhythmix.parser.ast.ASTNode} object.
+     * @param env     a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @param context a {@link java.util.Map} object.
+     * @return a {@link java.lang.String} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env, Map<String, Object> context) throws TranslatorException {
 
         try {

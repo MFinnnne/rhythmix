@@ -9,16 +9,29 @@ import io.pebbletemplates.pebble.template.PebbleTemplateImpl;
 import java.io.IOException;
 import java.io.Writer;
 
+/**
+ * <p>VarNode class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class VarNode extends AbstractRenderableNode {
 
 
     private String name;
 
+    /**
+     * <p>Constructor for VarNode.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param lineNumber a int.
+     */
     public VarNode(String name, int lineNumber) {
         super(lineNumber);
         this.name = name;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
         if (this.name.split("\\"+Config.SPLIT_SYMBOL).length==2) {
@@ -42,6 +55,7 @@ public class VarNode extends AbstractRenderableNode {
         writer.write(this.name + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void accept(NodeVisitor visitor) {
         visitor.visit(this);

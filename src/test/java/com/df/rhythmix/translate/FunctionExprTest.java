@@ -3,7 +3,7 @@ package com.df.rhythmix.translate;
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.util.RhythmixEventData;
 import com.df.rhythmix.util.Util;
@@ -19,7 +19,7 @@ class FunctionExprTest {
         String code = "count(>4,3)||count(<1,3)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        Executor translate = new Executor(translatedCode,env);
+        RhythmixExecutor translate = new RhythmixExecutor(translatedCode,env);
 //        System.out.println(translate);
         RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()));
@@ -36,7 +36,7 @@ class FunctionExprTest {
         String code = "keep(>4,100ms)||keep(<1,50ms)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        Executor translate = new Executor(translatedCode,env);
+        RhythmixExecutor translate = new RhythmixExecutor(translatedCode,env);
 //        System.out.println(translate);
         RhythmixEventData p1 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()+110));
@@ -52,7 +52,7 @@ class FunctionExprTest {
         String code = "delay(100ms)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        Executor translate = new Executor(translatedCode,env);
+        RhythmixExecutor translate = new RhythmixExecutor(translatedCode,env);
 //        System.out.println(translate);
         RhythmixEventData p1 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()+110));
@@ -69,7 +69,7 @@ class FunctionExprTest {
         String code = "keep(>4,100ms)";
         EnvProxy env = new EnvProxy();
         String translatedCode = Translator.translate(code, env);
-        Executor translate = new Executor(translatedCode,env);
+        RhythmixExecutor translate = new RhythmixExecutor(translatedCode,env);
 //        System.out.println(translate);
         RhythmixEventData p1 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis()+110));

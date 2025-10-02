@@ -1,6 +1,4 @@
 package com.df.rhythmix.lib;
-
-import cn.hutool.core.bean.BeanUtil;
 import com.df.rhythmix.exception.ComputeException;
 import com.df.rhythmix.lexer.Token;
 import com.googlecode.aviator.annotation.Import;
@@ -8,9 +6,30 @@ import com.googlecode.aviator.annotation.ImportScope;
 
 import java.util.List;
 
+/**
+ * A utility class providing mathematical functions for use within Aviator expressions.
+ * <p>
+ * This class is imported as a static namespace 'calc', making its methods available
+ * directly in Rhythmix expressions (e.g., {@code calc.sum(queue)}). It provides
+ * common aggregate functions like sum, average, count, and standard deviation.
+ *
+ * @author MFine
+ * @version 1.0
+ * @since 1.0
+ */
 @Import(ns = "calc", scopes = {ImportScope.Static})
 public class AviatorMath {
 
+    /**
+     * Calculates the sum of a list of numeric values.
+     * <p>
+     * The method handles both integers and floating-point numbers. If the list contains
+     * any floats, the result will be a double; otherwise, it will be an integer.
+     *
+     * @param values a {@link java.util.List} of objects holding event data with numeric values
+     * @return a {@link java.lang.Number} representing the sum; 0 if the list is null or empty
+     * @throws ComputeException if any value is not numeric
+     */
     public static Number sum(List<Object> values) throws ComputeException {
         if (values == null || values.isEmpty()) {
             return 0;
@@ -25,6 +44,13 @@ public class AviatorMath {
         }
     }
 
+    /**
+     * Calculates the average of a list of numeric values.
+     *
+     * @param values a list of event objects with numeric values
+     * @return the average value; 0 if the list is null or empty
+     * @throws ComputeException if any value is not numeric
+     */
     public static Number avg(List<Object> values) throws ComputeException {
         if (values == null || values.isEmpty()) {
             return 0;
@@ -34,15 +60,24 @@ public class AviatorMath {
     }
 
 
+    /**
+     * Counts the number of elements in a list.
+     *
+     * @param values the list to count
+     * @return the size of the list
+     * @throws ComputeException if the input list is null
+     */
     public static Number count(List<Object> values) throws ComputeException {
         return values.size();
     }
 
 
     /**
-     * @param values 测点集合
-     * @return 标准差
-     * @throws ComputeException 计算异常
+     * Calculates the standard deviation of a list of numeric values.
+     *
+     * @param values the list of data points
+     * @return the standard deviation of the values
+     * @throws ComputeException if fewer than two elements are provided
      */
     public static Number stddev(List<Object> values) throws ComputeException {
         if (values.size() < 2) {

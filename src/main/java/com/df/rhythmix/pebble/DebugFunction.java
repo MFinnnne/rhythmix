@@ -12,11 +12,15 @@ import java.util.Map;
 
 /**
  * 已废弃
- * 请使用{@link DebugTokenParser}
+ * 请使用{@link com.df.rhythmix.pebble.DebugTokenParser}
+ *
+ * author MFine
+ * version $Id: $Id
  */
 @Deprecated
 public class DebugFunction implements Function {
 
+    /** {@inheritDoc} */
     @Override
     public Object execute(Map<String, Object> args, PebbleTemplate self, EvaluationContext context,
                           int lineNumber) {
@@ -45,6 +49,7 @@ public class DebugFunction implements Function {
         return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getArgumentNames() {
         return null;

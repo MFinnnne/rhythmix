@@ -24,6 +24,12 @@ import java.util.Map;
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
 
+/**
+ * <p>Translator class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 @Slf4j
 public class Translator {
 
@@ -32,6 +38,9 @@ public class Translator {
      * Convert tokens parsed by lexer into aviator code
      *
      * @return aviator code
+     * @param code a {@link java.lang.String} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
      */
     public static String translate(String code, EnvProxy env) throws TranslatorException {
 
@@ -49,6 +58,10 @@ public class Translator {
      * Convert tokens parsed by lexer into aviator code
      *
      * @return aviator code
+     * @param code a {@link java.lang.String} object.
+     * @param context a {@link java.util.Map} object.
+     * @param env a {@link com.df.rhythmix.translate.EnvProxy} object.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
      */
     public static String translate(String code, Map<String, Object> context, EnvProxy env) throws TranslatorException {
 
@@ -81,11 +94,13 @@ public class Translator {
 
 
     /**
+     * <p>translate.</p>
+     *
      * @param astNode Abstract syntax tree
      * @param context Code translation context
      * @param env     Code execution environment context
      * @return Translated code
-     * @throws TranslatorException Translation exception
+     * @throws com.df.rhythmix.exception.TranslatorException Translation exception
      */
     public static String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         String code;

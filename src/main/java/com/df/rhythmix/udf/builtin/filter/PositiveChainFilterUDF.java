@@ -6,20 +6,22 @@ import com.df.rhythmix.util.RhythmixEventData;
 /**
  * Built-in positive value filter UDF that keeps only positive numeric values.
  * This will be auto-discovered and registered at startup.
- * 
+ *
  * Usage in expressions: filter(positiveFilter())
- * 
- * @author MFine
- * @version 1.0
- * @date 2025-07-18
+ *
+ * author MFine
+ * version 1.0
+ * date 2025-07-18
  */
 public class PositiveChainFilterUDF implements ChainFilterUDF {
     
+    /** {@inheritDoc} */
     @Override
     public String getName() {
         return "positiveFilter";
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean filter(RhythmixEventData event) {
         try {

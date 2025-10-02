@@ -12,9 +12,7 @@ class DocAnimation(Scene):
     """
     
     def __init__(self, **kwargs):
-        # Set custom resolution
-        config.pixel_width = DEFAULT_WIDTH
-        config.pixel_height = DEFAULT_HEIGHT
+        # 不在此处强制覆盖分辨率，保留外部（调用方）对 config.pixel_width/height 的设置
         super().__init__(**kwargs)
     
     def setup_scene(self):
@@ -28,7 +26,7 @@ class DocAnimation(Scene):
     
     def create_subtitle(self, text, scale=0.7):
         """Create a styled subtitle text."""
-        subtitle = Text(text, color=COLORS["text"]).scale(scale)
+        subtitle = Text(text, color=COLORS["subTitle"]).scale(scale)
         return subtitle
     
     def create_highlight_box(self, mobject, color=None):

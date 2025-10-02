@@ -11,12 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Optimized Aviator configuration for type-agnostic comparison operations.
- * Provides enhanced performance through caching, early type detection, and optimized comparison logic.
+ * <p>
+ * Provides enhanced performance through caching, early type detection, and optimized
+ * comparison logic. Registers overloaded comparison operators that work consistently
+ * across numbers, booleans, strings, and nulls.
  *
- * @author MFine
+ * author MFine
  * @version 2.0 (Optimized)
- * @date 2025/6/7 23:53
- **/
+ * @since 2.0
+ */
 public class AviatorConfig {
 
     // Constants for comparison results
@@ -73,11 +76,13 @@ public class AviatorConfig {
             return comparator.compare(compareResult);
         }
 
-        public boolean compare(Object left, Object right) {
-            return comparator.compare(compareValues(left, right));
-        }
+        // Note: direct compare(Object, Object) not used; we operate on compare results for efficiency
     }
 
+    /**
+     * Registers overloaded comparison operators with Aviator.
+     * Should be invoked once during application initialization.
+     */
     public static void operatorOverloading() {
         // Register all comparison operators using the unified approach
         registerOperator(OperatorType.GT, ComparisonOp.GT);
@@ -89,7 +94,10 @@ public class AviatorConfig {
     }
 
     /**
-     * Unified operator registration method with optimized comparison logic
+     * Unified operator registration method with optimized comparison logic.
+     *
+     * @param operatorType the Aviator operator type to override
+     * @param operation    the comparison operation to perform
      */
     private static void registerOperator(OperatorType operatorType, ComparisonOp operation) {
         AviatorEvaluator.getInstance().addOpFunction(operatorType, new AbstractFunction() {
@@ -122,10 +130,11 @@ public class AviatorConfig {
     }
 
     /**
-     * Optimized comparison method with caching and early type detection
-     * @param leftValue left operand
-     * @param rightValue right operand
-     * @return comparison result: negative if left < right, 0 if equal, positive if left > right
+     * Optimized comparison method with caching and early type detection.
+     *
+     * @param leftValue  left operand (may be {@code null})
+     * @param rightValue right operand (may be {@code null})
+     * @return negative if left < right, 0 if equal, positive if left > right
      */
     private static int compareValues(Object leftValue, Object rightValue) {
         // Handle null values first (most common edge case)
@@ -149,7 +158,11 @@ public class AviatorConfig {
     }
 
     /**
-     * Fast comparison for direct Number instances
+     * Fast comparison for direct {@link Number} instances.
+     *
+     * @param left  left number
+     * @param right right number
+     * @return comparison result per {@link Integer#compare(int, int)} semantics
      */
     private static int compareNumbers(Number left, Number right) {
         // Handle common integer cases first
@@ -165,7 +178,13 @@ public class AviatorConfig {
     }
 
     /**
-     * Optimized type-based comparison with minimal string operations
+     * Optimized type-based comparison with minimal string operations.
+     *
+     * @param leftStr  left value as string
+     * @param rightStr right value as string
+     * @param leftType detected left type
+     * @param rightType detected right type
+     * @return comparison result
      */
     private static int compareByTypes(String leftStr, String rightStr, ValueType leftType, ValueType rightType) {
         // Same type comparisons (most common case)
@@ -192,7 +211,9 @@ public class AviatorConfig {
     }
 
     /**
-     * Handle mixed type comparisons efficiently
+     * Handles mixed type comparisons efficiently.
+     *
+     * @return comparison result
      */
     private static int compareMixedTypes(String leftStr, String rightStr, ValueType leftType, ValueType rightType) {
         // Numeric vs Boolean
@@ -235,7 +256,10 @@ public class AviatorConfig {
     }
 
     /**
-     * Get or detect the type of a string value with caching
+     * Gets or detects the type of a string value with caching.
+     *
+     * @param str input string
+     * @return detected {@link ValueType}
      */
     private static ValueType getValueType(String str) {
         if (str == null) return ValueType.NULL;
@@ -258,8 +282,11 @@ public class AviatorConfig {
     }
 
     /**
-     * Fast type detection without regex for common cases
-     * AviatorScript's original string comparison semantics
+     * Fast type detection without regex for common cases.
+     * Follows AviatorScript's original string comparison semantics.
+     *
+     * @param str input string
+     * @return detected {@link ValueType}
      */
     private static ValueType detectValueType(String str) {
         if (str.isEmpty()) return ValueType.STRING;
@@ -282,7 +309,10 @@ public class AviatorConfig {
     }
 
     /**
-     * Fast numeric detection without regex for performance
+     * Fast numeric detection without regex for performance.
+     *
+     * @param str input string
+     * @return {@code true} if the string represents an integer or decimal number
      */
     private static boolean isNumericFast(String str) {
         if (str.isEmpty()) return false;
@@ -308,7 +338,11 @@ public class AviatorConfig {
     }
 
     /**
-     * Get cached numeric value or parse and cache it
+     * Gets a cached numeric value or parses and caches it.
+     * Returns {@link Double#NaN} if parsing fails.
+     *
+     * @param str numeric string
+     * @return a cached or parsed {@link Number}
      */
     private static Number getCachedNumber(String str) {
         Number cached = NUMERIC_CACHE.get(str);
@@ -343,7 +377,12 @@ public class AviatorConfig {
     }
 
     /**
-     * Optimized numeric string comparison with caching
+     * Optimized numeric string comparison with caching.
+     *
+     * @param leftStr left numeric string
+     * @param rightStr right numeric string
+     * @param useDouble whether to compare using double precision
+     * @return comparison result
      */
     private static int compareNumericStrings(String leftStr, String rightStr, boolean useDouble) {
         Number leftNum = getCachedNumber(leftStr);
@@ -371,7 +410,7 @@ public class AviatorConfig {
     }
 
     /**
-     * Clear caches to prevent memory leaks in long-running applications
+     * Clears caches to prevent memory leaks in long-running applications.
      */
     public static void clearCaches() {
         TYPE_CACHE.clear();

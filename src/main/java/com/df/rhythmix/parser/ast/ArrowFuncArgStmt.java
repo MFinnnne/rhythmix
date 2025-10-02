@@ -4,26 +4,32 @@ import com.df.rhythmix.exception.ParseException;
 import com.df.rhythmix.util.PeekTokenIterator;
 
 /**
- * @Author MFine
- * @Date 2023/12/13
- * @Description
+ * Parses the argument list for an arrow (anonymous) function, e.g., {@code (a, b)}.
+ * <p>
+ * This node collects variables until a closing parenthesis ')'.
+ *
+ * author MFine
+ * date 2023/12/13
+ * author MFine
+ * @version 1.0
+ * @since 1.0
  */
-
 public class ArrowFuncArgStmt extends Stmt {
 
     /**
-     *
+     * <p>Constructor for ArrowFuncArgStmt.</p>
      */
     protected ArrowFuncArgStmt() {
         super(ASTNodeTypes.ARROW_FUNC, "arrow function arg");
     }
 
     /**
-     * @param it
-     * @return {@link ASTNode}
-     * @throws ParseException
+     * Parses a comma-separated list of variable identifiers until ')'.
+     *
+     * @param it the token iterator
+     * @return the populated {@link ArrowFuncArgStmt}
+     * @throws ParseException if a variable is malformed
      */
-
     public static ASTNode parse(PeekTokenIterator it) throws ParseException {
         ArrowFuncArgStmt functionArgs = new ArrowFuncArgStmt();
         while (it.hasNext()) {

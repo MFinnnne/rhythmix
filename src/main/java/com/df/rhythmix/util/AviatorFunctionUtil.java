@@ -8,8 +8,21 @@ import com.googlecode.aviator.runtime.type.AviatorFunction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * <p>AviatorFunctionUtil class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class AviatorFunctionUtil {
 
+    /**
+     * <p>addFunction.</p>
+     *
+     * @param functionClass a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     public static <T extends AviatorFunction> T addFunction(Class<T> functionClass) {
         try {
             T instance = functionClass.getDeclaredConstructor().newInstance();
@@ -26,10 +39,24 @@ public class AviatorFunctionUtil {
         throw new RuntimeException("udf获取失败");
     }
 
+    /**
+     * <p>getFunction.</p>
+     *
+     * @param functionClass a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     * @return a T object.
+     */
     public static <T extends AviatorFunction> T getFunction(Class<T> functionClass) {
         return addFunction(functionClass);
     }
 
+    /**
+     * <p>alias.</p>
+     *
+     * @param name a {@link java.lang.String} object.
+     * @param functionClass a {@link java.lang.Class} object.
+     * @param <T> a T object.
+     */
     public static <T extends AviatorFunction> void alias(String name, Class<T> functionClass) {
         try {
             T instance = functionClass.getDeclaredConstructor().newInstance();
@@ -46,6 +73,12 @@ public class AviatorFunctionUtil {
         throw new RuntimeException("udf获取失败");
     }
 
+    /**
+     * <p>getExpr.</p>
+     *
+     * @param code a {@link java.lang.String} object.
+     * @return a {@link com.googlecode.aviator.Expression} object.
+     */
     public  static Expression getExpr(String code){
         Expression expr = AviatorEvaluator.getInstance().getCachedExpression(DigestUtil.md5Hex(code));
         if (expr==null) {

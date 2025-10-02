@@ -1,6 +1,6 @@
 /*
- * @Author: MFine
- * @Date: 2024-10-22 19:22:29
+ * author: MFine
+ * date: 2024-10-22 19:22:29
  * @LastEditTime: 2025-02-11 21:03:40
  * @LastEditors: MFine
  * @Description: 
@@ -21,9 +21,24 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * Translates the "limit" function in a chain expression.
+ * This function can limit the data stream by a specified number of items or by a time duration.
+ *
+ * @author MFine
+ * @version $Id: $Id
+ */
 public class Limit {
     private static final PebbleTemplate FILTER = ENGINE.getTemplate("expr/chain/limit.peb");
 
+    /**
+     * Translates a limit expression ASTNode into its string representation.
+     *
+     * @param astNode The ASTNode representing the limit expression. It can specify a limit by count or by time.
+     * @param env     The environment proxy.
+     * @return The translated string representation of the limit expression.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             Writer writer = new StringWriter();

@@ -2,8 +2,22 @@ package com.df.rhythmix.util;
 
 import com.df.rhythmix.exception.TranslatorException;
 
+/**
+ * <p>TranslateUtil class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class TranslateUtil {
 
+    /**
+     * <p>toMs.</p>
+     *
+     * @param time a long.
+     * @param unit a {@link java.lang.String} object.
+     * @return a long.
+     * @throws com.df.rhythmix.exception.TranslatorException if any.
+     */
     public static long toMs(long time, String unit) throws TranslatorException {
         switch (unit) {
             case "ms":

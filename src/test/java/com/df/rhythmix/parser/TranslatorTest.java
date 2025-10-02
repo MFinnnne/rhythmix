@@ -2,8 +2,8 @@ package com.df.rhythmix.parser;
 
 import com.df.rhythmix.exception.LexicalException;
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Compiler;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixCompiler;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.lexer.Lexer;
 import com.df.rhythmix.lexer.Token;
 import com.df.rhythmix.pebble.TemplateEngine;
@@ -61,7 +61,7 @@ class TranslatorTest {
         String code = "<1,2,3>";
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        Executor build = new Executor(translate, env);
+        RhythmixExecutor build = new RhythmixExecutor(translate, env);
         RhythmixEventData point1 = new RhythmixEventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()));
 
 
@@ -86,7 +86,7 @@ class TranslatorTest {
         String code = "<1.0,2.0,3.0>";
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        Executor build = new Executor(translate, env);
+        RhythmixExecutor build = new RhythmixExecutor(translate, env);
         RhythmixEventData point1 = new RhythmixEventData("1", "point_1", "1.0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData point2 = new RhythmixEventData("1", "point_1", "2.0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData point3 = new RhythmixEventData("1", "point_1", "3.0", new Timestamp(System.currentTimeMillis()));
@@ -105,7 +105,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        Executor build = new Executor(translate, env);
+        RhythmixExecutor build = new RhythmixExecutor(translate, env);
         RhythmixEventData point1 =  new RhythmixEventData("1", "point_1", "1", new Timestamp(System.currentTimeMillis()));
 
 
@@ -130,13 +130,13 @@ class TranslatorTest {
             String code = "asd<'1',2,'3'>";
             Lexer lexer = new Lexer();
             ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-            Executor translate = Compiler.compile(code);
+            RhythmixExecutor translate = RhythmixCompiler.compile(code);
         });
         Assertions.assertThrows(TranslatorException.class, () -> {
             String code = "<,2,'3'>";
             Lexer lexer = new Lexer();
             ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
-            Executor translate = Compiler.compile(code);
+            RhythmixExecutor translate = RhythmixCompiler.compile(code);
         });
     }
 
@@ -202,7 +202,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        Executor build = new Executor(translate, env);
+        RhythmixExecutor build = new RhythmixExecutor(translate, env);
 
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -215,7 +215,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        Executor build = new Executor(translate, env);
+        RhythmixExecutor build = new RhythmixExecutor(translate, env);
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
         Assertions.assertTrue(build.execute(p1, p2));
@@ -227,7 +227,7 @@ class TranslatorTest {
         TemplateEngine.enableDebugModel(true);
         EnvProxy env = new EnvProxy();
         String translate = Translator.translate(code, env);
-        Executor build = new Executor(translate, env);
+        RhythmixExecutor build = new RhythmixExecutor(translate, env);
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         Assertions.assertFalse(build.execute(p1, p2));

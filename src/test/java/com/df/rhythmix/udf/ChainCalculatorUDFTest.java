@@ -1,8 +1,8 @@
 package com.df.rhythmix.udf;
 
 import com.df.rhythmix.exception.TranslatorException;
-import com.df.rhythmix.execute.Compiler;
-import com.df.rhythmix.execute.Executor;
+import com.df.rhythmix.execute.RhythmixCompiler;
+import com.df.rhythmix.execute.RhythmixExecutor;
 import com.df.rhythmix.pebble.TemplateEngine;
 import com.df.rhythmix.udf.builtin.calculator.MaxChainCalculator;
 import com.df.rhythmix.udf.builtin.calculator.MinChainCalculator;
@@ -654,7 +654,7 @@ class ChainCalculatorUDFTest {
     @DisplayName("Test customized CalculatorUDF")
     void testCustomizedCalculatorUDF() throws TranslatorException {
         String code = "filter(>0).limit(5).maxcalc().meet(>10)";
-        Executor executor = Compiler.compile(code);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         // Create test data with mixed positive and negative values
         List<RhythmixEventData> testData = Arrays.asList(
@@ -677,7 +677,7 @@ class ChainCalculatorUDFTest {
         // 3. myMax() should return: 30 (maximum of the 5 values)
         // 4. meet(>10) should return true since 30 > 10
 
-        Boolean result = executor.execute(testData.toArray());
+        Boolean result = rhythmixExecutor.execute(testData.toArray());
 
         // Verify the result
         assertNotNull(result, "Result should not be null");
@@ -685,7 +685,7 @@ class ChainCalculatorUDFTest {
 
         // Test with data that should fail the meet condition
         String code2 = "filter(>0).limit(3).maxcalc().meet(>50)";
-        Executor executor2 = Compiler.compile(code2);
+        RhythmixExecutor rhythmixExecutor2 = RhythmixCompiler.compile(code2);
 
         List<RhythmixEventData> testData2 = Arrays.asList(
             createEventDataWithTimestamp(5, System.currentTimeMillis()),
@@ -700,14 +700,14 @@ class ChainCalculatorUDFTest {
         // 3. myMax() should return: 15 (maximum of the 3 values)
         // 4. meet(>50) should return false since 15 <= 50
 
-        Boolean result2 = executor2.execute(testData2.toArray());
+        Boolean result2 = rhythmixExecutor2.execute(testData2.toArray());
 
         assertNotNull(result2, "Result2 should not be null");
         assertFalse(result2, "Expression should return false since max(5,10,15) = 15 <= 50");
 
         // Test with edge case - all values filtered out
         String code3 = "filter(>100).limit(5).maxcalc().meet(>0)";
-        Executor executor3 = Compiler.compile(code3);
+        RhythmixExecutor rhythmixExecutor3 = RhythmixCompiler.compile(code3);
 
         List<RhythmixEventData> testData3 = Arrays.asList(
             createEventDataWithTimestamp(5, System.currentTimeMillis()),
@@ -715,7 +715,7 @@ class ChainCalculatorUDFTest {
             createEventDataWithTimestamp(15, System.currentTimeMillis() + 2000)
         );
 
-        Boolean result3 = executor3.execute(testData3.toArray());
+        Boolean result3 = rhythmixExecutor3.execute(testData3.toArray());
 
         assertNotNull(result3, "Result3 should not be null");
         assertFalse(result3, "Expression should return false since no values pass filter, myMax returns 0, and 0 <= 0");

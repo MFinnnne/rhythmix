@@ -17,19 +17,28 @@ import java.util.Map;
 
 import static com.df.rhythmix.pebble.TemplateEngine.ENGINE;
 
+/**
+ * <p>KeepTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
 public class KeepTranslate implements FunctionTranslate {
 
 
+    /** {@inheritDoc} */
     @Override
     public List<String> getName() {
         return List.of("keep");
     }
 
+    /** {@inheritDoc} */
     @Override
     public String translate(ASTNode astNode, Map<String, Object> context, EnvProxy env) throws TranslatorException {
         return translate(astNode, env);
     }
 
+    /** {@inheritDoc} */
     public String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
         try {
             PebbleTemplate template = ENGINE.getTemplate("expr/keep.peb");
@@ -53,7 +62,7 @@ public class KeepTranslate implements FunctionTranslate {
             Map<String, Object> context = new HashMap<>();
             ASTNode state = args.get(0);
             String code = Translator.translate(state, context, env);
-            if (!argsCheck(state)) {
+            if (argsCheck(state)) {
                 throw new TranslatorException("{} function first parameter must be a state parameter", funcName);
             }
             context.put("funcName", funcName);
@@ -69,11 +78,12 @@ public class KeepTranslate implements FunctionTranslate {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean argsCheck(ASTNode astNode) {
         List<ASTNodeTypes> types = ParserUtils.toBFSASTType(astNode);
 
         return types.stream()
-                .noneMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
+                .anyMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
     }
 }
