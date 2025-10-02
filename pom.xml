@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>rhythmix</artifactId>
     <name>rhythmix</name>
-    <groupId>io.github.mfinnnne</groupId>
+    <groupId>com.df.rhythmix</groupId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
