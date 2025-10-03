@@ -1,0 +1,80 @@
+package io.github.mfinnnne.rhythmix.translate.function;
+
+import io.github.mfinnnne.rhythmix.exception.TranslatorException;
+import io.github.mfinnnne.rhythmix.parser.ast.ASTNode;
+import io.github.mfinnnne.rhythmix.parser.ast.ASTNodeTypes;
+import io.github.mfinnnne.rhythmix.translate.EnvProxy;
+import io.github.mfinnnne.rhythmix.translate.Translator;
+import io.github.mfinnnne.rhythmix.util.ParserUtils;
+import io.pebbletemplates.pebble.template.PebbleTemplate;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static io.github.mfinnnne.rhythmix.pebble.TemplateEngine.ENGINE;
+
+/**
+ * <p>CountTranslate class.</p>
+ *
+ * author MFine
+ * version $Id: $Id
+ */
+public class CountTranslate implements FunctionTranslate {
+
+
+    /** {@inheritDoc} */
+    @Override
+    public List<String> getName() {
+        return List.of("count", "count!");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
+        Map<String,Object> context = new HashMap<>();
+        return translate(astNode, context,env);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String translate(ASTNode astNode,Map<String,Object> context, EnvProxy env) throws TranslatorException {
+        try {
+            PebbleTemplate template = ENGINE.getTemplate("expr/count.peb");
+            Writer writer = new StringWriter();
+            String funcName = astNode.getLabel();
+
+            List<ASTNode> args = astNode.getChildren(0).getChildren();
+            if (args.size() != 2) {
+                throw new TranslatorException("{} function requires exactly two parameters", astNode.getLexeme(), funcName);
+            }
+            context.put("funcName", funcName);
+            ASTNode state = args.get(0);
+            if (argsCheck(state)) {
+                throw new TranslatorException("{} function's first parameter must be a state parameter", astNode.getLexeme(), funcName);
+            }
+            String code = Translator.translate(state, context, env);
+            long times = Long.parseLong(args.get(1).getLexeme().getValue());
+            env.put("countTime", 0);
+            context.put("targetCountTimes", times);
+            context.put("stateCheckCode", code);
+            template.evaluate(writer, context);
+            return writer.toString();
+        } catch (Exception e) {
+            throw new TranslatorException(e.getMessage());
+        }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean argsCheck(ASTNode astNode) {
+        List<ASTNodeTypes> types = ParserUtils.toBFSASTType(astNode);
+
+        return types.stream()
+                .anyMatch(item -> item != ASTNodeTypes.COMPARE_EXPR && item != ASTNodeTypes.RANGE_EXPR && item != ASTNodeTypes.UNARY_EXPR);
+    }
+
+}
