@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>rhythmix</artifactId>
     <name>rhythmix</name>
-    <groupId>com.df.rhythmix</groupId>
+    <groupId>io.github.mfinnnne</groupId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -42,7 +42,6 @@
         <connection>scm:git:https://github.com/MFinnnne/rhythmix.git</connection>
         <developerConnection>scm:git:https://github.com/MFinnnne/rhythmix.git</developerConnection>
     </scm>
-
 
 
     <dependencies>
@@ -140,7 +139,7 @@
                 <version>1.6</version>
                 <configuration>
                     <executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</executable>
-                    <keyname>mfinnnne</keyname>
+                    <keyname>io.gitHub.mfinnnne</keyname>
                 </configuration>
                 <executions>
                     <execution>
