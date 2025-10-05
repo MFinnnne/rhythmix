@@ -40,11 +40,7 @@ jobs:
 
       # 第 3 步：从 Git 标签中提取版本号
       - name: Extract version from tag
-        run: |
-          # 从 github.event.release.tag_name (例如 v1.2.3) 中移除 'v' 前缀
-          # 然后将结果 (1.2.3) 保存到一个名为 RELEASE_VERSION 的环境变量中
-          # 供后续步骤使用
-          echo "RELEASE_VERSION=${{ github.event.release.tag_name#v }}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${{ github.event.release.tag_name#v }}" >> $GITHUB_ENV
 
       # 第 4 步：使用 Maven Versions 插件更新 pom.xml 中的版本号
       - name: Set project version in pom.xml
