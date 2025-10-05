@@ -1,5 +1,6 @@
 package io.github.mfinnnne.rhythmix.translate.chain;
 
+import io.github.mfinnnne.rhythmix.execute.RhythmixCompiler;
 import io.github.mfinnnne.rhythmix.execute.RhythmixExecutor;
 import io.github.mfinnnne.rhythmix.util.RhythmixEventData;
 import io.github.mfinnnne.rhythmix.exception.LexicalException;
@@ -22,9 +23,7 @@ class LimitTest {
     void test1() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter(((1,7]||>10)&&!=5).window(2).sum().meet(>1)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p4 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
@@ -39,9 +38,7 @@ class LimitTest {
     void test2() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter(((1,7]||>10)&&!=5).window(100ms).sum().meet(>1)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis() + 50));
         RhythmixEventData p4 = Util.genEventData("1", "11", new Timestamp(System.currentTimeMillis() + 110));
@@ -89,6 +86,26 @@ class LimitTest {
             rhythmixExecutor.execute(p2);
             rhythmixExecutor.execute(p2);
 
+        });
+    }
+
+    @Test
+    void limitAndWindowCanNotBeUsedTogether() {
+        String code = "filter((-5,5)).limit(2).window(100ms).sum().meet(>1)";
+        Assertions.assertThrows(TranslatorException.class,()->{
+            RhythmixCompiler.compile(code);
+        });
+    }
+
+    @Test
+    void limitCanNotFollowedBySamplingFunction() {
+        String code = "filter((-5,5)).window(100ms).limit(2).sum().meet(>1)";
+        Assertions.assertThrows(TranslatorException.class,()->{
+            RhythmixCompiler.compile(code);
+        });
+        String code1 = "filter((-5,5)).take(0,1).limit(2).sum().meet(>1)";
+        Assertions.assertThrows(TranslatorException.class,()->{
+            RhythmixCompiler.compile(code1);
         });
     }
 }

@@ -58,7 +58,7 @@ public class TestChainExpression {
         }
 
         // 过滤后：[100, 99.98, 100.02, 100.01, 99.99]，选取索引1-4：[99.98, 100.02, 100.01, 99.99]，平均值=100.0，100.0>99.98，应该返回true
-        Assertions.assertArrayEquals(new Boolean[]{false,true,false,false,false}, results.toArray());
+        Assertions.assertArrayEquals(new Boolean[]{false,true,false,true,true}, results.toArray());
     }
 
     /**
@@ -84,7 +84,7 @@ public class TestChainExpression {
         }
 
         // 过滤后：[100, 99.98, 100.02, 100.01, 99.99]，选取索引1-4：[99.98, 100.02, 100.01, 99.99]，平均值=100.0，100.0>99.98，应该返回true
-        Assertions.assertArrayEquals(new Boolean[]{false,false,true,false}, results.toArray());
+        Assertions.assertArrayEquals(new Boolean[]{false,false,true,true}, results.toArray());
     }
 
     /**
@@ -137,7 +137,7 @@ public class TestChainExpression {
         }
 
         // 过滤后：[100, 99.98, 100.02, 100.01, 99.99]，选取索引1-4：[99.98, 100.02, 100.01, 99.99]，平均值=100.0，100.0>99.98，应该返回true
-        Assertions.assertArrayEquals(new Boolean[]{false,false,true,false,false}, results.toArray());
+        Assertions.assertArrayEquals(new Boolean[]{false,false,true,false,true}, results.toArray());
     }
 
     /**
@@ -268,7 +268,7 @@ public class TestChainExpression {
             result = rhythmixExecutor.execute(data);
         }
 
-        Assertions.assertFalse(result);
+        Assertions.assertTrue(result);
     }
 
     // ==================== 数据计算测试 ====================
@@ -572,7 +572,7 @@ public class TestChainExpression {
         }
 
         // 过滤后：[100, 99.98, 100.02, 100.01, 99.99]，选取索引1-4：[99.98, 100.02, 100.01, 99.99]，平均值=100.0，100.0>99.98，应该返回true
-        Assertions.assertArrayEquals(new Boolean[]{false,false,false,false,true,false}, results.toArray());
+        Assertions.assertArrayEquals(new Boolean[]{false,false,false,false,true,true}, results.toArray());
     }
 
     /**
@@ -600,7 +600,7 @@ public class TestChainExpression {
         }
 
         // 过滤后：[100, 99.98, 100.02, 100.01, 99.99]，选取索引1-4：[99.98, 100.02, 100.01, 99.99]，平均值=100.0，100.0>99.98，应该返回true
-        Assertions.assertArrayEquals(new Boolean[]{false,true,true,false,false,true}, results.toArray());
+        Assertions.assertArrayEquals(new Boolean[]{false,true,true,false,true,true}, results.toArray());
     }
 
     /**
@@ -629,9 +629,8 @@ public class TestChainExpression {
             result = rhythmixExecutor.execute(data);
             results.add(result);
         }
-
         // 过滤后：[100, 99.98, 100.02, 100.01, 99.99]，选取索引1-4：[99.98, 100.02, 100.01, 99.99]，平均值=100.0，100.0>99.98，应该返回true
-        Assertions.assertArrayEquals(new Boolean[]{false,false,false,false,false,false,true,false,false}, results.toArray());
+        Assertions.assertArrayEquals(new Boolean[]{false,false,false,false,false,false,true,true,true}, results.toArray());
     }
 
 }

@@ -308,7 +308,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       }
   
       @Override
-      public boolean filter(EventData event) {
+      public boolean filter(RhythmixEventData event) {
           try {
               double temp = Double.parseDouble(event.getValue());
               return temp >= 20.0 && temp <= 80.0; // 保留20-80度的温度数据
@@ -337,7 +337,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   
   **高级功能 - 批量过滤**：
   
-  对于需要对整个数据列表进行处理的场景，可以重写 `filter(List<EventData>)` 方法：
+  对于需要对整个数据列表进行处理的场景，可以重写 `filter(List<RhythmixEventData>)` 方法：
   
   ```java
   public class ArrayFilterUDF implements FilterUDF {
@@ -347,7 +347,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       }
   
       @Override
-      public List<EventData> filter(List<EventData> events) {
+      public List<RhythmixEventData> filter(List<RhythmixEventData> events) {
           // 只保留最后3个数据
           if (events.size() >= 3) {
               return events.subList(events.size() - 3, events.size());
@@ -376,7 +376,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
 
   > 💡 **提示**: 该功能的设计是为了确保在极端情况下表达式成立导致数据积累过多引起不必要的内存占用
   >
-  > ⚠️ **与 window 函数的使用限制**: 不建议同时使用 limit 和 window 函数，详见 [window 函数说明](#数据限制)
+  > ⚠️ **与 window 函数的使用限制**: 不可以用同时使用 limit 和 window 函数，详见 [window 函数说明](#数据限制)
 
 - **window** 🪟
 
@@ -524,7 +524,7 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
       }
   
       @Override
-      public Number calculate(List<EventData> values) {
+      public Number calculate(List<RhythmixEventData> values) {
           // 自定义计算逻辑：找出最大值
           if (values == null || values.isEmpty()) {
               return 0;

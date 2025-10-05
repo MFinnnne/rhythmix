@@ -29,7 +29,8 @@ public class ChainFunctionConfig {
     // Function lists - using ArrayList for mutability
     private final List<String> startFunc = new ArrayList<>();
     private final List<String> endFunc = new ArrayList<>();
-    private final List<String> limitFunc = new ArrayList<>();
+    private final List<String> sampling = new ArrayList<>();
+    private final List<String> limit = new ArrayList<>();
     private final List<String> calcFunc = new ArrayList<>();
     private final Map<String, List<String>> callTree = new HashMap<>();
 
@@ -86,8 +87,10 @@ public class ChainFunctionConfig {
         // END_FUNC: functions that can end a chain
         endFunc.add("meet");
 
+        limit.add("limit");
+        
         // LIMIT_FUNC: functions that limit/control data flow
-        limitFunc.addAll(Arrays.asList("limit", "take", "window"));
+        sampling.addAll(Arrays.asList("take", "window"));
 
 
         // CALC_FUNC: functions that perform calculations
@@ -99,22 +102,23 @@ public class ChainFunctionConfig {
 
     private void buildCallTree() {
         // Combine limit and calc functions for chain transitions
-        List<String> limitAndCalc = new ArrayList<>();
-        limitAndCalc.addAll(limitFunc);
-        limitAndCalc.addAll(calcFunc);
+        List<String> doNotAfterCalc = new ArrayList<>();
+        doNotAfterCalc.addAll(sampling);
+        doNotAfterCalc.addAll(calcFunc);
+        doNotAfterCalc.addAll(limit);
 
         startFunc.forEach(s -> {
-            callTree.put(s, new ArrayList<>(limitAndCalc));
+            callTree.put(s, new ArrayList<>(doNotAfterCalc));
         });
-        // filter can be followed by any limit or calc function
-
-        // limit functions can be followed by calc functions or other limit functions
-        for (String limitFuncName : limitFunc) {
-            callTree.put(limitFuncName, new ArrayList<>(calcFunc));
-            // Allow chaining between limit functions
-            List<String> allowedAfterLimit = new ArrayList<>(calcFunc);
-            allowedAfterLimit.addAll(limitFunc);
-            callTree.put(limitFuncName, allowedAfterLimit);
+        // filter can be followed by any limit function
+        for (String s : limit) {
+            final ArrayList<String> limitAfterPermit = new ArrayList<>(sampling);
+            limitAfterPermit.addAll(calcFunc);
+            callTree.put(s, limitAfterPermit);
+        }
+        // sampling functions can be followed by calc functions
+        for (String samplingFunc : sampling) {
+            callTree.put(samplingFunc, new ArrayList<>(calcFunc));
         }
 
         // calc functions can only be followed by end functions

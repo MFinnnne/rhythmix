@@ -19,10 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.github.mfinnnne.rhythmix.pebble.TemplateEngine.ENGINE;
 
@@ -88,7 +85,9 @@ public class ChainExpr {
             env.put("debugChainResult", null);
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);
             filterAutoAdd(astNode, allCallStmtLabel);
-            checkLimitAndWindow(astNode);
+            if (allCallStmtLabel.contains("limit") && allCallStmtLabel.contains("window")) {
+                throw  new TranslatorException("limit and window cannot be used together", Objects.requireNonNull(ParserUtils.getNodeByLabel(astNode, "limit")).getLexeme());
+            }
             ChainExprSyntaxCheck.check(astNode);
             String code = recursiveTrans(astNode, env);
             context.put("chainFuncs", ParserUtils.getAllCallStmtLabel(astNode));
@@ -100,44 +99,6 @@ public class ChainExpr {
                     e.getCharacterPosition(), e.getLine(), e.getColumn());
         }catch (IOException e){
             throw new TranslatorException(e.getMessage());
-        }
-    }
-
-    private static void checkLimitAndWindow(ASTNode astNode) throws LexicalException, ParseException {
-        ASTNode limit = ParserUtils.getNodeByLabel(astNode, "limit");
-        ASTNode window = ParserUtils.getNodeByLabel(astNode, "window");
-        if (limit != null && window != null) {
-            List<ASTNode> limitVar = limit.getChildren(0).getChildren();
-            List<ASTNode> windowVar = window.getChildren(0).getChildren();
-            if (limitVar.size() == windowVar.size()) {
-                if (!limitVar.get(0).getLabel().equals(windowVar.get(0).getLabel())) {
-                    // Use the window node's token for position information since that's where the conflict occurs
-                    Token errorToken = window.getLexeme();
-                    throw new ParseException("Both limit and window parameters must be the same", errorToken);
-                }
-            }
-        }
-        if (limit == null && window != null) {
-            ASTNode parent = ParserUtils.getNodeParentByLabel(astNode, "window");
-            List<ASTNode> windowVar = window.getChildren(0).getChildren();
-            StringBuilder stringBuilder = new StringBuilder();
-            for (ASTNode node : windowVar) {
-                stringBuilder.append(node.getLabel());
-            }
-            assert parent != null;
-            List<ASTNode> copyChild = parent.getChildren();
-            Lexer lexer = new Lexer();
-            String str = "limit(" + stringBuilder + ")";
-            ArrayList<Token> tokens = lexer.analyse(str.chars().mapToObj(x -> (char) x));
-            ASTNode limitNode = Expr.parse(new PeekTokenIterator(tokens.stream()));
-            Expr expr = new Expr(ASTNodeTypes.CHAIN_EXPR, new Token(TokenType.OPERATOR, "."));
-            expr.getChildren().addAll(copyChild);
-            ArrayList<ASTNode> newChild = new ArrayList<>();
-            newChild.add(limitNode);
-            newChild.add(expr);
-            List<ASTNode> afterWindowChildren = copyChild.get(1).getChildren();
-            copyChild.get(1).setChildren(newChild);
-            newChild.get(1).setChildren(afterWindowChildren);
         }
     }
 

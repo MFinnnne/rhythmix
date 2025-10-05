@@ -9,6 +9,7 @@ let chain_{{ funcName }} = lambda()->
         let eIndex = count({% var rawChainQueue %});
         {% debug "chain window 起始索引：{},结束索引：{}",sIndex,eIndex%}
     {% var processedChainQueue  %}=  queue.sub({% var rawChainQueue %},sIndex,eIndex);
+        queue.poll({% var rawChainQueue %});
         return true;
     }
     return false;
@@ -34,7 +35,7 @@ let chain_{{ funcName }} = lambda()->
                    {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %})-1);
              }
              p({% var processedChainQueue  %} );
-
+             queue.poll({% var rawChainQueue %});
              return true;
         }
     }

@@ -87,7 +87,7 @@ class WindowTest {
     @Test
     void translate5() throws LexicalException, TranslatorException, IOException, ParseException {
         TemplateEngine.enableDebugModel(true);
-        String code = "filter((-5,5)).window(1s).limit(5).avg().meet(<=0.5)";
+        String code = "filter((-5,5)).window(1s).avg().meet(<=0.5)";
         RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis() + 510));

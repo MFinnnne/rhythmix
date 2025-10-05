@@ -1,8 +1,6 @@
 package io.github.mfinnnne.rhythmix.udf;
 
 import io.github.mfinnnne.rhythmix.lib.Register;
-import io.github.mfinnnne.rhythmix.udf.ChainMeetUDF;
-import io.github.mfinnnne.rhythmix.udf.MeetUDFRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
