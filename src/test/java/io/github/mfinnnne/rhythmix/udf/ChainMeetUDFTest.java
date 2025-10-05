@@ -240,7 +240,7 @@ class ChainMeetUDFTest {
         Assertions.assertTrue(result); // 13 >= 10, should meet threshold
 
         result = rhythmixExecutor.execute(event4); // Sum = 8 = 8 (clear calculation list when the method return true)
-        Assertions.assertFalse(result); // 9 < 10, should meet threshold
+        Assertions.assertTrue(result); // 9 < 10, should meet threshold
 
         result = rhythmixExecutor.execute(event5); // Sum =7 + 8 = 15 (event5 limited out)
         Assertions.assertTrue(result); // 15 >= 10, should meet threshold

@@ -55,7 +55,7 @@ public class ChainExprSyntaxCheck {
             if (callTree.containsKey(curFunc)) {
                 // Check if transition from current to next function is allowed
                 if (!callTree.get(curFunc).contains(nextFunc)) {
-                    throw new TranslatorException("'{}' operator cannot be followed by '{}' operator", nodes.get(i).getLexeme(), curFunc, nextFunc);
+                    throw new TranslatorException("'{}' operator cannot follow by '{}' operator", nodes.get(i+1).getLexeme(),nextFunc, curFunc);
                 }
             } else {
                 throw new TranslatorException("{} operator is not defined", nodes.get(i).getLexeme(), curFunc);

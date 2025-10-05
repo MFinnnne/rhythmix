@@ -42,7 +42,7 @@ class ChainCalculatorUDFTest {
 
         Number result = calculator.calculate(events);
         assertEquals(15L, result);
-        assertTrue(result instanceof Long);
+        assertInstanceOf(Long.class, result);
     }
 
     @Test
@@ -60,7 +60,7 @@ class ChainCalculatorUDFTest {
 
         Number result = calculator.calculate(events);
         assertEquals(-3L, result);
-        assertTrue(result instanceof Long);
+        assertInstanceOf(Long.class, result);
     }
 
     @Test

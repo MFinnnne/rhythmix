@@ -308,7 +308,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       }
   
       @Override
-      public boolean filter(EventData event) {
+      public boolean filter(RhythmixEventData event) {
           try {
               double temp = Double.parseDouble(event.getValue());
               return temp >= 20.0 && temp <= 80.0; // 保留20-80度的温度数据
@@ -337,7 +337,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   
   **高级功能 - 批量过滤**：
   
-  对于需要对整个数据列表进行处理的场景，可以重写 `filter(List<EventData>)` 方法：
+  对于需要对整个数据列表进行处理的场景，可以重写 `filter(List<RhythmixEventData>)` 方法：
   
   ```java
   public class ArrayFilterUDF implements FilterUDF {
@@ -347,7 +347,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
       }
   
       @Override
-      public List<EventData> filter(List<EventData> events) {
+      public List<RhythmixEventData> filter(List<RhythmixEventData> events) {
           // 只保留最后3个数据
           if (events.size() >= 3) {
               return events.subList(events.size() - 3, events.size());
@@ -376,7 +376,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
 
   > 💡 **提示**: 该功能的设计是为了确保在极端情况下表达式成立导致数据积累过多引起不必要的内存占用
   >
-  > ⚠️ **与 window 函数的使用限制**: 不建议同时使用 limit 和 window 函数，详见 [window 函数说明](#数据限制)
+  > ⚠️ **与 window 函数的使用限制**: 不可以用同时使用 limit 和 window 函数
 
 - **window** 🪟
 
@@ -414,27 +414,7 @@ filter((-5,5)).limit(5).take(0,2).sum().meet(>1)
   > - 数量窗口：当数据量达到指定数量时，保留最新的 N 个数据
   > - 时间窗口：只保留指定时间范围内的数据，基于数据的时间戳计算
   >
-  > 🔄 **自动 limit 函数添加**:
-  > - 当表达式中**只有 window 函数而没有 limit 函数**时，系统会自动添加一个与 window 参数相同的 limit 函数
-  > - 这确保了数据队列管理的一致性和内存使用的优化
-  >
-  > **自动添加示例**：
-  > ```js
-  > // 用户编写的表达式
-  > filter(>0).window(5).sum().meet(>10)
-  >
-  > // 系统自动转换为
-  > filter(>0).limit(5).window(5).sum().meet(>10)
-  > ```
-
-  > ⚠️ **limit 和 window 函数使用限制**:
-  > - **不建议手动同时使用** limit 和 window 函数，这可能导致意外的行为
-  > - 如果必须同时使用，两者的参数类型和数值必须完全一致：
-  >   - ✅ 正确：`limit(5).window(5)` 或 `limit(100ms).window(100ms)`
-  >   - ❌ 错误：`limit(5).window(3)` 或 `limit(100ms).window(200ms)`
-  >   - ❌ 错误：`limit(5).window(100ms)` （类型不匹配）
-  > - 推荐做法：只使用 window 函数，让系统自动添加匹配的 limit 函数
-
+  
 - **take**
 
   take 函数有两个参数：第一个参数表示起始索引（包含），第二个参数表示结束索引（不包含）。如果第二个参数为空则默认取到最后一个元素。
@@ -524,7 +504,7 @@ Rhythmix 提供了多种数据计算函数,用于对数据进行统计分析:
       }
   
       @Override
-      public Number calculate(List<EventData> values) {
+      public Number calculate(List<RhythmixEventData> values) {
           // 自定义计算逻辑：找出最大值
           if (values == null || values.isEmpty()) {
               return 0;

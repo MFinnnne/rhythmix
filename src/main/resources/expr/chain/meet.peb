@@ -8,7 +8,7 @@ let chain_{{ funcName }} = lambda()->
         let res = {{ stateCode }};
     {% endif %}
     if(res){
-        queue.clear({% var rawChainQueue %});
+{#        queue.clear({% var rawChainQueue %});#}
         {% var chainResult %}=nil;
         return true;
     }

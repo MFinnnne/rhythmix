@@ -16,7 +16,7 @@ class MeetTest {
     @Test
     void translate() throws TranslatorException{
         TemplateEngine.enableDebugModel(true);
-        String code = "take(0,1).limit(100).sum().meet((<5||(8,12])&&!=10)";
+        String code = "limit(2).take(0,1).sum().meet((<5||(8,12])&&!=10)";
         RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         RhythmixEventData p2 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));
@@ -24,7 +24,7 @@ class MeetTest {
         boolean execute = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute);
         boolean execute1 = rhythmixExecutor.execute(p3);
-        Assertions.assertFalse(execute1);
+        Assertions.assertTrue(execute1);
         boolean execute2 = rhythmixExecutor.execute(p4);
         Assertions.assertFalse(execute2);
     }

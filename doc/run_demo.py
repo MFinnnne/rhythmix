@@ -1,5 +1,5 @@
 import sys
-from demos.chain_expression_demos import create_chain_expression_demo, create_chain_expression_demo_with_queue_line
+from demos.chain_expression_demos import create_chain_expression_demo, create_chain_expression_demo_with_queue_line, create_filter_window_avg_meet_demo
 from demos.count_demos import create_count_constraint_demo, create_multi_count_state_transition_demo, create_count_demo
 from demos.state_transition_demos import create_state_transition_demo, create_complex_state_transition_demo, \
     create_equal_chain_state_transition_demo, create_logical_and_state_transition_demo, \
@@ -9,6 +9,7 @@ from demos.state_transition_demos import create_state_transition_demo, create_co
 AVAILABLE_DEMOS = {
     "chain_expression": create_chain_expression_demo,
     "chain_expression_with_queue": create_chain_expression_demo_with_queue_line,
+    "filter_window_avg_meet": create_filter_window_avg_meet_demo,
     "count": create_count_demo,
     "count_constraint": create_count_constraint_demo,
     "multi_count_state_transition": create_multi_count_state_transition_demo,

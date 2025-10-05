@@ -92,3 +92,41 @@ def create_chain_expression_demo_with_queue_line():
         width=900,
         height=400
     )
+
+
+def create_filter_window_avg_meet_demo():
+    """
+    Create a GIF demonstrating the filter(>0).window(3).avg().meet(>50) chain expression.
+    This shows a data processing pipeline with:
+    1. filter(>0): Only accept positive values
+    2. window(3): Maintain a sliding window of 3 values
+    3. avg(): Calculate the average of the window
+    4. meet(>50): Check if the average is greater than 50
+    """
+    state_pairs = [
+        # Initial negative values - filtered out
+        StateTransitionPair("-5", "false", "-5≤0|FILTERED OUT", False, subtitle="Window:[]"),
+        StateTransitionPair("-2", "false", "-2≤0|FILTERED OUT", False, subtitle="Window:[]"),
+
+        # Building up the window - need 3 values for average
+        StateTransitionPair("10", "false", "10>0|Need 3 values", False, subtitle="Window:[10]"),
+        StateTransitionPair("20", "false", "20>0|Need 3 values", False, subtitle="Window:[10,20]"),
+        StateTransitionPair("30", "false", "30>0|(10+20+30)/3=20", False, subtitle="Window:[10,20,30]"),
+
+        # Sliding window - first success
+        StateTransitionPair("40", "false", "40>0|(20+30+40)/3=30", False, subtitle="Window:[20,30,40]"),
+        StateTransitionPair("80", "false", "80>0|(30+40+80)/3=50", False, subtitle="Window:[30,40,80]"),
+        StateTransitionPair("90", "true", "90>0|(40+80+90)/3=70", True, subtitle="Window:[40,80,90]"),
+
+    ]
+
+    return create_state_transition_gif(
+        pairs=state_pairs,
+        output_name='filter_window_avg_meet_demo',
+        speed_multiplier=0.9,
+        expression_parts=["filter(>0)", ".", "window(3)", ".", "avg()", ".", "meet(>50)"],
+        line_spacing=0.3,
+        column_spacing=3.5,
+        width=1000,
+        height=500
+    )

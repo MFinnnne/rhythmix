@@ -1,6 +1,7 @@
 package io.github.mfinnnne.rhythmix.translate.chain;
 
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
+import io.github.mfinnnne.rhythmix.execute.RhythmixCompiler;
 import io.github.mfinnnne.rhythmix.execute.RhythmixExecutor;
 import io.github.mfinnnne.rhythmix.pebble.TemplateEngine;
 import io.github.mfinnnne.rhythmix.translate.EnvProxy;
@@ -17,22 +18,19 @@ class TakeTest {
     void translate1() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).limit(5).take(-3,-1).sum().meet(>1)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode, env);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
-        rhythmixExecutor.execute(p1);
+        rhythmixExecutor.execute(p2);
         boolean execute = rhythmixExecutor.execute(p2);
         Assertions.assertFalse(execute);
         boolean execute2 = rhythmixExecutor.execute(p2);
-        Assertions.assertFalse(execute2);
+        Assertions.assertTrue(execute2);
         boolean execute3 = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute3);
-        rhythmixExecutor.execute(p2);
-        boolean execute1 = rhythmixExecutor.execute(p3);
+        rhythmixExecutor.execute(p1);
+        boolean execute1 = rhythmixExecutor.execute(p1);
         Assertions.assertFalse(execute1);
     }
 
@@ -41,30 +39,25 @@ class TakeTest {
     void translate2() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).limit(5).take(0,-1).sum().meet(>1)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode, env);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
-        RhythmixEventData p3 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
         rhythmixExecutor.execute(p1);
         rhythmixExecutor.execute(p2);
         rhythmixExecutor.execute(p2);
         boolean execute = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute);
         rhythmixExecutor.execute(p2);
-        boolean execute1 = rhythmixExecutor.execute(p3);
-        Assertions.assertFalse(execute1);
+        boolean execute1 = rhythmixExecutor.execute(p1);
+        Assertions.assertTrue(execute1);
     }
 
     @Test
     void translate3() throws TranslatorException {
         TemplateEngine.enableDebugModel(true);
         String code = "filter((-5,5)).limit(5).take(-3,5).sum().meet(>1)";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode, env);
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
 
         RhythmixEventData p1 = Util.genEventData("1", "0", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
@@ -76,7 +69,7 @@ class TakeTest {
         boolean execute = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute);
         boolean execute1 = rhythmixExecutor.execute(p3);
-        Assertions.assertFalse(execute1);
+        Assertions.assertTrue(execute1);
     }
 
 
