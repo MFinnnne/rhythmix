@@ -25,12 +25,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
-          # 从 GitHub Secrets 中获取你的 GPG 私钥
+          # You were missing these two lines
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          # 从 GitHub Secrets 中获取你的 GPG 密码
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           
       # 3. 缓存 Maven 依赖，加快构建速度
