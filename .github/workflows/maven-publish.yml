@@ -40,11 +40,11 @@ jobs:
 
       # 第 3 步：从 Git 标签中提取版本号
       - name: Extract version from tag
-        run: echo "RELEASE_VERSION=${{ github.event.release.tag_name#v }}" >> $GITHUB_ENV
-
-      # 第 4 步：使用 Maven Versions 插件更新 pom.xml 中的版本号
-      - name: Set project version in pom.xml
-        run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
+        run: |
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          # 去掉开头的 v 或 V（如果存在）
+          RELEASE_VERSION="$(echo "${TAG_NAME}" | sed 's/^[vV]//')"
+          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
 
       # 第 5 步：配置 Git 用户信息，用于提交 pom.xml
       - name: Configure Git user
@@ -77,14 +77,9 @@ jobs:
 
       # 第 9 步：将构建产物 (JAR包) 上传到本次 GitHub Release 的附件中
       - name: Upload JAR to GitHub Release
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: ./target/rhythmix-${{ env.RELEASE_VERSION }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # upload_url 指向触发本次工作流程的那个 Release
-          upload_url: ${{ github.event.release.upload_url }}
-          # 使用通配符匹配 target 目录下的 JAR 文件
-          asset_path: ./target/rhythmix-*.jar
-          # 自定义上传后的附件名称，包含版本号
-          asset_name: rhythmix-${{ env.RELEASE_VERSION }}.jar
-          asset_content_type: application/java-archive
