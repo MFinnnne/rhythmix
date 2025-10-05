@@ -1,0 +1,94 @@
+# .github/workflows/release.yml
+
+# 工作流程的名称
+name: Publish to Maven Central
+
+# 触发条件：当一个新的 Release 被 "published" (发布) 时
+on:
+  release:
+    types: [published]
+
+jobs:
+  # 定义一个名为 "publish" 的任务
+  publish:
+    # 使用最新的 Ubuntu 系统作为运行环境
+    runs-on: ubuntu-latest
+
+    # 授予工作流程必要的权限
+    permissions:
+      contents: write # 允许检出代码、提交和推送 pom.xml 的更改
+
+    steps:
+      # 第 1 步：检出您的代码仓库
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 第 2 步：设置 JDK 17 和 Maven 环境，并配置认证信息
+      - name: Set up JDK 17 and Maven settings
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          # 配置用于发布到 Maven Central 的服务器认证
+          # 这里的 server-id 必须与 pom.xml 中 central-publishing-maven-plugin 的配置完全匹配
+          server-id: Rhythmix
+          # 新的 Central Portal 认证模式下，用户名会被忽略，但该字段不能为空
+          server-username:  ${{ secrets.CENTRAL_USERNAME }}
+          # 这里引用 GitHub Secrets 中的 CENTRAL_TOKEN
+          server-password:  ${{ secrets.CENTRAL_TOKEN }}
+
+      # 第 3 步：从 Git 标签中提取版本号
+      - name: Extract version from tag
+        run: |
+          # 从 github.event.release.tag_name (例如 v1.2.3) 中移除 'v' 前缀
+          # 然后将结果 (1.2.3) 保存到一个名为 RELEASE_VERSION 的环境变量中
+          # 供后续步骤使用
+          echo "RELEASE_VERSION=${{ github.event.release.tag_name#v }}" >> $GITHUB_ENV
+
+      # 第 4 步：使用 Maven Versions 插件更新 pom.xml 中的版本号
+      - name: Set project version in pom.xml
+        run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
+
+      # 第 5 步：配置 Git 用户信息，用于提交 pom.xml
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 第 6 步：提交并推送 pom.xml 的版本更改
+      - name: Commit and push pom.xml changes
+        run: |
+          git add pom.xml
+          git commit -m "chore(release): Set version to ${{ env.RELEASE_VERSION }}"
+          git push
+
+      # 第 7 步：导入 GPG 私钥，用于为构件签名
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      # 第 8 步：执行构建、签名，并发布到 Maven Central
+      - name: Build and publish to Maven Central
+        # -P release 激活 pom.xml 中定义的 'release' profile
+        # central-publishing:publish 是新发布插件的目标 (goal)
+        run: mvn -B -P release clean deploy central-publishing:publish
+        env:
+          # 将 CENTRAL_TOKEN 作为环境变量传递给 setup-java Action
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+
+      # 第 9 步：将构建产物 (JAR包) 上传到本次 GitHub Release 的附件中
+      - name: Upload JAR to GitHub Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # upload_url 指向触发本次工作流程的那个 Release
+          upload_url: ${{ github.event.release.upload_url }}
+          # 使用通配符匹配 target 目录下的 JAR 文件
+          asset_path: ./target/rhythmix-*.jar
+          # 自定义上传后的附件名称，包含版本号
+          asset_name: rhythmix-${{ env.RELEASE_VERSION }}.jar
+          asset_content_type: application/java-archive
