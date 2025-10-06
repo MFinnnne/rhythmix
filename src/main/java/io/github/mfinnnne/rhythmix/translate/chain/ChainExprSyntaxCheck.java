@@ -30,7 +30,7 @@ public class ChainExprSyntaxCheck {
         // Get current configuration from singleton
         ChainFunctionConfig config = ChainFunctionConfig.getInstance();
         List<String> startFunc = config.getStartFunc();
-        List<String> endFunc = config.getEndFunc();
+        List<String> postProcessing = config.getPostProcessing();
         Map<String, List<String>> callTree = config.getCallTree();
 
         for (int i = 0; i < nodes.size(); i++) {
@@ -42,7 +42,7 @@ public class ChainExprSyntaxCheck {
             }
             if (i == nodes.size() - 1) {
                 // Check if last function is allowed to end a chain
-                if (!endFunc.contains(nodes.get(nodes.size() - 1).getLabel())) {
+                if (!postProcessing.contains(nodes.get(nodes.size() - 1).getLabel())) {
                     throw new TranslatorException("{} cannot be the last operator", nodes.get(nodes.size() - 1).getLexeme(), nodes.get(nodes.size() - 1).getLabel());
                 }
                 break;

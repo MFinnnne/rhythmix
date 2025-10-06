@@ -141,7 +141,7 @@ public class ChainExpr {
                     case "window":
                         return Window.translate(astNode, env);
                     case "take":
-                        return Take.translate(astNode, env);
+                        return Take.translate(astNode);
                     case "meet":
                         return Meet.translate(astNode, env);
                     case "stddev":
@@ -150,6 +150,8 @@ public class ChainExpr {
                         return Calculator.Count.translate(astNode, env);
                     case "hitRate":
                         return Calculator.HitRate.translate(astNode, env);
+                    case "clear":
+                        return Clear.translate(astNode, env);
                     default:
                         // Use the AST node's token for position information
                         if (ChainFunctionConfig.getInstance().getStartFunc().contains(name)) {
@@ -160,6 +162,9 @@ public class ChainExpr {
                         }
                         if (ChainFunctionConfig.getInstance().getEndFunc().contains(name)) {
                             return Meet.translate(astNode, env,true);
+                        }
+                        if (ChainFunctionConfig.getInstance().getPostProcessing().contains(name)) {
+                            return Clear.translate(astNode, env, true);
                         }
                         Token errorToken = astNode.getLexeme();
                         throw new TranslatorException("Chain expression does not support '{}' operator", errorToken, name);

@@ -1,0 +1,23 @@
+## ===============  clear start ===============
+## 清空队列
+let chain_{{ funcName }} = lambda()->
+    {% if isUDF is not null and isUDF == true %}
+       let udf = seq.get(meetUDFMap,"{{ funcName }}");
+       let res =  {{ funcName }}.handle(udf,{% var chainResult %});
+       if(res){
+           {% var chainResult %}=nil;
+           return true;
+       }
+       return false;
+    {% else%}
+       if(!is_empty({% var processedChainQueue %})){
+           queue.clear({% var processedChainQueue %});
+       }
+       if(!is_empty({% var rawChainQueue %})){
+           queue.clear({% var rawChainQueue %});
+       }
+       {% var chainResult %}=nil;
+       return true;
+    {% endif %}
+end;
+## ===============  clear end  ===============
