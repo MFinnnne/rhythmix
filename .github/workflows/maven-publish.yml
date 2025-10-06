@@ -46,14 +46,14 @@ jobs:
       - name: Set project version in pom.xml
         run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
 
-      # ✅ 创建提交并发起 Pull Request（不会直接推 master）
       - name: Create Pull Request for version update
+        id: create_pr
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: chore(release): Set version to ${{ env.RELEASE_VERSION }}
-          title: Release ${{ env.RELEASE_VERSION }}
+          commit-message: "chore(release): Set version to ${{ env.RELEASE_VERSION }}"
+          title: "Release ${{ env.RELEASE_VERSION }}"
           body: "Automated version bump to ${{ env.RELEASE_VERSION }}"
-          branch: release/version-${{ env.RELEASE_VERSION }}
+          branch: "release/version-${{ env.RELEASE_VERSION }}"
           base: master
           signoff: true
 
