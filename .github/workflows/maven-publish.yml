@@ -1,46 +1,35 @@
-# 工作流名称
 name: Publish to Maven Central
 
-# 工作流触发器
 on:
-  # 当一个新的 GitHub Release 被发布时触发
   release:
     types: [published]
-  # 允许手动触发
   workflow_dispatch:
     inputs:
       version:
         description: '要发布的版本 (例如, 1.2.3)'
         required: true
 
-# 定义工作任务
 jobs:
   publish:
-    # 运行环境
     runs-on: ubuntu-latest
 
-    # 为 job 分配权限
     permissions:
-      contents: write # 需要权限来提交 pom.xml 的变更和上传 release 附件
+      contents: write
 
-    # 定义步骤
     steps:
-      # 第一步：检出代码
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 第二步：设置 JDK 17 和 Maven settings.xml
       - name: Set up JDK 17 and Maven settings
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: Rhythmix # 确保这个 ID 和你的 settings.xml/pom.xml 中的一致
+          server-id: Rhythmix
           server-username: ${{ secrets.CENTRAL_USERNAME }}
           server-password: ${{ secrets.CENTRAL_TOKEN }}
 
-      # 第三步：从 release 标签或手动输入中确定版本号
       - name: Extract version
         run: |
           if [ -n "${{ github.event.release.tag_name }}" ]; then
@@ -51,17 +40,14 @@ jobs:
           fi
           echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
 
-      # 第四步：使用 versions-maven-plugin 更新 pom.xml 中的版本
       - name: Set project version in pom.xml
         run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
-      
-      # 第五步：配置将要提交代码的 Git 用户
+
       - name: Configure Git user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # 第六步：导入用于签名的 GPG 密钥
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
@@ -69,8 +55,6 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-      # 第七步：为 GPG 签名配置 Git (关键修改)
-      # This is the updated, robust step.
       - name: Configure Git for GPG signing
         env:
           GPG_KEY_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
@@ -79,38 +63,32 @@ jobs:
             echo "Error: GPG fingerprint was not found. Check the import step and secrets."
             exit 1
           fi
-      
+
           echo "GPG Key Fingerprint found: ${GPG_KEY_FINGERPRINT}. Configuring Git."
           git config --global user.signingkey "${GPG_KEY_FINGERPRINT}"
           git config --global commit.gpgsign true
-      
-      # 第八步：为版本更新创建 Pull Request
-      # 这个操作会创建一个 commit，所以必须在 GPG 签名配置好之后运行
+
       - name: Create Pull Request for version update
         uses: peter-evans/create-pull-request@v6
         with:
-          # 使用个人访问令牌 (PAT) 来确保有足够的权限
           token: ${{ secrets.ACTIONS_PAT }}
           commit-message: "chore(release): Set version to ${{ env.RELEASE_VERSION }}"
           title: "Release ${{ env.RELEASE_VERSION }}"
-          body: "This PR was automatically created by a GitHub Action to update the project version to `${{ env.RELEASE_VERSION }}`."
+          body: "This PR was automatically created by a GitHub Action to update the project version to \`${{ env.RELEASE_VERSION }}\`."
           branch: "release/version-${{ env.RELEASE_VERSION }}"
           base: master
           signoff: true
 
-      # 第九步：构建并发布到 Maven Central
       - name: Build and publish to Maven Central
-        run: mvn deploy
+        run: mvn -B -P release clean deploy central-publishing:publish
         env:
-          SERVER_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      # 第十步：将构建好的 JAR 包上传到 GitHub Release
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          # 使用通配符比硬编码文件名更可靠
           files: ./target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
