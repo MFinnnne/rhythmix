@@ -62,7 +62,7 @@ jobs:
       # Configure Git to use the imported GPG key for signing commits.
       - name: Configure Git for GPG signing
         run: |
-          git config --global user.signingkey ${{ steps.import_gpg.outputs.key_id }}
+          git config --global user.signingkey ${{ steps.import_gpg.outputs.keyid }}
           git config --global commit.gpgsign true
       
       # This action creates a commit, so it must run after GPG signing is configured.
