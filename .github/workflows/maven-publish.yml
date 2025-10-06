@@ -8,6 +8,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.2.3)'
+        required: true
 
 jobs:
   # 定义一个名为 "publish" 的任务
