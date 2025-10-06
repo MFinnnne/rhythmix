@@ -73,18 +73,15 @@ jobs:
       # This is the updated, robust step.
       - name: Configure Git for GPG signing
         env:
-          # 将上一步的输出传给环境变量，方便在 shell 脚本中使用
-          GPG_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
+          GPG_KEY_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
         run: |
-          # 检查 GPG Key ID 是否为空，如果为空则立即失败并给出清晰的错误提示
-          if [ -z "${GPG_KEY_ID}" ]; then
-            echo "Error: GPG Key ID was not found. Check the import step and secrets."
+          if [ -z "${GPG_KEY_FINGERPRINT}" ]; then
+            echo "Error: GPG fingerprint was not found. Check the import step and secrets."
             exit 1
           fi
-          
-          echo "GPG Key ID found. Configuring Git."
-          # 使用获取到的 Key ID 配置 Git
-          git config --global user.signingkey "${GPG_KEY_ID}"
+      
+          echo "GPG Key Fingerprint found: ${GPG_KEY_FINGERPRINT}. Configuring Git."
+          git config --global user.signingkey "${GPG_KEY_FINGERPRINT}"
           git config --global commit.gpgsign true
       
       # 第八步：为版本更新创建 Pull Request
@@ -103,9 +100,11 @@ jobs:
 
       # 第九步：构建并发布到 Maven Central
       - name: Build and publish to Maven Central
-        run: mvn -B clean deploy
+        run: mvn deploy
         env:
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
+          SERVER_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       # 第十步：将构建好的 JAR 包上传到 GitHub Release
       - name: Upload JAR to GitHub Release
