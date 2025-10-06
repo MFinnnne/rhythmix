@@ -90,7 +90,7 @@ class LimitTest {
     }
 
     @Test
-    void limitAndWindowCanNotBeUsedTogether() {
+    void limitAndWindowCanNotBeUsedTogether() throws TranslatorException {
         String code = "filter((-5,5)).limit(2).window(100ms).sum().meet(>1)";
         Assertions.assertThrows(TranslatorException.class,()->{
             RhythmixCompiler.compile(code);

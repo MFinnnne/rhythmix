@@ -54,8 +54,7 @@ public class RhythmixCompiler {
             return new RhythmixExecutor(translatedCode, env);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);
-            log.error(formattedError);
-            throw e;
+            throw new TranslatorException(formattedError);
         }
     }
 

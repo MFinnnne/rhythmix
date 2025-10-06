@@ -119,7 +119,7 @@ def create_filter_window_avg_meet_demo():
         StateTransitionPair("90", "true", "90>0|(40+80+90)/3=70", True, subtitle="Window:[40,80,90]"),
 
     ]
-
+# I only need one document, whose content merely includes the explanation of the expression and the corresponding reference
     return create_state_transition_gif(
         pairs=state_pairs,
         output_name='filter_window_avg_meet_demo',
