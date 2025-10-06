@@ -51,18 +51,19 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Import the GPG key needed for signing commits and artifacts.
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
-      # Configure Git to use the imported GPG key for signing commits.
       - name: Configure Git for GPG signing
+        env:
+          # Pass the output to an environment variable for easier shell access
+          GPG_KEY_ID: ${{ steps.import_gpg.outputs.keyid }}
         run: |
-          git config --global user.signingkey ${{ steps.import_gpg.outputs.keyid }}
+          # Fail fast if the key ID is not set
+          if [ -z "${GPG_KEY_ID}" ]; then
+            echo "Error: GPG Key ID was not found. Check the import step and secrets."
+            exit 1
+          fi
+          
+          echo "GPG Key ID found. Configuring Git."
+          git config --global user.signingkey "${GPG_KEY_ID}"
           git config --global commit.gpgsign true
       
       # This action creates a commit, so it must run after GPG signing is configured.
