@@ -14,8 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # Needed to commit pom.xml changes and upload release assets
 
     steps:
       - name: Checkout repository
@@ -27,11 +26,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: Rhythmix
+          server-id: Rhythmix # Make sure this matches the id in your settings.xml/pom.xml
           server-username: ${{ secrets.CENTRAL_USERNAME }}
           server-password: ${{ secrets.CENTRAL_TOKEN }}
 
-      # ✅ 自动触发用 tag，手动触发用输入
+      # Determine the version from the release tag or manual input
       - name: Extract version
         run: |
           if [ -n "${{ github.event.release.tag_name }}" ]; then
@@ -42,23 +41,25 @@ jobs:
           fi
           echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
 
-      # ✅ 使用 versions-maven-plugin 更新 pom.xml
+      # Use versions-maven-plugin to update pom.xml
       - name: Set project version in pom.xml
         run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
 
+      # The 'create-pull-request' action often requires a token with more permissions
+      # than the default GITHUB_TOKEN, especially if branch protection is enabled.
       - name: Create Pull Request for version update
-        id: create_pr
         uses: peter-evans/create-pull-request@v6
         with:
+          # Use a Personal Access Token (PAT) to ensure sufficient permissions.
+          token: ${{ secrets.ACTIONS_PAT }}
           commit-message: "chore(release): Set version to ${{ env.RELEASE_VERSION }}"
           title: "Release ${{ env.RELEASE_VERSION }}"
-          body: "Automated version bump to ${{ env.RELEASE_VERSION }}"
+          body: "This PR was automatically created by a GitHub Action to update the project version to `${{ env.RELEASE_VERSION }}`."
           branch: "release/version-${{ env.RELEASE_VERSION }}"
           base: master
           signoff: true
 
-      # ✅ 如果 pom.xml 未变化或 PR 不需要创建，则继续
-      - name: Configure Git user
+      - name: Configure Git user for publishing
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -74,10 +75,12 @@ jobs:
         env:
           CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
 
+      # This step attaches the built JAR(s) to the GitHub Release.
+      # It will update an existing release or create a new one if triggered manually.
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.release.tag_name || env.RELEASE_VERSION }}
-          files: ./target/rhythmix-${{ env.RELEASE_VERSION }}.jar
+          # Using a wildcard is more robust than a hardcoded filename.
+          files: ./target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
