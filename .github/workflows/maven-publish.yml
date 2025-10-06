@@ -7,6 +7,7 @@ name: Publish to Maven Central
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   # 定义一个名为 "publish" 的任务
