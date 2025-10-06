@@ -15,6 +15,7 @@ jobs:
 
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -30,7 +31,7 @@ jobs:
           server-username: ${{ secrets.CENTRAL_USERNAME }}
           server-password: ${{ secrets.CENTRAL_TOKEN }}
 
-      # ✅ 自动触发用 tag，手动触发用输入参数
+      # ✅ 自动触发用 tag，手动触发用输入
       - name: Extract version
         run: |
           if [ -n "${{ github.event.release.tag_name }}" ]; then
@@ -41,21 +42,26 @@ jobs:
           fi
           echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
 
-      # ✅ 使用 versions-maven-plugin 更新 pom.xml 版本
+      # ✅ 使用 versions-maven-plugin 更新 pom.xml
       - name: Set project version in pom.xml
         run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
 
+      # ✅ 创建提交并发起 Pull Request（不会直接推 master）
+      - name: Create Pull Request for version update
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: chore(release): Set version to ${{ env.RELEASE_VERSION }}
+          title: Release ${{ env.RELEASE_VERSION }}
+          body: "Automated version bump to ${{ env.RELEASE_VERSION }}"
+          branch: release/version-${{ env.RELEASE_VERSION }}
+          base: master
+          signoff: true
+
+      # ✅ 如果 pom.xml 未变化或 PR 不需要创建，则继续
       - name: Configure Git user
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      # ✅ 有变更即提交
-      - name: Commit and push pom.xml changes
-        run: |
-          git add pom.xml
-          git commit -m "chore(release): Set version to ${{ env.RELEASE_VERSION }}" || echo "No changes to commit"
-          git push || echo "No changes to push"
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
