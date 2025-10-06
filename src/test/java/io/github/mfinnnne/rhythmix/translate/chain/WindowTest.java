@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class WindowTest {
 
@@ -100,5 +102,62 @@ class WindowTest {
         Assertions.assertTrue(execute1);
         boolean execute2 = rhythmixExecutor.execute(p4);//3
         Assertions.assertFalse(execute2);
+    }
+
+    @Test
+    void testTimeWindow() throws TranslatorException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "filter().window(3ms).sum().meet(>0)";
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
+        RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis() + 1));
+        RhythmixEventData p3 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis() + 2));
+        RhythmixEventData p4 = Util.genEventData("1", "4", new Timestamp(System.currentTimeMillis() + 3));
+        RhythmixEventData p5 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis() + 4));
+        RhythmixEventData p6 = Util.genEventData("1", "6", new Timestamp(System.currentTimeMillis() + 10));
+        RhythmixEventData p7 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis() + 11));
+        RhythmixEventData p8 = Util.genEventData("1", "8", new Timestamp(System.currentTimeMillis() + 12));
+        RhythmixEventData p9 = Util.genEventData("1", "9", new Timestamp(System.currentTimeMillis() + 13));
+
+        rhythmixExecutor.execute(p1);
+        rhythmixExecutor.execute(p2);
+        rhythmixExecutor.execute(p3);
+        List<String> chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertEquals(0, chainQueueData.size());
+        boolean execute = rhythmixExecutor.execute(p4);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertArrayEquals(new String[]{"1","2","3","4"}, chainQueueData.toArray());
+        Assertions.assertTrue(execute);
+        boolean execute1 = rhythmixExecutor.execute(p5);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertArrayEquals(new String[]{"2","3","4","5"}, chainQueueData.toArray());
+        Assertions.assertTrue(execute1);
+        rhythmixExecutor.execute(p6);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertArrayEquals(new String[]{"3","4","5"}, chainQueueData.toArray());
+        rhythmixExecutor.execute(p7);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertArrayEquals(new String[]{"4","5"}, chainQueueData.toArray());
+        rhythmixExecutor.execute(p8);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertArrayEquals(new String[]{"5"}, chainQueueData.toArray());
+        rhythmixExecutor.execute(p8);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertEquals(0,chainQueueData.size());
+        rhythmixExecutor.execute(p9);
+        chainQueueData = getChainProcessedQueueData(rhythmixExecutor);
+        Assertions.assertArrayEquals(new String[]{"6","7","8","8","9"}, chainQueueData.toArray());
+    }
+
+
+    private List<String> getChainProcessedQueueData(RhythmixExecutor executor) {
+        final EnvProxy envProxy = executor.getEnvProxy();
+        List<RhythmixEventData> data = new ArrayList<>();
+        envProxy.getEnv().forEach((k, v) -> {
+           if (k.contains("processedChainQueue")) {
+               data.addAll(((List<RhythmixEventData>) v));
+           }
+        });
+        return  data.stream().map(RhythmixEventData::getValue).collect(Collectors.toList());
     }
 }

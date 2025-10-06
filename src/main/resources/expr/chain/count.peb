@@ -2,9 +2,8 @@
 ## 求集合元素个数
 
 let chain_{{ funcName }} = lambda()->
-   if({% var processedChainQueue %}!=nil){
+   if(!is_empty({% var processedChainQueue %})){
         {% var chainResult  %} = calc.count({% var processedChainQueue %});
-        queue.clear({% var processedChainQueue %});
         {% debug  "chain count 剪裁集合个数结果:{}",chainResult%}
    }else{
        {% var chainResult  %}= calc.count({% var rawChainQueue%});

@@ -51,6 +51,8 @@ let chain_{{ funcName }} = lambda()->
    }
    {% debug "take: 计算后起始索引：!{},结束索引：!{}",s,e %}
    {% var processedChainQueue  %}= queue.sub({% var rawChainQueue %},s ,e);
+   queue.clear( {% var processedChainQueue  %} );
+   into({% var processedChainQueue  %},queue.sub({% var rawChainQueue %},s,e));
    return true;
 end;
 ## ===============  chain take  end  ===============

@@ -20,25 +20,37 @@ let chain_{{ funcName }} = lambda()->
        return false;
     }
     let eIndex = count({% var rawChainQueue %})-1;
-    let endEvent = seq.get({% var rawChainQueue %},eIndex);
-    let endTime =ts.ts2Ms(endEvent.ts);
+    let startEvent = seq.get({% var rawChainQueue %},0);
+    let nextEvent = seq.get({% var rawChainQueue %},1);
+    let startTime =ts.ts2Ms(startEvent.ts);
+    let nextTime = ts.ts2Ms(nextEvent.ts);
+    if(nextTime-startTime > {{ windowTime }}){
+        queue.clear( {% var processedChainQueue  %} );
+        into({% var processedChainQueue  %},queue.sub({% var rawChainQueue %},0,1));
+        queue.poll({% var rawChainQueue %});
+        return true;
+    }
     for index in range(1,count({% var rawChainQueue %})){
-        let sIndex = count({% var rawChainQueue %})-index-1;
-        let curEvent = seq.get({% var rawChainQueue %},sIndex);
-        let diff =endTime - ts.ts2Ms(curEvent.ts);
+        let curEvent = seq.get({% var rawChainQueue %},index);
+        let diff = ts.ts2Ms(curEvent.ts)- startTime;
         {% debug "chain window 时间限制：!{} ms，当前时间差：!{}",windowTime,diff %}
-        if(diff>={{ windowTime }}){
-            {% debug "chain window:起始索引：!{}，结束索引：!{}",sIndex,eIndex %}
-            {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %}));
-             if(diff>{{ windowTime }}){
-                 nextChainData = event;
-                   {% var processedChainQueue  %} =  queue.sub({% var rawChainQueue %},sIndex,count({% var rawChainQueue %})-1);
-             }
-             p({% var processedChainQueue  %} );
-             queue.poll({% var rawChainQueue %});
-             return true;
+        if(diff=={{ windowTime }}){
+            eIndex = index+1;
+            {% debug "chain window:起始索引：0，结束索引：!{}",eIndex%}
+            queue.clear( {% var processedChainQueue  %} );
+            into({% var processedChainQueue  %},queue.sub({% var rawChainQueue %},0,index+1));
+            queue.poll({% var rawChainQueue %});
+            return true;
+        }
+        if(diff>{{ windowTime }}){
+            {% debug "chain window:起始索引：0，结束索引：!{}",index%}
+            queue.clear( {% var processedChainQueue  %} );
+            into({% var processedChainQueue  %},queue.sub({% var rawChainQueue %},0,index));
+            queue.poll({% var rawChainQueue %});
+            return true;
         }
     }
+    queue.clear( {% var processedChainQueue  %} );
     return false;
     {% endif %}
 end;

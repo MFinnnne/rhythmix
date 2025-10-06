@@ -31,7 +31,6 @@ let chain_{{ funcName }} = lambda()->
     if(res){
         {{ debug("filter() 接收数据：{}","event.value") }}
         queue.push({% var rawChainQueue %},event);
-
         {% if isUDF is not null and isUDF == true %}
         let udf = seq.get(filterUDFMap,"{{ udfName }}");
         let temp_queue = seq.list();

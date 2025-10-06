@@ -5,9 +5,8 @@ let chain_{{ funcName }} = lambda()->
    let udf = seq.get(calculatorUDFMap,"{{ funcName }}");
     {{ debug("calculator udf：{}","udf") }}
 
-   if({% var processedChainQueue %}!=nil){
+   if(!is_empty({% var processedChainQueue %})){
        {% var chainResult %} = {{ funcName }}.calculate(udf,{% var processedChainQueue %});
-       queue.clear({% var processedChainQueue %});
        {% debug  "{} 结果1:{}",funName,chainResult%}
 
    }else{
@@ -18,6 +17,7 @@ let chain_{{ funcName }} = lambda()->
         debugChainResult = {% var chainResult %} ;
     {% endif %}
     if ({% var chainResult %} == nil){
+        queue.clear({% var processedChainQueue %});
         return false;
     }
    return true;

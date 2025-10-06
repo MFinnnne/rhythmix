@@ -80,7 +80,7 @@ public class ChainExpr {
             PebbleTemplate chainTemplate = ENGINE.getTemplate("expr/chain.peb");
             Writer writer = new StringWriter();
             env.put("rawChainQueue", new ArrayList<>());
-            env.put("processedChainQueue", null);
+            env.put("processedChainQueue", new ArrayList<>());
             env.put("chainResult", null);
             env.put("debugChainResult", null);
             List<String> allCallStmtLabel = ParserUtils.getAllCallStmtLabel(astNode);

@@ -2,9 +2,8 @@
 ## 收集数据存入到数据队列中等待后续操作
 
 let chain_{{ funcName }} = lambda()->
-   if({% var processedChainQueue %}!=nil){
+   if(!is_empty({% var processedChainQueue %})){
         {% var chainResult  %}= calc.sum({% var processedChainQueue %});
-        queue.clear({% var processedChainQueue %});
         {% debug  "chain sum 求和结果1:{}",chainResult%}
    }else{
        {% var chainResult %} = calc.sum({% var rawChainQueue %});

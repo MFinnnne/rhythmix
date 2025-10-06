@@ -2,7 +2,7 @@
 ## 统计集合中符合要求的数据个数
 
 let chain_{{ funcName }} = lambda()->
-   let array ={% var  processedChainQueue %}==nil?{% var rawChainQueue %}:{% var processedChainQueue %};
+   let array =is_empty({% var processedChainQueue %})?{% var rawChainQueue %}:{% var processedChainQueue %};
    let hit=0;
 
    for x in array{
