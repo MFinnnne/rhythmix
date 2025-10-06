@@ -44,9 +44,28 @@ jobs:
       # Use versions-maven-plugin to update pom.xml
       - name: Set project version in pom.xml
         run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
+      
+      # Configure the Git user that will author the commit.
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # The 'create-pull-request' action often requires a token with more permissions
-      # than the default GITHUB_TOKEN, especially if branch protection is enabled.
+      # Import the GPG key needed for signing commits and artifacts.
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      # Configure Git to use the imported GPG key for signing commits.
+      - name: Configure Git for GPG signing
+        run: |
+          git config --global user.signingkey ${{ steps.import_gpg.outputs.key_id }}
+          git config --global commit.gpgsign true
+      
+      # This action creates a commit, so it must run after GPG signing is configured.
       - name: Create Pull Request for version update
         uses: peter-evans/create-pull-request@v6
         with:
@@ -59,24 +78,12 @@ jobs:
           base: master
           signoff: true
 
-      - name: Configure Git user for publishing
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
       - name: Build and publish to Maven Central
-        run: mvn -B -P release clean deploy central-publishing:publish
+        run: mvn -B clean deploy central-publishing:publish
         env:
           CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
 
       # This step attaches the built JAR(s) to the GitHub Release.
-      # It will update an existing release or create a new one if triggered manually.
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -84,3 +91,4 @@ jobs:
           files: ./target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
