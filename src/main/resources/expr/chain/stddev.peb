@@ -2,14 +2,13 @@
 ## 求集合标准差
 
 let chain_{{ funcName }} = lambda()->
-   if({% var processedChainQueue %}!=nil){
+   if(!is_empty({% var processedChainQueue %})){
         ## 标准差计算至少需要2个数据点
         if(count({% var processedChainQueue %}) < 2){
             {% debug "chain stddev 数据点不足，至少需要2个数据点" %}
             return false;
         }
         {% var chainResult  %}= calc.stddev({% var processedChainQueue %});
-        queue.clear({% var processedChainQueue %});
         {% debug  "chain stddev 标准差结果:{}",chainResult%}
    }else{
         ## 标准差计算至少需要2个数据点

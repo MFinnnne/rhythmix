@@ -1,6 +1,7 @@
 package io.github.mfinnnne.rhythmix.translate.chain;
 
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
+import io.github.mfinnnne.rhythmix.execute.RhythmixCompiler;
 import io.github.mfinnnne.rhythmix.execute.RhythmixExecutor;
 import io.github.mfinnnne.rhythmix.pebble.TemplateEngine;
 import io.github.mfinnnne.rhythmix.translate.EnvProxy;
@@ -18,9 +19,8 @@ public class HitRateTest {
         TemplateEngine.enableDebugModel(true);
 
         String code = "hitRate((1,5)).meet((>=0.5))";
-        EnvProxy env = new EnvProxy();
-        String transCode = Translator.translate(code, env);
-        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode,env);;
+
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "7", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p3 = Util.genEventData("1", "10", new Timestamp(System.currentTimeMillis()));

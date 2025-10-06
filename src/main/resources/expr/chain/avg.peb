@@ -1,9 +1,8 @@
 ## =============avg function================
 
 let chain_{{ funcName }} = lambda()->
-   if({% var processedChainQueue %}!=nil){
+   if(!is_empty({% var processedChainQueue %})){
         {% var chainResult  %}= calc.avg({% var processedChainQueue %});
-        queue.clear({% var processedChainQueue %});
         {% debug  "chain avg结果:{}",chainResult%}
    }else{
        {% var chainResult %} = calc.avg({% var rawChainQueue %});

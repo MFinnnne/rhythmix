@@ -665,9 +665,9 @@ class ChainCalculatorUDFTest {
             createEventDataWithTimestamp(-2, System.currentTimeMillis() + 4000), // Should be filtered out (<= 0)
             createEventDataWithTimestamp(30, System.currentTimeMillis() + 5000), // Should pass filter (>0)
             createEventDataWithTimestamp(12, System.currentTimeMillis() + 6000), // Should pass filter (>0)
-            createEventDataWithTimestamp(18, System.currentTimeMillis() + 7000), // Should pass filter (>0) but limited
-            createEventDataWithTimestamp(22, System.currentTimeMillis() + 8000), // Should pass filter (>0) but limited
-            createEventDataWithTimestamp(35, System.currentTimeMillis() + 9000)  // Should pass filter (>0) but limited
+            createEventDataWithTimestamp(18, System.currentTimeMillis() + 7000), // Should pass filter (>0)
+            createEventDataWithTimestamp(22, System.currentTimeMillis() + 8000), // Should pass filter (>0)
+            createEventDataWithTimestamp(35, System.currentTimeMillis() + 9000)  // Should pass filter (>0)
         );
 
         // Execute the expression
