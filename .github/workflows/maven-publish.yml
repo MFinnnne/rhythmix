@@ -82,10 +82,10 @@ jobs:
           signoff: true
 
       - name: Build and publish to Maven Central
-        run: mvn -B -P release clean deploy central-publishing:publish
+        run: mvn  deploy
         env:
-          SERVER_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Upload JAR to GitHub Release
