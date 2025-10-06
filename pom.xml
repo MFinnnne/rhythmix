@@ -161,7 +161,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>Rhythmix</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
                 </configuration>
             </plugin>
         </plugins>
