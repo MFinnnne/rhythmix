@@ -42,11 +42,19 @@ jobs:
           server-username:  ${{ secrets.CENTRAL_USERNAME }}
           # 这里引用 GitHub Secrets 中的 CENTRAL_TOKEN
           server-password:  ${{ secrets.CENTRAL_TOKEN }}
-          
-      # 第 4 步：使用 Maven Versions 插件更新 pom.xml 中的版本号
-      - name: Set project version in pom.xml
-        run: mvn versions:set -DnewVersion=${{ env.RELEASE_VERSION }}
-      # 第 3 步：从 Git 标签中提取版本号
+
+              
+      # 第 3 步： 修改pom.xml版本号
+      - name: Extract version from tag or manual input
+        run: |
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            TAG_NAME="${{ github.event.release.tag_name }}"
+            RELEASE_VERSION="$(echo "${TAG_NAME}" | sed 's/^[vV]//')"
+          else
+            RELEASE_VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+
       - name: Extract version from tag
         run: |
           TAG_NAME="${{ github.event.release.tag_name }}"
