@@ -4,8 +4,6 @@ import io.github.mfinnnne.rhythmix.exception.TranslatorException;
 import io.github.mfinnnne.rhythmix.execute.RhythmixCompiler;
 import io.github.mfinnnne.rhythmix.execute.RhythmixExecutor;
 import io.github.mfinnnne.rhythmix.pebble.TemplateEngine;
-import io.github.mfinnnne.rhythmix.translate.EnvProxy;
-import io.github.mfinnnne.rhythmix.translate.Translator;
 import io.github.mfinnnne.rhythmix.util.RhythmixEventData;
 import io.github.mfinnnne.rhythmix.util.Util;
 import org.junit.jupiter.api.Assertions;

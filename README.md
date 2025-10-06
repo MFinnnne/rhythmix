@@ -23,7 +23,7 @@
 <dependency>
     <groupId>io.github.mfinnnne</groupId>
     <artifactId>rhythmix</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
