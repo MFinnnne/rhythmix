@@ -18,10 +18,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Test class for the Clear post-processing operator.
- * 
+ *
  * @author MFine
  */
 public class ClearTest {
@@ -39,22 +42,25 @@ public class ClearTest {
         EnvProxy env = new EnvProxy();
         String transCode = Translator.translate(code, env);
         RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode, env);
-        
+
         RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
         RhythmixEventData p2 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
-        
         // First execution: sum = 1, not > 1, should return false
         boolean execute1 = rhythmixExecutor.execute(p1);
         Assertions.assertFalse(execute1);
-        
+        List<String> queueData = Util.getRawProcessedQueueData(rhythmixExecutor);
+        assertThat(queueData).isNotEmpty();
         // Second execution: sum = 3, > 1, should return true and clear queues
         boolean execute2 = rhythmixExecutor.execute(p2);
         Assertions.assertTrue(execute2);
-        
+        queueData = Util.getRawProcessedQueueData(rhythmixExecutor);
+        assertThat(queueData).isEmpty();
         // After clear, the queues should be empty, so next execution starts fresh
         // Third execution: sum = 1, not > 1, should return false
         boolean execute3 = rhythmixExecutor.execute(p1);
         Assertions.assertFalse(execute3);
+        queueData = Util.getRawProcessedQueueData(rhythmixExecutor);
+        assertThat(queueData).isNotEmpty();
     }
 
     @Test
