@@ -33,11 +33,10 @@ public class Take {
      * Translates a take expression ASTNode into its string representation.
      *
      * @param astNode The ASTNode representing the take expression, which includes start and optional end indices.
-     * @param env     The environment proxy.
      * @return The translated string representation of the take expression.
      * @throws TranslatorException if any.
      */
-    public static String translate(ASTNode astNode, EnvProxy env) throws TranslatorException {
+    public static String translate(ASTNode astNode) throws TranslatorException {
         try {
             Writer writer = new StringWriter();
             Map<String, Object> context = new HashMap<>();

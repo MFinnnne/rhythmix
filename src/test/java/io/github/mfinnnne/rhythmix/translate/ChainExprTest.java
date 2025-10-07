@@ -173,4 +173,29 @@ class ChainExprTest {
             RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
         });
     }
+
+    @Test
+    void testClearOperator() throws LexicalException, ParseException, TranslatorException, IOException {
+        TemplateEngine.enableDebugModel(true);
+        String code = "filter((-5,5)).limit(5).sum().meet(>1).clear()";
+        EnvProxy env = new EnvProxy();
+        String transCode = Translator.translate(code, env);
+        RhythmixExecutor rhythmixExecutor = new RhythmixExecutor(transCode, env);
+
+        RhythmixEventData p1 = Util.genEventData("1", "1", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("1", "2", new Timestamp(System.currentTimeMillis()));
+
+        // First execution: sum = 1, not > 1, should return false
+        boolean execute1 = rhythmixExecutor.execute(p1);
+        Assertions.assertFalse(execute1);
+
+        // Second execution: sum = 3, > 1, should return true and clear queues
+        boolean execute2 = rhythmixExecutor.execute(p2);
+        Assertions.assertTrue(execute2);
+
+        // After clear, the queues should be empty, so next execution starts fresh
+        // Third execution: sum = 1, not > 1, should return false
+        boolean execute3 = rhythmixExecutor.execute(p1);
+        Assertions.assertFalse(execute3);
+    }
 }

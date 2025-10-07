@@ -30,7 +30,9 @@ public class ChainExprSyntaxCheck {
         // Get current configuration from singleton
         ChainFunctionConfig config = ChainFunctionConfig.getInstance();
         List<String> startFunc = config.getStartFunc();
+        List<String> postProcessing = config.getPostProcessing();
         List<String> endFunc = config.getEndFunc();
+        endFunc.addAll(postProcessing);
         Map<String, List<String>> callTree = config.getCallTree();
 
         for (int i = 0; i < nodes.size(); i++) {
@@ -55,7 +57,7 @@ public class ChainExprSyntaxCheck {
             if (callTree.containsKey(curFunc)) {
                 // Check if transition from current to next function is allowed
                 if (!callTree.get(curFunc).contains(nextFunc)) {
-                    throw new TranslatorException("'{}' operator cannot follow by '{}' operator", nodes.get(i+1).getLexeme(),nextFunc, curFunc);
+                    throw new TranslatorException("'{}' operator cannot follow by '{}' operator", nodes.get(i + 1).getLexeme(), nextFunc, curFunc);
                 }
             } else {
                 throw new TranslatorException("{} operator is not defined", nodes.get(i).getLexeme(), curFunc);

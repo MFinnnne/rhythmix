@@ -32,6 +32,7 @@ public class ChainFunctionConfig {
     private final List<String> sampling = new ArrayList<>();
     private final List<String> limit = new ArrayList<>();
     private final List<String> calcFunc = new ArrayList<>();
+    private final List<String> postProcessing = new ArrayList<>();
     private final Map<String, List<String>> callTree = new HashMap<>();
 
 
@@ -96,6 +97,7 @@ public class ChainFunctionConfig {
         // CALC_FUNC: functions that perform calculations
         calcFunc.addAll(Arrays.asList("sum", "hitRate", "count", "avg", "stddev"));
 
+        postProcessing.add("clear");
         // Build CALL_TREE based on function categories
         buildCallTree();
     }
@@ -125,6 +127,9 @@ public class ChainFunctionConfig {
         for (String calcFuncName : calcFunc) {
             callTree.put(calcFuncName, new ArrayList<>(endFunc));
         }
+        endFunc.forEach(s -> {
+            callTree.put(s, postProcessing);
+        });
     }
 
     /**
