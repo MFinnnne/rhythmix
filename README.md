@@ -7,13 +7,12 @@
 
 
 # 🎵 Rhythmix
-![License](https://img.shields.io/badge/许可证-MIT-green)
+
 
 > **Rhythmix**（可以理解为"节奏混合"）是一个简单而强大的流数据处理规则表达式引擎。它能够在流数据中找出符合特定规律（节奏）的数据，就像按照某种节奏运作一样。
 
 ## 📑 目录
 
-[TOC]
 
 
 
