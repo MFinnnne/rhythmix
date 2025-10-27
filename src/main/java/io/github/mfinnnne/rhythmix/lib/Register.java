@@ -10,6 +10,7 @@ package io.github.mfinnnne.rhythmix.lib;
 import io.github.mfinnnne.rhythmix.udf.FilterUDFRegistry;
 import io.github.mfinnnne.rhythmix.udf.CalculatorUDFRegistry;
 import io.github.mfinnnne.rhythmix.udf.MeetUDFRegistry;
+import io.github.mfinnnne.rhythmix.udf.PostProcessingUDFRegistry;
 import com.googlecode.aviator.AviatorEvaluator;
 
 /**
@@ -47,6 +48,9 @@ public class Register {
 
             // Auto-import MeetUDF instances
             MeetUDFRegistry.autoImportMeetUDFs();
+
+            // Auto-import PostProcessingUDF instances
+            PostProcessingUDFRegistry.autoImportPostProcessingUDFs();
 
         } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);

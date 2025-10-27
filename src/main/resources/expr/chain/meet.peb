@@ -9,7 +9,7 @@ let chain_{{ funcName }} = lambda()->
     {% endif %}
     if(res){
 {#        queue.clear({% var rawChainQueue %});#}
-        {% var chainResult %}=nil;
+{#        {% var chainResult %}=nil;#}
         return true;
     }
     return false;

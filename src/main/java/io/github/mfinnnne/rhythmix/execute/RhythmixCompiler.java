@@ -9,6 +9,7 @@ import io.github.mfinnnne.rhythmix.translate.Translator;
 import io.github.mfinnnne.rhythmix.udf.CalculatorUDFRegistry;
 import io.github.mfinnnne.rhythmix.udf.FilterUDFRegistry;
 import io.github.mfinnnne.rhythmix.udf.MeetUDFRegistry;
+import io.github.mfinnnne.rhythmix.udf.PostProcessingUDFRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public class RhythmixCompiler {
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
+            env.rawPut("postProcessingUDFMap", PostProcessingUDFRegistry.getRegisteredUdfs());
             String translatedCode = Translator.translate(code, env);
             return new RhythmixExecutor(translatedCode, env);
         } catch (RhythmixException e) {
@@ -74,6 +76,7 @@ public class RhythmixCompiler {
             env.rawPut("filterUDFMap", FilterUDFRegistry.getRegisteredUdfs());
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
+            env.rawPut("postProcessingUDFMap", PostProcessingUDFRegistry.getRegisteredUdfs());
             return new RhythmixExecutor(translatedCode, env);
         } catch (RhythmixException e) {
             // Use ErrorFormatter.formatError() to display the error with source code context
