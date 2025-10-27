@@ -1,14 +1,21 @@
 ## ===============  clear start ===============
 ## 清空队列
 let chain_{{ funcName }} = lambda()->
-    {% if isUDF is not null and isUDF == true %}
-       let udf = seq.get(meetUDFMap,"{{ funcName }}");
-       let res =  {{ funcName }}.handle(udf,{% var chainResult %});
+    {% if isPostProcessingUDF is not null and isPostProcessingUDF == true %}
+       let udf = seq.get(postProcessingUDFMap,"{{ funcName }}");
+       let aggregatedData = nil;
+       if(!is_empty({% var processedChainQueue %})){
+           aggregatedData = {% var processedChainQueue %};
+       }else{
+           aggregatedData = {% var rawChainQueue %};
+       }
+       let res =  {{ funcName }}.handle(udf,aggregatedData,{% var chainResult %});
        if(res){
            {% var chainResult %}=nil;
-           return true;
+           queue.clear({% var processedChainQueue %});
+           queue.clear({% var rawChainQueue %});
        }
-       return false;
+       return true;
     {% else%}
        if(!is_empty({% var processedChainQueue %})){
            queue.clear({% var processedChainQueue %});

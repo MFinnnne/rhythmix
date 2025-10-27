@@ -39,6 +39,8 @@ public class Clear {
             String name = astNode.getLabel();
             if (isUDF) {
                 context.put("isUDF", true);
+                // For UDF post-processing, we need to pass both aggregated data and calculation result
+                context.put("isPostProcessingUDF", true);
             }
             context.put("funcName", name);
             template.evaluate(writer, context);

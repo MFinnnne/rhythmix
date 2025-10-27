@@ -130,6 +130,10 @@ public class ChainFunctionConfig {
         endFunc.forEach(s -> {
             callTree.put(s, postProcessing);
         });
+        // post-processing functions can only be the last function in a chain
+        postProcessing.forEach(s -> {
+            callTree.put(s, new ArrayList<>());
+        });
     }
 
     /**
@@ -178,6 +182,24 @@ public class ChainFunctionConfig {
         for (String funcName : functionNames) {
             if (!this.endFunc.contains(funcName)) {
                 this.endFunc.add(funcName);
+            }
+        }
+        // Rebuild call tree to reflect changes
+        buildCallTree();
+    }
+
+    /**
+     * Adds one or more function names to the list of post-processing functions.
+     * If a function name already exists in the list, it will not be added again.
+     * After adding the function(s), the call tree is rebuilt to reflect the changes.
+     * This method is synchronized to ensure thread safety.
+     *
+     * @param functionNames one or more function names to add.
+     */
+    public synchronized void addPostProcessing(String... functionNames) {
+        for (String funcName : functionNames) {
+            if (!this.postProcessing.contains(funcName)) {
+                this.postProcessing.add(funcName);
             }
         }
         // Rebuild call tree to reflect changes

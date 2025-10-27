@@ -89,5 +89,76 @@ public class ClearTest {
         RhythmixExecutor executor1 = RhythmixCompiler.compile(code1);
         Assertions.assertNotNull(executor1);
     }
+
+    @Test
+    @DisplayName("Test default clear UDF - always clears")
+    void testDefaultClearUDF() throws TranslatorException {
+        String code = "filter(>0).sum().meet(>5).clear()";
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
+
+        RhythmixEventData p1 = Util.genEventData("1", "3", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "4", new Timestamp(System.currentTimeMillis()));
+
+        // First execution: sum = 3, not > 5, should return false
+        boolean execute1 = rhythmixExecutor.execute(p1);
+        Assertions.assertFalse(execute1);
+
+        // Second execution: sum = 7, > 5, should return true and clear
+        boolean execute2 = rhythmixExecutor.execute(p2);
+        Assertions.assertTrue(execute2);
+
+        // After clear, queues should be empty
+        List<String> queueData = Util.getRawProcessedQueueData(rhythmixExecutor);
+        assertThat(queueData).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Test conditional clear UDF - clears only when result > 100")
+    void testConditionalClearUDF() throws TranslatorException {
+        String code = "filter(>0).sum().meet(>50).conditionalClear()";
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
+
+        RhythmixEventData p1 = Util.genEventData("1", "30", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "40", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p3 = Util.genEventData("3", "50", new Timestamp(System.currentTimeMillis()));
+
+        // First execution: sum = 30, not > 50, should return false
+        boolean execute1 = rhythmixExecutor.execute(p1);
+        Assertions.assertFalse(execute1);
+
+        // Second execution: sum = 70, > 50 but not > 100, should return false (no clear)
+        boolean execute2 = rhythmixExecutor.execute(p2);
+        Assertions.assertTrue(execute2);
+
+        // Third execution: sum = 120, > 50 and > 100, should return true and clear
+        boolean execute3 = rhythmixExecutor.execute(p3);
+        Assertions.assertTrue(execute3);
+
+        // After clear, queues should be empty
+        List<String> queueData = Util.getRawProcessedQueueData(rhythmixExecutor);
+        assertThat(queueData).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Test backward compatibility - non-UDF clear operator")
+    void testBackwardCompatibilityNonUDFClear() throws TranslatorException {
+        String code = "filter(>0).sum().meet(>10).clear()";
+        RhythmixExecutor rhythmixExecutor = RhythmixCompiler.compile(code);
+
+        RhythmixEventData p1 = Util.genEventData("1", "5", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData p2 = Util.genEventData("2", "8", new Timestamp(System.currentTimeMillis()));
+
+        // First execution: sum = 5, not > 10, should return false
+        boolean execute1 = rhythmixExecutor.execute(p1);
+        Assertions.assertFalse(execute1);
+
+        // Second execution: sum = 13, > 10, should return true and clear
+        boolean execute2 = rhythmixExecutor.execute(p2);
+        Assertions.assertTrue(execute2);
+
+        // After clear, queues should be empty
+        List<String> queueData = Util.getRawProcessedQueueData(rhythmixExecutor);
+        assertThat(queueData).isEmpty();
+    }
 }
 

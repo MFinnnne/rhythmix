@@ -257,6 +257,8 @@ public class UDFRegistry<T> {
                 return ((ChainCalculatorUDF) udf).getName();
             } else if (udf instanceof ChainMeetUDF) {
                 return ((ChainMeetUDF) udf).getName();
+            } else if (udf instanceof ChainPostProcessingUDF) {
+                return ((ChainPostProcessingUDF) udf).getName();
             } else {
                 // Try to call getName() method via reflection
                 return (String) udf.getClass().getMethod("getName").invoke(udf);
