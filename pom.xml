@@ -5,7 +5,7 @@
     <artifactId>rhythmix</artifactId>
     <name>rhythmix</name>
     <groupId>io.github.mfinnnne</groupId>
-    <version>1.0.3</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
     <description>A simple regular expression</description>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.5.13</version>
+            <version>1.5.19</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.aviator</groupId>
