@@ -16,7 +16,7 @@ public class AlphabetHelper {
     static Pattern ptnLetter = Pattern.compile("^[a-zA-Z]$");
     static Pattern ptnNumber = Pattern.compile("^[0-9]$");
     static Pattern ptnLiteral = Pattern.compile("^[_a-zA-Z0-9$]$");
-    static Pattern ptnOperator = Pattern.compile("^[*+-<>=!&|^%/,]$");
+    static Pattern ptnOperator = Pattern.compile("^[*+-<>=!&|^%/,:#]$");
 
     /**
      * Checks if a character is an alphabet letter (a-z, A-Z).

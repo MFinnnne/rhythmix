@@ -199,4 +199,201 @@ class LexerTest {
         assertToken(analyse.get(18), "1", TokenType.INTEGER);
         assertToken(analyse.get(19), ")", TokenType.BRACKET);
     }
+
+    @Test
+    void testHashAndColonTokenization() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "#temp:<30#";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize as: #, temp, :, <, 30, #
+        Assertions.assertEquals(6, tokens.size());
+        assertToken(tokens.get(0), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(1), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(2), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(3), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "30", TokenType.INTEGER);
+        assertToken(tokens.get(5), "#", TokenType.OPERATOR);
+    }
+
+    @Test
+    void testMultiSourceEventExpressionBasic() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:<30# && #humidity:>80#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize as: {, #, temp, :, <, 30, #, &&, #, humidity, :, >, 80, #, }
+        Assertions.assertEquals(15, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(5), "30", TokenType.INTEGER);
+        assertToken(tokens.get(6), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "&&", TokenType.OPERATOR);
+        assertToken(tokens.get(8), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(9), "humidity", TokenType.VARIABLE);
+        assertToken(tokens.get(10), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(11), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(12), "80", TokenType.INTEGER);
+        assertToken(tokens.get(13), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(14), "}", TokenType.BRACKET);
+    }
+
+    @Test
+    void testMultiSourceEventExpressionWithOr() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:<30# || #humidity:>80#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize with || operator
+        Assertions.assertEquals(15, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(5), "30", TokenType.INTEGER);
+        assertToken(tokens.get(6), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "||", TokenType.OPERATOR);
+        assertToken(tokens.get(8), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(9), "humidity", TokenType.VARIABLE);
+        assertToken(tokens.get(10), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(11), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(12), "80", TokenType.INTEGER);
+        assertToken(tokens.get(13), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(14), "}", TokenType.BRACKET);
+    }
+
+    @Test
+    void testMultiSourceEventExpressionThreeSources() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:<30# && #humidity:>80# || #pressure:>1000#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize three event sources with mixed operators
+        Assertions.assertEquals(22, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(5), "30", TokenType.INTEGER);
+        assertToken(tokens.get(6), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "&&", TokenType.OPERATOR);
+        assertToken(tokens.get(8), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(9), "humidity", TokenType.VARIABLE);
+        assertToken(tokens.get(10), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(11), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(12), "80", TokenType.INTEGER);
+        assertToken(tokens.get(13), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(14), "||", TokenType.OPERATOR);
+        assertToken(tokens.get(15), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(16), "pressure", TokenType.VARIABLE);
+        assertToken(tokens.get(17), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(18), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(19), "1000", TokenType.INTEGER);
+        assertToken(tokens.get(20), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(21), "}", TokenType.BRACKET);
+    }
+
+    @Test
+    void testMultiSourceEventExpressionWithRange() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:[20,30]# && #humidity:>80#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize with range expression [20,30]
+        Assertions.assertEquals(18, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "[", TokenType.BRACKET);
+        assertToken(tokens.get(5), "20", TokenType.INTEGER);
+        assertToken(tokens.get(6), ",", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "30", TokenType.INTEGER);
+        assertToken(tokens.get(8), "]", TokenType.BRACKET);
+        assertToken(tokens.get(9), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(10), "&&", TokenType.OPERATOR);
+        assertToken(tokens.get(11), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(12), "humidity", TokenType.VARIABLE);
+        assertToken(tokens.get(13), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(14), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(15), "80", TokenType.INTEGER);
+        assertToken(tokens.get(16), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(17), "}", TokenType.BRACKET);
+    }
+
+    @Test
+    void testMultiSourceEventExpressionWithComplexCondition() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:>20 && <30# && #humidity:>=80#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize with complex condition (>20 && <30)
+        Assertions.assertEquals(18, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(5), "20", TokenType.INTEGER);
+        assertToken(tokens.get(6), "&&", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(8), "30", TokenType.INTEGER);
+        assertToken(tokens.get(9), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(10), "&&", TokenType.OPERATOR);
+        assertToken(tokens.get(11), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(12), "humidity", TokenType.VARIABLE);
+        assertToken(tokens.get(13), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(14), ">=", TokenType.OPERATOR);
+        assertToken(tokens.get(15), "80", TokenType.INTEGER);
+        assertToken(tokens.get(16), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(17), "}", TokenType.BRACKET);
+    }
+
+    @Test
+    void testMultiSourceEventExpressionWithFloats() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:<30.5# && #humidity:>80.0#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize with float values
+        Assertions.assertEquals(15, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(5), "30.5", TokenType.FLOAT);
+        assertToken(tokens.get(6), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "&&", TokenType.OPERATOR);
+        assertToken(tokens.get(8), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(9), "humidity", TokenType.VARIABLE);
+        assertToken(tokens.get(10), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(11), ">", TokenType.OPERATOR);
+        assertToken(tokens.get(12), "80.0", TokenType.FLOAT);
+        assertToken(tokens.get(13), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(14), "}", TokenType.BRACKET);
+    }
+
+    @Test
+    void testSingleSourceMultiSourceSyntax() throws LexicalException {
+        Lexer lexer = new Lexer();
+        String code = "{#temp:<30#}";
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        // Should tokenize single source with multi-source syntax
+        Assertions.assertEquals(8, tokens.size());
+        assertToken(tokens.get(0), "{", TokenType.BRACKET);
+        assertToken(tokens.get(1), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(2), "temp", TokenType.VARIABLE);
+        assertToken(tokens.get(3), ":", TokenType.OPERATOR);
+        assertToken(tokens.get(4), "<", TokenType.OPERATOR);
+        assertToken(tokens.get(5), "30", TokenType.INTEGER);
+        assertToken(tokens.get(6), "#", TokenType.OPERATOR);
+        assertToken(tokens.get(7), "}", TokenType.BRACKET);
+    }
 }

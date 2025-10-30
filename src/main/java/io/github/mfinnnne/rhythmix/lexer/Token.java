@@ -358,6 +358,10 @@ public class Token {
                             return new Token(TokenType.OPERATOR, ";", startPos, startPos >= 0 ? startPos : -1, line, column);
                         case '.':
                             return new Token(TokenType.OPERATOR,".", startPos, startPos >= 0 ? startPos : -1, line, column);
+                        case '#':
+                            return new Token(TokenType.OPERATOR,"#", startPos, startPos >= 0 ? startPos : -1, line, column);
+                        case ':':
+                            return new Token(TokenType.OPERATOR,":", startPos, startPos >= 0 ? startPos : -1, line, column);
                         default:
                             break;
                     }

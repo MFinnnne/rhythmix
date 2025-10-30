@@ -38,6 +38,11 @@ public enum ASTNodeTypes {
      */
     ARROW_EXPR,
 
+    /**
+     * A multi-source event expression, combining conditions from multiple event sources.
+     * Example: {#temp:<30# && #humidity:>80#}
+     */
+    MULTI_SOURCE_EVENT_EXPR,
 
     /**
      * An anonymous function (lambda expression).
