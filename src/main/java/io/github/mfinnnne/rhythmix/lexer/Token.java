@@ -1,6 +1,7 @@
 package io.github.mfinnnne.rhythmix.lexer;
 
 import io.github.mfinnnne.rhythmix.exception.LexicalException;
+import lombok.Setter;
 
 /**
  * Represents a token produced by the {@link Lexer}.
@@ -15,6 +16,13 @@ import io.github.mfinnnne.rhythmix.exception.LexicalException;
  */
 public class Token {
     private final TokenType type;
+    /**
+     * -- SETTER --
+     *  Sets the string value of the token.
+     *
+     * @param value a {@link String} object.
+     */
+    @Setter
     private  String value;
     private final int startPosition;
     private final int endPosition;
@@ -28,15 +36,6 @@ public class Token {
      */
     public String getValue() {
         return value;
-    }
-
-    /**
-     * Sets the string value of the token.
-     *
-     * @param value a {@link java.lang.String} object.
-     */
-    public void setValue(String value) {
-        this.value = value;
     }
 
     /**
@@ -101,7 +100,8 @@ public class Token {
     }
 
     /**
-     * Gets the line number where the token appears.
+     * Gets the line number where the token appears.jjjiiyinkoiukmtyoi,limpu...;;;o,[/'.]p/.'p][0l99pl'jjj
+     *
      *
      * @return the line number, or -1 if not available.
      */
@@ -530,7 +530,7 @@ public class Token {
                     if (lookahead == '0') {
                         state = 1;
                     } else if (AlphabetHelper.isNumber(lookahead)) {
-                        if ("0".equals(res.toString())) {
+                        if ("0".contentEquals(res)) {
                             res = new StringBuilder();
                         }
                         state = 2;

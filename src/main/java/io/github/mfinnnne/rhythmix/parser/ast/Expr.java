@@ -105,9 +105,12 @@ public class Expr extends ASTNode {
             expr = CompareStmt.parser(it);
             return expr;
         } else if ("{".equals(token.getValue())) {
-            //由于目前'{'开头的只有箭头表达式 因此暂时对于箭头表达式的判断就只是判断是否 '{'开头
-            //如果后续不符合语法规则则会报解析错误
-            expr = ArrowStmt.parse(it);
+            // Check if it's a multi-source event expression ({#...#}) or arrow expression ({...})
+            if (MultiSourceEventStmt.isMultiSourceEvent(it)) {
+                expr = MultiSourceEventStmt.parse(it);
+            } else {
+                expr = ArrowStmt.parse(it);
+            }
             return expr;
         }
         return null;

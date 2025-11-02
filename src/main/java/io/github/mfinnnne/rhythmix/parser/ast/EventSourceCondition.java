@@ -49,6 +49,29 @@ public class EventSourceCondition extends ASTNode {
     }
 
     /**
+     * Detects whether the upcoming tokens represent an event source condition.
+     * <p>
+     * Pattern: {@code #alias:condition#}
+     * <p>
+     * This method uses lookahead to check if the next token is a {@code #} delimiter
+     * without consuming any tokens.
+     *
+     * @param it the token iterator
+     * @return true if the next tokens form an event source condition, false otherwise
+     */
+    public static boolean isEventSourceCondition(PeekTokenIterator it) {
+        if (!it.hasNext()) {
+            return false;
+        }
+        try {
+            it.record();
+            return "#".equals(it.peek().getValue());
+        } finally {
+            it.backRecord();
+        }
+    }
+
+    /**
      * Parses a single event source condition from the token stream.
      * <p>
      * Expected format: {@code #alias:condition#}
@@ -113,6 +136,9 @@ public class EventSourceCondition extends ASTNode {
      * This method collects all tokens until it finds a # at depth 0 (not inside brackets/braces).
      * It handles nested expressions like ranges {@code [20,30]}, chains {@code >20 && <30},
      * and other complex conditions.
+     * <p>
+     * Note: Within an event source condition, {@code &&} and {@code ||} are part of the condition
+     * (e.g., {@code #temp:>20 && <30#}), not multi-source logical operators.
      *
      * @param it the token iterator
      * @return the parsed condition expression as an ASTNode
@@ -146,9 +172,17 @@ public class EventSourceCondition extends ASTNode {
         // Now backtrack and parse the expression properly
         it.backRecord();
 
-        // Parse the condition expression using Expr.parse
-        // This will handle all expression types: compare, range, chain, binary, etc.
+        // Save the current priority table to preserve context
+        // (e.g., when parsing multi-source events with custom priority table)
+        var savedTable = Expr.table;
+
+        // Parse the condition expression using Expr.parse with default priority table
+        // This ensures && and || within the condition are parsed correctly
+        // (e.g., #temp:>20 && <30# parses the chain expression >20 && <30)
         ASTNode conditionExpr = Expr.parse(it);
+
+        // Restore the saved priority table to preserve the parsing context
+        Expr.table = savedTable;
 
         return conditionExpr;
     }

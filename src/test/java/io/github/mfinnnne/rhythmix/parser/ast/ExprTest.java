@@ -4,8 +4,6 @@ import io.github.mfinnnne.rhythmix.exception.LexicalException;
 import io.github.mfinnnne.rhythmix.exception.ParseException;
 import io.github.mfinnnne.rhythmix.lexer.Lexer;
 import io.github.mfinnnne.rhythmix.lexer.Token;
-import io.github.mfinnnne.rhythmix.parser.ast.ASTNode;
-import io.github.mfinnnne.rhythmix.parser.ast.Expr;
 import io.github.mfinnnne.rhythmix.util.ParserUtils;
 import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
 import jdk.jshell.spi.ExecutionControl;
@@ -118,5 +116,54 @@ class ExprTest {
 
         ASTNode parse = Expr.parse(new PeekTokenIterator(tokens.stream()));
         Assertions.assertEquals("a ! b &&", ParserUtils.toPostfixExpression(parse));
+    }
+
+    @Test
+    void testMultiSourceViaExprParse() throws LexicalException, ParseException, ExecutionControl.NotImplementedException {
+        String code = "{#temp:<30# && #humidity:>80#}";
+        Lexer lexer = new Lexer();
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        ASTNode parse = Expr.parse(new PeekTokenIterator(tokens.stream()));
+
+        // Verify it's parsed as MULTI_SOURCE_EVENT_EXPR
+        Assertions.assertEquals(ASTNodeTypes.MULTI_SOURCE_EVENT_EXPR, parse.getType());
+        Assertions.assertEquals("multi-source event expr", parse.getLabel());
+
+        // Verify structure: should have one child (binary expression)
+        Assertions.assertEquals(1, parse.getChildren().size());
+        ASTNode binaryExpr = parse.getChildren(0);
+        Assertions.assertEquals(ASTNodeTypes.BINARY_EXPR, binaryExpr.getType());
+        Assertions.assertEquals("&&", binaryExpr.getLexeme().getValue());
+    }
+
+    @Test
+    void testMultiSourceSingleCondition() throws LexicalException, ParseException{
+        String code = "{#temp:<30#}";
+        Lexer lexer = new Lexer();
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        ASTNode parse = Expr.parse(new PeekTokenIterator(tokens.stream()));
+
+        // Verify it's parsed as MULTI_SOURCE_EVENT_EXPR
+        Assertions.assertEquals(ASTNodeTypes.MULTI_SOURCE_EVENT_EXPR, parse.getType());
+
+        // Verify structure: should have one child (EventSourceCondition)
+        Assertions.assertEquals(1, parse.getChildren().size());
+        ASTNode condition = parse.getChildren(0);
+        Assertions.assertTrue(condition instanceof EventSourceCondition);
+    }
+
+    @Test
+    void testArrowExpressionStillWorks() throws LexicalException, ParseException {
+        String code = "{>1}->{<5}";
+        Lexer lexer = new Lexer();
+        ArrayList<Token> tokens = lexer.analyse(code.chars().mapToObj(x -> (char) x));
+
+        ASTNode parse = Expr.parse(new PeekTokenIterator(tokens.stream()));
+
+        // Verify it's still parsed as ARROW_EXPR (backward compatibility)
+        Assertions.assertEquals(ASTNodeTypes.ARROW_EXPR, parse.getType());
+        Assertions.assertEquals("arrow expr", parse.getLabel());
     }
 }

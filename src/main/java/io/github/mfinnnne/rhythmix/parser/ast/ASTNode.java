@@ -164,7 +164,7 @@ public abstract class ASTNode {
             System.out.println("print:" + this);
         }
         for (int i = 0; i < intent * 2; i++) {
-            System.out.printf(" ");
+            System.out.print(" ");
         }
         System.out.println(label);
         for (ASTNode child : children) {

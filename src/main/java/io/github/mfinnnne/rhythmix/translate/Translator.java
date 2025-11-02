@@ -109,6 +109,8 @@ public class Translator {
                 code = ArrowExpr.translate(astNode, context, env);
                 ((ArrayList<String>) context.get("baseCodes")).add(code);
                 return "arrow" + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
+            case MULTI_SOURCE_EVENT_EXPR:
+                return MultiSourceEventExpr.translate(astNode, context, env);
             case RANGE_EXPR:
                 return RangeExpr.translate(astNode, context, env);
             case COMPARE_EXPR:

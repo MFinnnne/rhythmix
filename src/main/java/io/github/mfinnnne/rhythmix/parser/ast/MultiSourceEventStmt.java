@@ -3,6 +3,9 @@ package io.github.mfinnnne.rhythmix.parser.ast;
 import io.github.mfinnnne.rhythmix.exception.ParseException;
 import io.github.mfinnnne.rhythmix.lexer.Token;
 import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
+import io.github.mfinnnne.rhythmix.util.PriorityTable;
+
+import java.util.Arrays;
 
 /**
  * Represents a multi-source event expression in the AST.
@@ -21,6 +24,22 @@ import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
  * @since 1.1
  */
 public class MultiSourceEventStmt extends Stmt {
+
+    /**
+     * Priority table with only logical operators for multi-source event expressions.
+     * <p>
+     * Precedence (lower index = lower precedence, evaluated first):
+     * <ul>
+     *   <li>Level 0: || (OR) - lower precedence</li>
+     *   <li>Level 1: && (AND) - higher precedence</li>
+     * </ul>
+     * <p>
+     * This ensures that {@code a || b && c} is parsed as {@code a || (b && c)}.
+     */
+    private static final PriorityTable MULTI_SOURCE_PRIORITY_TABLE = new PriorityTable(
+        Arrays.asList("||"),  // Level 0: OR (lower precedence)
+        Arrays.asList("&&")   // Level 1: AND (higher precedence)
+    );
 
     /**
      * Constructs a MultiSourceEventStmt.
@@ -68,21 +87,26 @@ public class MultiSourceEventStmt extends Stmt {
      * <p>
      * Expected format: {@code {#alias:condition# logicalOp #alias:condition# ...}}
      * <p>
-     * Example: {@code {#temp:<30# && #humidity:>80#}}
+     * Examples:
+     * <ul>
+     *   <li>{@code {#temp:<30# && #humidity:>80#}} - simple AND</li>
+     *   <li>{@code {#a:>1# || #b:>2# && #c:>3#}} - precedence: {@code a || (b && c)}</li>
+     *   <li>{@code {(#a:>1# || #b:>2#) && #c:>3#}} - parentheses: {@code (a || b) && c}</li>
+     * </ul>
      * <p>
      * The parsing process:
      * <ol>
      *   <li>Consume opening {@code {}</li>
-     *   <li>Parse first {@link EventSourceCondition}</li>
-     *   <li>While logical operators (&&, ||) exist:
-     *     <ul>
-     *       <li>Parse the operator</li>
-     *       <li>Parse the next {@link EventSourceCondition}</li>
-     *       <li>Build a binary expression tree</li>
-     *     </ul>
-     *   </li>
+     *   <li>Use Pratt parser to parse the logical expression with proper precedence</li>
+     *   <li>Validate that the expression contains only EventSourceCondition nodes and logical operators</li>
      *   <li>Consume closing {@code }}</li>
      * </ol>
+     * <p>
+     * Operator precedence (AND has higher precedence than OR):
+     * <ul>
+     *   <li>{@code &&} - higher precedence (evaluated first)</li>
+     *   <li>{@code ||} - lower precedence</li>
+     * </ul>
      *
      * @param it the token iterator
      * @return the parsed MultiSourceEventStmt
@@ -90,68 +114,78 @@ public class MultiSourceEventStmt extends Stmt {
      */
     public static ASTNode parse(PeekTokenIterator it) throws ParseException {
         MultiSourceEventStmt stmt = new MultiSourceEventStmt();
-        
+
         // Expect opening brace
         if (!"{".equals(it.peek().getValue())) {
             throw new ParseException("Expected '{' at start of multi-source event expression", it.peek());
         }
         Token openingBrace = it.next(); // consume {
         stmt.lexeme = openingBrace;
-        
-        // Parse the first event source condition
-        EventSourceCondition firstCondition = EventSourceCondition.parse(it);
-        
-        // Check if there are logical operators
-        if (!it.hasNext() || "}".equals(it.peek().getValue())) {
-            // Single condition case: {#temp:<30#}
-            stmt.addChild(firstCondition);
-            
-            // Consume closing brace
-            if (!"}".equals(it.peek().getValue())) {
-                throw new ParseException("Expected '}' at end of multi-source event expression", it.peek());
-            }
-            it.next(); // consume }
-            
-            return stmt;
-        }
-        
-        // Multiple conditions with logical operators
-        ASTNode currentExpr = firstCondition;
-        
-        while (it.hasNext() && !"}".equals(it.peek().getValue())) {
-            Token operatorToken = it.peek();
-            String operator = operatorToken.getValue();
-            
-            // Check for logical operator
-            if (!"&&".equals(operator) && !"||".equals(operator)) {
-                throw new ParseException("Expected logical operator (&&, ||) between event source conditions", operatorToken);
-            }
-            it.next(); // consume operator
-            
-            // Parse the next event source condition
-            EventSourceCondition nextCondition = EventSourceCondition.parse(it);
-            
-            // Build binary expression tree
-            Expr binaryExpr = new Expr(ASTNodeTypes.BINARY_EXPR, operatorToken);
-            binaryExpr.addChild(currentExpr);
-            binaryExpr.addChild(nextCondition);
-            
-            currentExpr = binaryExpr;
-        }
-        
-        // Add the final expression tree as child
-        stmt.addChild(currentExpr);
-        
+
+        // Parse the logical expression using Pratt parser with custom priority table
+        // This handles precedence (AND before OR) and parentheses automatically
+        ASTNode logicalExpr = Expr.parse(it, MULTI_SOURCE_PRIORITY_TABLE);
+
+        // Validate that the expression contains only EventSourceCondition nodes
+        // and logical operators (&&, ||)
+        validateMultiSourceExpression(logicalExpr);
+
+        stmt.addChild(logicalExpr);
+
         // Expect closing brace
         if (!it.hasNext()) {
             throw new ParseException("Expected '}' at end of multi-source event expression");
         }
-        if ( !"}".equals(it.peek().getValue())) {
+        if (!"}".equals(it.peek().getValue())) {
             throw new ParseException("Expected '}' at end of multi-source event expression", it.peek());
         }
         it.next(); // consume }
-        
+
         return stmt;
+    }
+
+    /**
+     * Validates that the expression tree contains only EventSourceCondition nodes
+     * and logical operators (&&, ||).
+     * <p>
+     * This ensures that multi-source event expressions don't contain invalid constructs
+     * like arithmetic operations, comparisons outside of event source conditions, etc.
+     *
+     * @param node the AST node to validate
+     * @throws ParseException if the node contains invalid constructs
+     */
+    private static void validateMultiSourceExpression(ASTNode node) throws ParseException {
+        if (node == null) {
+            return;
+        }
+
+        ASTNodeTypes type = node.getType();
+
+        // Allow EventSourceCondition (leaf nodes)
+        if (type == ASTNodeTypes.COMPARE_EXPR && node instanceof EventSourceCondition) {
+            return; // Valid leaf node
+        }
+
+        // Allow BINARY_EXPR with && or || operators
+        if (type == ASTNodeTypes.BINARY_EXPR) {
+            String operator = node.getLexeme().getValue();
+            if (!"&&".equals(operator) && !"||".equals(operator)) {
+                throw new ParseException(
+                    "Invalid operator '" + operator + "' in multi-source event expression. " +
+                    "Only && and || are allowed.", node.getLexeme());
+            }
+            // Recursively validate children
+            for (ASTNode child : node.getChildren()) {
+                validateMultiSourceExpression(child);
+            }
+            return;
+        }
+
+        // Invalid node type
+        throw new ParseException(
+            "Invalid expression in multi-source event. " +
+            "Only event source conditions (#alias:condition#) and logical operators (&&, ||) are allowed.",
+            node.getLexeme());
     }
 }
 

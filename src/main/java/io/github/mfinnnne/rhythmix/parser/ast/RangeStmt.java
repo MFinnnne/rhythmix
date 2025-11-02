@@ -97,7 +97,7 @@ public class RangeStmt extends Stmt {
             }
             return rangeStmt;
         } catch (ParseException e) {
-            throw e;
+            throw new ParseException(e.getMessage());
         } finally {
             Expr.table = new PriorityTable();
         }
