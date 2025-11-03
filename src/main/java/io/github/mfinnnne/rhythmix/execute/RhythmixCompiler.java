@@ -18,13 +18,20 @@ import java.util.HashMap;
  * The main compiler for the Rhythmix language.
  * <p>
  * This class provides static methods to compile Rhythmix source code into an executable
- * {@link RhythmixExecutor}. It handles the translation process, environment setup,
- * and error formatting.
+ * {@link RhythmixExecutor} with built-in monitoring capabilities. It handles the translation
+ * process, environment setup, and error formatting.
+ * <p>
+ * Monitoring is automatically enabled in all compiled executors, tracking event processing,
+ * state transitions, and execution performance.
  * <p>
  * Typical usage:
  * <pre>{@code
  * RhythmixExecutor executor = RhythmixCompiler.compile("a > 1 && b < 3");
  * boolean matched = executor.execute(eventObject);
+ *
+ * // Access monitoring data
+ * ExecutionMonitorData data = executor.getMonitoringData();
+ * executor.printReport();
  * }</pre>
  *
  * @author MFine
@@ -38,11 +45,13 @@ public class RhythmixCompiler {
     }
 
     /**
-     * Compiles Rhythmix source code into an executable form.
+     * Compiles Rhythmix source code into an executable form with monitoring enabled.
      * This method initializes a default environment with registered UDFs.
+     * Monitoring is automatically enabled to track event processing, state transitions,
+     * and execution performance.
      *
      * @param code the Rhythmix source code to compile
-     * @return a {@link RhythmixExecutor} instance ready for execution
+     * @return a {@link RhythmixExecutor} instance ready for execution with monitoring enabled
      * @throws TranslatorException if a compilation error occurs
      */
     public static RhythmixExecutor compile(String code) throws TranslatorException {
@@ -53,7 +62,7 @@ public class RhythmixCompiler {
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
             env.rawPut("postProcessingUDFMap", PostProcessingUDFRegistry.getRegisteredUdfs());
             String translatedCode = Translator.translate(code, env);
-            return new RhythmixExecutor(translatedCode, env);
+            return new RhythmixExecutor(translatedCode, env, code);
         } catch (RhythmixException e) {
             String formattedError = ErrorFormatter.formatError(e, code);
             throw new TranslatorException(formattedError);
@@ -61,11 +70,12 @@ public class RhythmixCompiler {
     }
 
     /**
-     * Compiles Rhythmix source code with a custom User-Defined Function (UDF) environment.
+     * Compiles Rhythmix source code with a custom User-Defined Function (UDF) environment
+     * and monitoring enabled.
      *
      * @param code   the Rhythmix source code to compile
      * @param udfEnv a {@link HashMap} containing custom UDFs to be made available during compilation and execution
-     * @return a {@link RhythmixExecutor} instance ready for execution
+     * @return a {@link RhythmixExecutor} instance ready for execution with monitoring enabled
      * @throws TranslatorException if a compilation error occurs
      */
     public static RhythmixExecutor compile(String code, HashMap<String, Object> udfEnv) throws TranslatorException {
@@ -77,7 +87,7 @@ public class RhythmixCompiler {
             env.rawPut("calculatorUDFMap", CalculatorUDFRegistry.getRegisteredUdfs());
             env.rawPut("meetUDFMap", MeetUDFRegistry.getRegisteredUdfs());
             env.rawPut("postProcessingUDFMap", PostProcessingUDFRegistry.getRegisteredUdfs());
-            return new RhythmixExecutor(translatedCode, env);
+            return new RhythmixExecutor(translatedCode, env, code);
         } catch (RhythmixException e) {
             // Use ErrorFormatter.formatError() to display the error with source code context
             String formattedError = ErrorFormatter.formatError(e, code);
@@ -86,100 +96,4 @@ public class RhythmixCompiler {
         }
     }
 
-
-    /**
-     * Compiles source code with a custom UDF environment and returns detailed error information if compilation fails.
-     *
-     * @param code   the Rhythmix source code to compile
-     * @param udfEnv custom UDF environment (can be {@code null})
-     * @return a {@link CompilationResult} containing either the executor or detailed error information
-     */
-    public static CompilationResult compileWithDetailedErrors(String code, HashMap<String, Object> udfEnv) {
-        try {
-            RhythmixExecutor rhythmixExecutor = udfEnv != null ? compile(code, udfEnv) : compile(code);
-            return CompilationResult.success(rhythmixExecutor);
-        } catch (RhythmixException e) {
-            String formattedError = ErrorFormatter.formatError(e, code);
-            return CompilationResult.failure(e, formattedError);
-        }
-    }
-
-    /**
-     * Represents the result of a compilation operation.
-     * <p>
-     * Contains either a successful compilation artifact ({@link RhythmixExecutor}) or the
-     * exception detailing the failure. Use the static factory methods to construct instances.
-     */
-    public static class CompilationResult {
-        private final boolean success;
-        private final RhythmixExecutor rhythmixExecutor;
-        private final RhythmixException exception;
-
-        private CompilationResult(boolean success, RhythmixExecutor rhythmixExecutor, RhythmixException exception,
-                                  String formattedError, String detailedErrorReport) {
-            this.success = success;
-            this.rhythmixExecutor = rhythmixExecutor;
-            this.exception = exception;
-        }
-
-        /**
-         * Creates a successful compilation result.
-         *
-         * @param rhythmixExecutor the successfully created executor
-         * @return a new {@link CompilationResult} instance for a successful compilation
-         */
-        public static CompilationResult success(RhythmixExecutor rhythmixExecutor) {
-            return new CompilationResult(true, rhythmixExecutor, null, null, null);
-        }
-
-        /**
-         * Creates a failed compilation result with detailed error information.
-         *
-         * @param exception           the exception that occurred during compilation
-         * @param formattedError      a formatted error message
-         * @param detailedErrorReport an optional detailed report of the error
-         * @return a new {@link CompilationResult} instance for a failed compilation
-         */
-        public static CompilationResult failure(RhythmixException exception, String formattedError, String detailedErrorReport) {
-            return new CompilationResult(false, null, exception, formattedError, detailedErrorReport);
-        }
-
-        /**
-         * Creates a failed compilation result with a detailed error report.
-         *
-         * @param exception           the exception that occurred
-         * @param detailedErrorReport a detailed report of the error
-         * @return a new {@link CompilationResult} instance for a failed compilation
-         */
-        public static CompilationResult failure(RhythmixException exception, String detailedErrorReport) {
-            return new CompilationResult(false, null, exception, null, detailedErrorReport);
-        }
-
-        /**
-         * Returns the executor from a successful compilation.
-         *
-         * @return the {@link RhythmixExecutor}
-         * @throws IllegalStateException if the compilation was not successful
-         */
-        public RhythmixExecutor getExecutor() {
-            if (!success) {
-                throw new IllegalStateException("Compilation failed, no executor available");
-            }
-            return rhythmixExecutor;
-        }
-
-        /**
-         * Returns the exception from a failed compilation.
-         *
-         * @return the {@link RhythmixException}
-         * @throws IllegalStateException if the compilation was successful
-         */
-        public RhythmixException getException() {
-            if (success) {
-                throw new IllegalStateException("Compilation succeeded, no exception available");
-            }
-            return exception;
-        }
-
-    }
 }

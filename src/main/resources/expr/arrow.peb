@@ -16,16 +16,22 @@ let {% var funcName %} =lambda()->
         let fName = '{% var funcName %}';
         let res = arrow_fn_{{ codeIndex }}();
         {% debug "!{}:第 {} 个函数运行后结果：!{}",fName,index, res %}
+        ## Inject monitoring: record current state position
+        __monitor_state_position__ = {{ codeIndex }};
         {% if codeIndex == codeSize %}
         if(res){
             {% var  __preFuncFinishTime__ %} = now();
             {% var index %} = 0;
+            ## Inject monitoring: reset position on completion
+            __monitor_state_position__ = 0;
             return true;
         }
         {% else %}
         if(res) {
            {% var  __preFuncFinishTime__ %} = now();
             {% var index %}= {%var index%} +1;
+            ## Inject monitoring: update position on state transition
+            __monitor_state_position__ = {%var index%};
             return false;
         }
         {% endif %}
