@@ -115,13 +115,16 @@ public class Monitor {
     /**
      * Records an execution event.
      *
-     * @param event     the event data
-     * @param result    the execution result
-     * @param startTime the start time in nanoseconds
-     * @param endTime   the end time in nanoseconds
-     * @param duration  the execution duration in nanoseconds
+     * @param event                      the event data
+     * @param result                     the execution result
+     * @param startTime                  the start time in nanoseconds
+     * @param endTime                    the end time in nanoseconds
+     * @param duration                   the execution duration in nanoseconds
+     * @param statePositionBeforeExec    the state position before/during execution
+     * @param statePositionAfterExec     the state position after execution
      */
-    public synchronized void recordExecution(Object event, boolean result, long startTime, long endTime, long duration) {
+    public synchronized void recordExecution(Object event, boolean result, long startTime, long endTime, long duration,
+                                            Integer statePositionBeforeExec, Integer statePositionAfterExec) {
         // Extract event data
         RhythmixEventData eventData = null;
         String eventId = null;
@@ -133,9 +136,8 @@ public class Monitor {
             eventId = "unknown-" + System.currentTimeMillis();
         }
 
-        // Get current state position from environment
-        Integer statePosition = getCurrentStatePosition();
-        String stateUnit = stateFlowMetadata != null ? stateFlowMetadata.getStateUnitAtPosition(statePosition) : null;
+        // Get state unit expression at the before-execution position
+        String stateUnit = stateFlowMetadata != null ? stateFlowMetadata.getStateUnitAtPosition(statePositionBeforeExec) : null;
 
         // Create execution record
         ExecutionRecord record = ExecutionRecord.builder()
@@ -145,12 +147,13 @@ public class Monitor {
                 .startTimeNanos(startTime)
                 .endTimeNanos(endTime)
                 .executionDurationNanos(duration)
-                .currentStatePosition(statePosition)
+                .currentStatePosition(statePositionBeforeExec)
                 .stateUnitAtPosition(stateUnit)
+                .statePositionAfterExecution(statePositionAfterExec)
                 .build();
 
         // Add record with FIFO strategy
-        if (executionRecords.size() >= maxRecords) {
+        while (executionRecords.size() >= maxRecords) {
             executionRecords.removeFirst(); // Remove oldest record
         }
         executionRecords.addLast(record);

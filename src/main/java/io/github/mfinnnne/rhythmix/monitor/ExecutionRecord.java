@@ -53,7 +53,8 @@ public class ExecutionRecord {
     private Long executionDurationNanos;
 
     /**
-     * The current state unit position in the execution flow (0-based index).
+     * The current state unit position in the execution flow (0-based index) at the time of execution.
+     * This represents the position BEFORE or DURING the event processing.
      * For example, in "{a}->{b}->{c}", position 0 is "{a}", position 1 is "{b}", position 2 is "{c}".
      */
     private Integer currentStatePosition;
@@ -63,6 +64,15 @@ public class ExecutionRecord {
      * For example, "{a}", "{count(>4,3)}", etc.
      */
     private String stateUnitAtPosition;
+
+    /**
+     * The state unit position AFTER the current event has been executed (0-based index).
+     * This represents where the executor moved to after processing this event.
+     * This allows tracking state transitions: if currentStatePosition=0 and statePositionAfterExecution=1,
+     * it means the event caused a transition from state 0 to state 1.
+     * If both positions are the same, no state transition occurred.
+     */
+    private Integer statePositionAfterExecution;
 
     /**
      * Calculates and returns the execution duration in milliseconds.
@@ -96,11 +106,12 @@ public class ExecutionRecord {
     @Override
     public String toString() {
         return String.format(
-            "ExecutionRecord{eventId='%s', result=%s, duration=%.3fms, statePosition=%d, stateUnit='%s'}",
+            "ExecutionRecord{eventId='%s', result=%s, duration=%.3fms, statePosition=%d->%d, stateUnit='%s'}",
             eventId,
             executionResult,
             getExecutionDurationMillis(),
             currentStatePosition,
+            statePositionAfterExecution,
             stateUnitAtPosition
         );
     }

@@ -108,23 +108,49 @@ public class RhythmixExecutor {
     public synchronized boolean execute(Object event) {
         long startTime = System.nanoTime();
 
+        // Capture state position before execution
+        Integer statePositionBefore = getStatePositionFromEnv();
+
         this.envProxy.rawPut("event", event);
         Expression expr = AviatorFunctionUtil.getExpr(code);
         Object res = expr.execute(envProxy.getEnv());
         Boolean res1 = (Boolean) res;
-
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
 
+        // Capture state position after execution
+        Integer statePositionAfter = getStatePositionFromEnv();
+
         // Record execution for monitoring (delegate to monitor)
         if (monitor != null) {
-            monitor.recordExecution(event, res1, startTime, endTime, duration);
+            monitor.recordExecution(event, res1, startTime, endTime, duration, statePositionBefore, statePositionAfter);
         }
 
         if (res1) {
             resetEnv();
         }
         return res1;
+    }
+
+    /**
+     * Gets the current state position from the environment.
+     *
+     * @return the current state position, or 0 if not found
+     */
+    private Integer getStatePositionFromEnv() {
+        try {
+            Object position = envProxy.rawGet("__monitor_state_position__");
+            if (position instanceof Integer) {
+                return (Integer) position;
+            } else if (position instanceof Long) {
+                return ((Long) position).intValue();
+            } else if (position instanceof Number) {
+                return ((Number) position).intValue();
+            }
+        } catch (Exception e) {
+            // Return 0 if unable to get position
+        }
+        return 0;
     }
 
     /**
