@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,7 @@ public class ExecutionMonitorData {
     /**
      * Total number of events processed.
      */
-    private Integer totalEventsProcessed;
+    private int totalEventsProcessed=0;
 
     /**
      * Count of successful matches (execution result = true).
@@ -54,22 +55,19 @@ public class ExecutionMonitorData {
     /**
      * Total execution time in nanoseconds (sum of all execution durations).
      */
-    private Long totalExecutionTimeNanos;
+    private long totalExecutionTimeNanos;
 
     /**
      * Average execution time in nanoseconds.
      */
-    private Double averageExecutionTimeNanos;
+    private double averageExecutionTimeNanos=0.0;
 
     /**
      * Gets the average execution time in milliseconds.
      *
      * @return average execution time in milliseconds
      */
-    public Double getAverageExecutionTimeMillis() {
-        if (averageExecutionTimeNanos == null) {
-            return null;
-        }
+    public double getAverageExecutionTimeMillis() {
         return averageExecutionTimeNanos / 1_000_000.0;
     }
 
@@ -78,10 +76,7 @@ public class ExecutionMonitorData {
      *
      * @return total execution time in milliseconds
      */
-    public Double getTotalExecutionTimeMillis() {
-        if (totalExecutionTimeNanos == null) {
-            return null;
-        }
+    public double getTotalExecutionTimeMillis() {
         return totalExecutionTimeNanos / 1_000_000.0;
     }
 
@@ -90,8 +85,8 @@ public class ExecutionMonitorData {
      *
      * @return success rate (0-100)
      */
-    public Double getSuccessRate() {
-        if (totalEventsProcessed == null || totalEventsProcessed == 0) {
+    public double getSuccessRate() {
+        if (totalEventsProcessed == 0) {
             return 0.0;
         }
         return (successfulMatches * 100.0) / totalEventsProcessed;
@@ -129,7 +124,7 @@ public class ExecutionMonitorData {
     public Long getMinExecutionTimeNanos() {
         return executionRecords.stream()
                 .map(ExecutionRecord::getExecutionDurationNanos)
-                .filter(duration -> duration != null)
+                .filter(Objects::nonNull)
                 .min(Long::compareTo)
                 .orElse(null);
     }
@@ -142,7 +137,7 @@ public class ExecutionMonitorData {
     public Long getMaxExecutionTimeNanos() {
         return executionRecords.stream()
                 .map(ExecutionRecord::getExecutionDurationNanos)
-                .filter(duration -> duration != null)
+                .filter(Objects::nonNull)
                 .max(Long::compareTo)
                 .orElse(null);
     }

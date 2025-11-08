@@ -2,6 +2,8 @@ package io.github.mfinnnne.rhythmix.monitor;
 
 import io.github.mfinnnne.rhythmix.translate.EnvProxy;
 import io.github.mfinnnne.rhythmix.util.RhythmixEventData;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -27,12 +29,24 @@ public class Monitor {
 
     /**
      * The original expression string (before translation).
+     * -- GETTER --
+     *  Gets the original expression string.
+     *
+     * @return the expression string
+
      */
+    @Getter
     private final String expression;
 
     /**
      * Metadata about the state flow structure.
+     * -- GETTER --
+     *  Gets the state flow metadata.
+     *
+     * @return the state flow metadata
+
      */
+    @Getter
     private final StateFlowMetadata stateFlowMetadata;
 
     /**
@@ -47,7 +61,13 @@ public class Monitor {
 
     /**
      * Maximum number of execution records to keep in memory.
+     * -- SETTER --
+     *  Sets the maximum number of records to keep in memory.
+     *
+     * @param maxRecords the maximum number of records
+
      */
+    @Setter
     private int maxRecords = 1000;
 
     /**
@@ -173,7 +193,7 @@ public class Monitor {
      *
      * @return the current state position, or 0 if not found
      */
-    private Integer getCurrentStatePosition() {
+    private int getCurrentStatePosition() {
         try {
             Object position = envProxy.rawGet(MONITOR_STATE_POSITION_KEY);
             if (position instanceof Integer) {
@@ -235,15 +255,6 @@ public class Monitor {
     }
 
     /**
-     * Sets the maximum number of records to keep in memory.
-     *
-     * @param maxRecords the maximum number of records
-     */
-    public void setMaxRecords(int maxRecords) {
-        this.maxRecords = maxRecords;
-    }
-
-    /**
      * Gets the current number of stored execution records.
      *
      * @return the number of execution records
@@ -252,21 +263,4 @@ public class Monitor {
         return executionRecords.size();
     }
 
-    /**
-     * Gets the original expression string.
-     *
-     * @return the expression string
-     */
-    public String getExpression() {
-        return expression;
-    }
-
-    /**
-     * Gets the state flow metadata.
-     *
-     * @return the state flow metadata
-     */
-    public StateFlowMetadata getStateFlowMetadata() {
-        return stateFlowMetadata;
-    }
 }
