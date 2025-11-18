@@ -1,5 +1,6 @@
 package io.github.mfinnnne.rhythmix.parser.ast;
 
+import io.github.mfinnnne.rhythmix.exception.ParseException;
 import io.github.mfinnnne.rhythmix.lexer.Token;
 import io.github.mfinnnne.rhythmix.lexer.TokenType;
 import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
@@ -34,14 +35,22 @@ public class Factor extends ASTNode {
 
     /**
      * Parses a factor from the token stream.
-     * It checks if the next token is a variable or a scalar and creates the corresponding node.
+     * It checks if the next token is a variable, scalar, or event source condition
+     * and creates the corresponding node.
      *
      * @param it the token iterator.
      * @return an {@link ASTNode} for the factor, or {@code null} if no factor can be parsed.
+     * @throws ParseException if parsing an event source condition fails.
      */
-    public static ASTNode parse(PeekTokenIterator it) {
+    public static ASTNode parse(PeekTokenIterator it) throws ParseException {
 
         Token next = it.peek();
+
+        // Check for event source condition (#alias:condition#)
+        if (EventSourceCondition.isEventSourceCondition(it)) {
+            return EventSourceCondition.parse(it);
+        }
+
         if (next.isVariable()) {
             return new Variable(it);
         } else if (next.isScalar()) {

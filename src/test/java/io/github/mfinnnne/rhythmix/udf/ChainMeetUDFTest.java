@@ -1,5 +1,6 @@
 package io.github.mfinnnne.rhythmix.udf;
 
+import io.github.mfinnnne.rhythmix.config.ChainFunctionConfig;
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
 import io.github.mfinnnne.rhythmix.execute.RhythmixCompiler;
 import io.github.mfinnnne.rhythmix.execute.RhythmixExecutor;
@@ -166,8 +167,11 @@ class ChainMeetUDFTest {
     @Test
     @DisplayName("Test custom MeetUDF - custom threshold checking")
     void testCustomMeetUDF() throws TranslatorException {
-        // Register custom meet UDF
-        MeetUDFRegistry.registerMeetUDF(new CustomThresholdChainMeetUDF());
+        // Register the custom UDF before using it
+        CustomThresholdChainMeetUDF customUDF = new CustomThresholdChainMeetUDF();
+        MeetUDFRegistry.registerMeetUDF(customUDF);
+        // Add the custom UDF to the chain function config as an end function
+        ChainFunctionConfig.getInstance().addEndFunc(customUDF.getName());
 
         // Test custom thresholdMeet (threshold > 15)
         String code = "filter(>0).sum().customThresholdMeet()";
@@ -192,8 +196,11 @@ class ChainMeetUDFTest {
     @Test
     @DisplayName("Test custom RangeMeetUDF - custom range checking")
     void testCustomRangeMeetUDF() throws TranslatorException {
-        // Register custom range meet UDF
-        MeetUDFRegistry.registerMeetUDF(new CustomRangeChainMeetUDF());
+        // Register the custom UDF before using it
+        CustomRangeChainMeetUDF customUDF = new CustomRangeChainMeetUDF();
+        MeetUDFRegistry.registerMeetUDF(customUDF);
+        // Add the custom UDF to the chain function config as an end function
+        ChainFunctionConfig.getInstance().addEndFunc(customUDF.getName());
 
         // Test custom rangeMeet (range 20-100)
         String code = "filter(>0).avg().customRangeMeet()";

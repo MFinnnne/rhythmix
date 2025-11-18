@@ -43,12 +43,8 @@ public class MinChainCalculator implements ChainCalculatorUDF {
 
             try {
                 double num;
-                if (value instanceof Number) {
-                    num = ((Number) value).doubleValue();
-                } else {
-                    // Try to parse string representation as number
-                    num = Double.parseDouble(value.toString());
-                }
+                // Try to parse string representation as number
+                num = Double.parseDouble(value.toString());
 
                 // Skip NaN values
                 if (Double.isNaN(num)) {

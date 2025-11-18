@@ -13,7 +13,8 @@ import io.pebbletemplates.pebble.cache.template.NoOpTemplateCache;
  */
 public class TemplateEngine {
     /** Constant <code>ENGINE</code> */
-    public static final PebbleEngine ENGINE = new PebbleEngine.Builder().extension(new CustomExtension()).tagCache(new NoOpTagCache()).templateCache(new NoOpTemplateCache()).autoEscaping(false).cacheActive(false).build();
+    public static final PebbleEngine ENGINE = new PebbleEngine.Builder().extension(new CustomExtension()).tagCache(new NoOpTagCache())
+            .templateCache(new NoOpTemplateCache()).autoEscaping(false).cacheActive(false).strictVariables(false).build();
     /**
      * <p>enableDebugModel.</p>
      *

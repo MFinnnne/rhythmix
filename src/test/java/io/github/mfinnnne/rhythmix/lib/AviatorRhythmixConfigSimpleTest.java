@@ -19,7 +19,7 @@ import java.util.Map;
  * 5. Pure strings use lexicographic comparison
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AviatorConfigSimpleTest {
+public class AviatorRhythmixConfigSimpleTest {
 
     @BeforeAll
     static void setUpClass() {

@@ -13,3 +13,4 @@ doc/__pycache__
 *.log
 logs
 /rhythmix.iml
+*.md

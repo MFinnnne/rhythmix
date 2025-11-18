@@ -130,3 +130,58 @@ def create_filter_window_avg_meet_demo():
         width=1000,
         height=500
     )
+
+
+def create_count_equal_chain_demo():
+    """
+    Create a GIF demonstrating the {count!(==1,5)}->{==0}->{count!(==1,5)} state transition expression.
+    This shows a cyclic state machine with:
+    1. {count!(==1,5)}: Count exactly 5 consecutive occurrences of value 1 (State 0)
+    2. ->: Transition to next state when count is met
+    3. {==0}: Wait for a value that equals 0 (State 1)
+    4. ->: Transition back to first state
+    5. {count!(==1,5)}: Count exactly 5 consecutive occurrences of value 1 again (cycle repeats)
+    """
+    state_pairs = [
+        # First cycle - State 0: Building up count to 5
+        StateTransitionPair("2", "false", "2≠1|RESET  0/5", False, current_state=0, subtitle="Count:0/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 1/5", True, current_state=0, subtitle="Count:1/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 2/5", True, current_state=0, subtitle="Count:2/5"),
+        StateTransitionPair("0", "false", "0≠1|RESET 0/5", False, current_state=0, subtitle="Count:0/5"),
+
+        # Restart counting after interruption
+        StateTransitionPair("1", "false", "1==1|Count: 1/5", True, current_state=0, subtitle="Count:1/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 2/5", True, current_state=0, subtitle="Count:2/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 3/5", True, current_state=0, subtitle="Count:3/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 4/5", True, current_state=0, subtitle="Count:4/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 5/5|To State 1", True, current_state=1, subtitle="Count:5/5✓"),
+
+        # State 1: Waiting for 0
+        StateTransitionPair("1", "false", "1≠0|Stay in State 1", False, current_state=1, subtitle="Waiting for 0"),
+        StateTransitionPair("2", "false", "2≠0|Stay in State 1", False, current_state=1, subtitle="Waiting for 0"),
+        StateTransitionPair("0", "false", "0==0|To State 2", True, current_state=1, subtitle="Got 0✓"),
+
+        # Second cycle - State 0: Building count again
+        StateTransitionPair("1", "false", "1==1|Count: 1/5", True, current_state=2, subtitle="Count:1/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 2/5", True, current_state=2, subtitle="Count:2/5"),
+        StateTransitionPair("3", "false", "3≠1|RESET count to 0/5", False, current_state=2, subtitle="Count:0/5"),
+
+        # Another attempt
+        StateTransitionPair("1", "false", "1==1|Count: 1/5", True, current_state=2, subtitle="Count:1/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 2/5", True, current_state=2, subtitle="Count:2/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 3/5", True, current_state=2, subtitle="Count:3/5"),
+        StateTransitionPair("1", "false", "1==1|Count: 4/5", True, current_state=2, subtitle="Count:4/5"),
+        StateTransitionPair("1", "true", "1==1|Count: 5/5|To State 0", True, current_state=2, subtitle="Count:5/5✓"),
+
+    ]
+
+    return create_state_transition_gif(
+        pairs=state_pairs,
+        output_name='count_equal_chain_demo',
+        speed_multiplier=1.5,
+        expression_parts=["{count!(==1,5)}", "->", "{==0}", "->", "{count!(==1,5)}"],
+        line_spacing=0.4,
+        column_spacing=3.0,
+        width=1100,
+        height=450
+    )

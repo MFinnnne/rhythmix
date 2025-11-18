@@ -11,7 +11,7 @@ import io.github.mfinnnne.rhythmix.exception.LexicalException;
 import io.github.mfinnnne.rhythmix.exception.ParseException;
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
 import io.github.mfinnnne.rhythmix.lexer.Token;
-import io.github.mfinnnne.rhythmix.config.Config;
+import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import io.github.mfinnnne.rhythmix.parser.ast.ASTNodeTypes;
 import io.github.mfinnnne.rhythmix.parser.ast.ArrowStmt;
 import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
@@ -74,7 +74,7 @@ public class ArrowExpr {
                 // preFuncFinishTime variable scope is current expression
                 // This approach allows the template to find and directly reference the existing preFuncFinishTime variable
                 // Rather than creating a new variable by adding a suffix that would cause the delay function to fail
-                context.put("preFuncFinishTime","preFuncFinishTime"+Config.SPLIT_SYMBOL+ Config.VAR_COUNTER.get());
+                context.put("preFuncFinishTime","preFuncFinishTime"+ RhythmixConfig.SPLIT_SYMBOL+ RhythmixConfig.VAR_COUNTER.get());
                 for (ASTNode arg : children) {
                     if (arg.getType() == ASTNodeTypes.ARROW_EXPR) {
                         throw new TranslatorException("Arrow expressions cannot be nested");

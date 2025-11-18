@@ -1,0 +1,25 @@
+## =============Multi-Source Event Expression================
+## Initialize state variables for each event source
+{% for condition in conditions %}
+let {{ condition.stateVarName  }} = {{ condition.stateVarName  }} == nil ? false : {{ condition.stateVarName  }};
+{% endfor %}
+
+## Route events by name and update corresponding state
+{% for condition in conditions %}
+if (event.name == "{{ condition.alias }}") {
+    {{  condition.stateVarName }}  = {{ condition.conditionCode }};
+}
+{% endfor %}
+
+## Evaluate the combined logical expression
+if ({{ logicalExpression }}) {
+    ## Reset all states after successful match
+    {% for condition in conditions %}
+    {{  condition.stateVarName }} = false;
+    {% endfor %}
+    return true;
+}
+
+return false;
+## =============Multi-Source Event Expression================
+

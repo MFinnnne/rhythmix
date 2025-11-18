@@ -1,5 +1,6 @@
 package io.github.mfinnnne.rhythmix.config;
 
+import io.github.mfinnnne.rhythmix.lib.Register;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,13 +12,8 @@ import java.util.Map;
 /**
  * Test class for ChainFunctionConfig functionality
  */
-public class ChainFunctionConfigTest {
+public class ChainFunctionRhythmixConfigTest {
 
-    @BeforeEach
-    void setUp() {
-        // Reset the singleton instance before each test
-        ChainFunctionConfig.resetInstance();
-    }
 
     @Test
     @DisplayName("Test singleton instance creation")
@@ -181,6 +177,7 @@ public class ChainFunctionConfigTest {
         // Verify the new function is in the call tree
         assertTrue(meetFollowups.contains("clear"));
         assertTrue(meetFollowups.contains("conditionalClear"));
+
     }
 
     @Test
@@ -244,27 +241,6 @@ public class ChainFunctionConfigTest {
         assertTrue(config.getPostProcessing().contains("threadClear2"));
         assertTrue(config.getPostProcessing().contains("threadClear3"));
         assertEquals(initialCount + 3, config.getPostProcessing().size());
-    }
-
-    @Test
-    @DisplayName("Test resetInstance")
-    void testResetInstance() {
-        ChainFunctionConfig config1 = ChainFunctionConfig.getInstance();
-        config1.addPostProcessing("customClear");
-        
-        assertTrue(config1.getPostProcessing().contains("customClear"));
-        
-        // Reset the instance
-        ChainFunctionConfig.resetInstance();
-        
-        ChainFunctionConfig config2 = ChainFunctionConfig.getInstance();
-        
-        // Should be a new instance
-        assertNotSame(config1, config2);
-        
-        // Should have default configuration (without customClear)
-        assertFalse(config2.getPostProcessing().contains("customClear"));
-        assertTrue(config2.getPostProcessing().contains("clear"));
     }
 }
 

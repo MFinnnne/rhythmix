@@ -7,6 +7,7 @@
  */
 package io.github.mfinnnne.rhythmix.lib;
 
+import io.github.mfinnnne.rhythmix.config.ChainFunctionConfig;
 import io.github.mfinnnne.rhythmix.udf.FilterUDFRegistry;
 import io.github.mfinnnne.rhythmix.udf.CalculatorUDFRegistry;
 import io.github.mfinnnne.rhythmix.udf.MeetUDFRegistry;
@@ -51,6 +52,8 @@ public class Register {
 
             // Auto-import PostProcessingUDF instances
             PostProcessingUDFRegistry.autoImportPostProcessingUDFs();
+
+            ChainFunctionConfig.getInstance().buildCallTree();
 
         } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
