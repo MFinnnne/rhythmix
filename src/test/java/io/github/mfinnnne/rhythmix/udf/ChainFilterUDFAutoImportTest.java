@@ -22,7 +22,6 @@ class ChainFilterUDFAutoImportTest {
         TemplateEngine.enableDebugModel(true);
         
         // Trigger auto-import by calling Register.importFunction()
-        Register.importFunction();
     }
 
     @Test

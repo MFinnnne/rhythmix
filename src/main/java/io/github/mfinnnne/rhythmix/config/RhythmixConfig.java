@@ -1,6 +1,9 @@
 package io.github.mfinnnne.rhythmix.config;
 
 import cn.hutool.core.util.RandomUtil;
+import io.github.mfinnnne.rhythmix.monitor.RhythmixDefaultMonitor;
+import io.github.mfinnnne.rhythmix.monitor.RhythmixMonitor;
+import lombok.Getter;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,8 +16,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * @version 1.0
  * @since 1.0
  */
-public class Config {
+public class RhythmixConfig {
 
+    @Getter
+    private static RhythmixMonitor monitor = new RhythmixDefaultMonitor();
 
     /**
      * A thread-safe counter for generating unique variable names.
@@ -27,5 +32,15 @@ public class Config {
      * This helps in creating structured and unique identifiers.
      */
     public final static String SPLIT_SYMBOL = "$";
+
+    /**
+     * Sets the monitor instance.
+     *
+     * @param monitor the monitor instance to set
+     */
+    public static void setMonitor(RhythmixMonitor monitor) {
+        RhythmixConfig.monitor = monitor;
+    }
+
 
 }

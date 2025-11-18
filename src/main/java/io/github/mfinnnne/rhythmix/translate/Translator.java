@@ -9,7 +9,7 @@ import io.github.mfinnnne.rhythmix.lexer.Token;
 import io.github.mfinnnne.rhythmix.parser.ast.ASTNode;
 import io.github.mfinnnne.rhythmix.parser.ast.ASTNodeTypes;
 import io.github.mfinnnne.rhythmix.parser.ast.Expr;
-import io.github.mfinnnne.rhythmix.config.Config;
+import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -105,10 +105,10 @@ public class Translator {
         String code;
         switch (astNode.getType()) {
             case ARROW_EXPR:
-                Config.VAR_COUNTER.incrementAndGet();
+                RhythmixConfig.VAR_COUNTER.incrementAndGet();
                 code = ArrowExpr.translate(astNode, context, env);
                 ((ArrayList<String>) context.get("baseCodes")).add(code);
-                return "arrow" + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
+                return "arrow" + RhythmixConfig.SPLIT_SYMBOL + RhythmixConfig.VAR_COUNTER.get() + "()";
             case MULTI_SOURCE_EVENT_EXPR:
                 return MultiSourceEventExpr.translate(astNode, context, env);
             case RANGE_EXPR:
@@ -118,14 +118,14 @@ public class Translator {
             case VARIABLE:
                 // 函数调用
                 if (!astNode.getChildren().isEmpty() && astNode.getChildren(0).getType() == ASTNodeTypes.CALL_STMT) {
-                    Config.VAR_COUNTER.incrementAndGet();
+                    RhythmixConfig.VAR_COUNTER.incrementAndGet();
                     if (astNode.getLabel().endsWith("!")) {
                         context.put("strict", true);
                         astNode.setLabel(astNode.getLabel().substring(0,astNode.getLabel().length()-1));
                     }
                     code = FunctionExpr.translate(astNode, context, env);
                     ((ArrayList<String>) context.get("baseCodes")).add(code);
-                    return astNode.getLabel() + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
+                    return astNode.getLabel() + RhythmixConfig.SPLIT_SYMBOL + RhythmixConfig.VAR_COUNTER.get() + "()";
                 } else {
                     if (env.containsKey(astNode.getLabel())) {
                         throw new TranslatorException("Undefined variable: '{}'", astNode.getLexeme(), astNode.getLabel());
@@ -133,8 +133,8 @@ public class Translator {
                     return env.rawGet(astNode.getLabel()).toString();
                 }
             case CHAIN_EXPR:
-                Config.VAR_COUNTER.incrementAndGet();
-                String name = "chain" + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get() + "()";
+                RhythmixConfig.VAR_COUNTER.incrementAndGet();
+                String name = "chain" + RhythmixConfig.SPLIT_SYMBOL + RhythmixConfig.VAR_COUNTER.get() + "()";
                 context.put("funcName", name);
 
                 code = ChainExpr.translate(astNode, context, env);

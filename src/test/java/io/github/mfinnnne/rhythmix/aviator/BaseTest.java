@@ -17,10 +17,6 @@ import java.util.Queue;
 
 public class BaseTest {
 
-    @BeforeAll
-    static void beforeAll() {
-        Register.importFunction();
-    }
 
     @Test
     void testQueueEnv() {

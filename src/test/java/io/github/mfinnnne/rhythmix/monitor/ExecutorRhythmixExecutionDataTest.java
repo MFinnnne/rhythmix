@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 1.1.0
  */
 @DisplayName("RhythmixExecutor Monitoring Tests")
-class ExecutorMonitorTest {
+class ExecutorRhythmixExecutionDataTest {
 
     @Test
     @DisplayName("Test basic monitoring with simple arrow expression")

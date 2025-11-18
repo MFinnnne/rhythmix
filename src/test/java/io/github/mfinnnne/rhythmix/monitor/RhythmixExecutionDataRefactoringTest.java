@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 1.1.0
  */
 @DisplayName("Monitor Refactoring Verification Tests")
-class MonitorRefactoringTest {
+class RhythmixExecutionDataRefactoringTest {
 
     @Test
     @DisplayName("Verify monitoring works after refactoring")
@@ -78,7 +78,7 @@ class MonitorRefactoringTest {
         assertEquals(0, executor.getRecordCount());
 
         // Test printReport (should not throw exception)
-        assertDoesNotThrow(() -> executor.printReport());
+        assertDoesNotThrow(executor::printReport);
     }
 
     @Test

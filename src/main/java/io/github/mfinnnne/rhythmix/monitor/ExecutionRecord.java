@@ -87,18 +87,6 @@ public class ExecutionRecord {
     }
 
     /**
-     * Calculates and returns the execution duration in microseconds.
-     *
-     * @return execution duration in microseconds
-     */
-    public Double getExecutionDurationMicros() {
-        if (executionDurationNanos == null) {
-            return null;
-        }
-        return executionDurationNanos / 1_000.0;
-    }
-
-    /**
      * Returns a human-readable string representation of this execution record.
      *
      * @return formatted string with execution details

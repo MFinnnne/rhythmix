@@ -29,10 +29,7 @@ import static org.assertj.core.api.Assertions.*;
  */
 public class ClearTest {
 
-    @BeforeAll
-    static void beforeAll() {
-        Register.importFunction();
-    }
+
 
     @Test
     @DisplayName("Test clear operator after meet")

@@ -1,6 +1,6 @@
 package io.github.mfinnnne.rhythmix.pebble.node;
 
-import io.github.mfinnnne.rhythmix.config.Config;
+import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import io.pebbletemplates.pebble.extension.NodeVisitor;
 import io.pebbletemplates.pebble.node.AbstractRenderableNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
@@ -34,7 +34,7 @@ public class VarNode extends AbstractRenderableNode {
     /** {@inheritDoc} */
     @Override
     public void render(PebbleTemplateImpl self, Writer writer, EvaluationContextImpl context) throws IOException {
-        if (this.name.split("\\"+Config.SPLIT_SYMBOL).length==2) {
+        if (this.name.split("\\"+ RhythmixConfig.SPLIT_SYMBOL).length==2) {
             writer.write(this.name);
             return;
         }
@@ -52,7 +52,7 @@ public class VarNode extends AbstractRenderableNode {
                 return;
             }
         }
-        writer.write(this.name + Config.SPLIT_SYMBOL + Config.VAR_COUNTER.get());
+        writer.write(this.name + RhythmixConfig.SPLIT_SYMBOL + RhythmixConfig.VAR_COUNTER.get());
     }
 
     /** {@inheritDoc} */

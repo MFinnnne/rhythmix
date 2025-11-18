@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @since 1.1.0
  */
 @DisplayName("RhythmixExecutor Monitoring Integration Tests")
-class ExecutorMonitorIntegrationTest {
+class ExecutorRhythmixExecutionDataIntegrationTest {
 
     @Test
     @DisplayName("Temperature Sensor Monitoring - State Transition from Normal to Alert")
@@ -117,8 +117,8 @@ class ExecutorMonitorIntegrationTest {
         // Analyze timing statistics
         ExecutionMonitorData data = executor.getMonitoringData();
 
-        assertNotNull(data.getAverageExecutionTimeMillis());
-        assertNotNull(data.getTotalExecutionTimeMillis());
+        data.getAverageExecutionTimeMillis();
+        data.getTotalExecutionTimeMillis();
         assertTrue(data.getAverageExecutionTimeMillis() > 0);
 
         System.out.println("\n=== Network Latency Monitoring Report ===");

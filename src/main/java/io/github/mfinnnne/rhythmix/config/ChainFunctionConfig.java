@@ -61,13 +61,6 @@ public class ChainFunctionConfig {
         return instance;
     }
 
-    /**
-     * Resets the singleton instance. This method is primarily used for testing purposes
-     * to ensure a clean state between tests. It is synchronized to maintain thread safety.
-     */
-    public static synchronized void resetInstance() {
-        instance = null;
-    }
 
     /**
      * Creates a new instance with a default configuration.
@@ -99,10 +92,9 @@ public class ChainFunctionConfig {
 
         postProcessing.add("clear");
         // Build CALL_TREE based on function categories
-        buildCallTree();
     }
 
-    private void buildCallTree() {
+    public void buildCallTree() {
         // Combine limit and calc functions for chain transitions
         List<String> doNotAfterCalc = new ArrayList<>();
         doNotAfterCalc.addAll(sampling);
@@ -149,7 +141,6 @@ public class ChainFunctionConfig {
             }
         }
         // Rebuild call tree to reflect changes
-        buildCallTree();
     }
 
     /**
@@ -167,7 +158,6 @@ public class ChainFunctionConfig {
             }
         }
         // Rebuild call tree to reflect changes
-        buildCallTree();
     }
 
     /**
@@ -185,7 +175,6 @@ public class ChainFunctionConfig {
             }
         }
         // Rebuild call tree to reflect changes
-        buildCallTree();
     }
 
     /**
@@ -203,6 +192,5 @@ public class ChainFunctionConfig {
             }
         }
         // Rebuild call tree to reflect changes
-        buildCallTree();
     }
 }

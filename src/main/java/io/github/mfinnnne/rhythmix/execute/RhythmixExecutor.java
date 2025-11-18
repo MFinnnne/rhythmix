@@ -1,5 +1,6 @@
 package io.github.mfinnnne.rhythmix.execute;
 
+import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import io.github.mfinnnne.rhythmix.lib.AviatorConfig;
 import io.github.mfinnnne.rhythmix.monitor.*;
 import io.github.mfinnnne.rhythmix.translate.EnvProxy;
@@ -36,6 +37,7 @@ public class RhythmixExecutor {
     @Getter
     private String code;
 
+
     @Getter
     @Setter
     private EnvProxy envProxy;
@@ -46,7 +48,8 @@ public class RhythmixExecutor {
     /**
      * Monitor instance for tracking execution data and performance.
      */
-    private Monitor monitor;
+    @Getter
+    private RhythmixExecutionData rhythmixExecutionData;
 
     /**
      * Default constructor.
@@ -79,7 +82,7 @@ public class RhythmixExecutor {
         AviatorConfig.operatorOverloading();
 
         // Initialize monitoring
-        this.monitor = new Monitor(expression, env);
+        this.rhythmixExecutionData = new RhythmixExecutionData(expression, env);
     }
 
     /**
@@ -113,8 +116,7 @@ public class RhythmixExecutor {
 
         this.envProxy.rawPut("event", event);
         Expression expr = AviatorFunctionUtil.getExpr(code);
-        Object res = expr.execute(envProxy.getEnv());
-        Boolean res1 = (Boolean) res;
+        Boolean res =(Boolean) expr.execute(envProxy.getEnv());
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
 
@@ -122,14 +124,14 @@ public class RhythmixExecutor {
         Integer statePositionAfter = getStatePositionFromEnv();
 
         // Record execution for monitoring (delegate to monitor)
-        if (monitor != null) {
-            monitor.recordExecution(event, res1, startTime, endTime, duration, statePositionBefore, statePositionAfter);
+        if (rhythmixExecutionData != null) {
+            rhythmixExecutionData.recordExecution(event, res, startTime, endTime, duration, statePositionBefore, statePositionAfter);
         }
 
-        if (res1) {
+        if (res) {
             resetEnv();
         }
-        return res1;
+        return res;
     }
 
     /**
@@ -187,8 +189,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public ExecutionMonitorData getMonitoringData() {
-        if (monitor != null) {
-            return monitor.getMonitoringData();
+        if (rhythmixExecutionData != null) {
+            return rhythmixExecutionData.getMonitoringData();
         }
         // Return empty data if monitor is not initialized
         return ExecutionMonitorData.builder()
@@ -209,8 +211,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public void resetMonitoring() {
-        if (monitor != null) {
-            monitor.resetMonitoring();
+        if (rhythmixExecutionData != null) {
+            rhythmixExecutionData.resetMonitoring();
         }
     }
 
@@ -221,8 +223,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public void printReport() {
-        if (monitor != null) {
-            monitor.printReport();
+        if (rhythmixExecutionData != null) {
+            rhythmixExecutionData.printReport();
         }
     }
 
@@ -234,8 +236,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public void setMaxRecords(int maxRecords) {
-        if (monitor != null) {
-            monitor.setMaxRecords(maxRecords);
+        if (rhythmixExecutionData != null) {
+            rhythmixExecutionData.setMaxRecords(maxRecords);
         }
     }
 
@@ -247,8 +249,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public int getRecordCount() {
-        if (monitor != null) {
-            return monitor.getRecordCount();
+        if (rhythmixExecutionData != null) {
+            return rhythmixExecutionData.getRecordCount();
         }
         return 0;
     }
@@ -261,8 +263,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public String getExpression() {
-        if (monitor != null) {
-            return monitor.getExpression();
+        if (rhythmixExecutionData != null) {
+            return rhythmixExecutionData.getExpression();
         }
         return null;
     }
@@ -275,8 +277,8 @@ public class RhythmixExecutor {
      * @since 1.1.0
      */
     public StateFlowMetadata getStateFlowMetadata() {
-        if (monitor != null) {
-            return monitor.getStateFlowMetadata();
+        if (rhythmixExecutionData != null) {
+            return rhythmixExecutionData.getStateFlowMetadata();
         }
         return null;
     }

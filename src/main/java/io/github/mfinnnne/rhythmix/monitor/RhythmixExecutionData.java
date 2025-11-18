@@ -25,7 +25,7 @@ import java.util.LinkedList;
  * @since 1.1.0
  */
 @Slf4j
-public class Monitor {
+public class RhythmixExecutionData {
 
     /**
      * The original expression string (before translation).
@@ -68,7 +68,7 @@ public class Monitor {
 
      */
     @Setter
-    private int maxRecords = 1000;
+    private int maxRecords = 100;
 
     /**
      * Total number of events processed (including those removed from records).
@@ -101,7 +101,7 @@ public class Monitor {
      * @param expression the original expression string
      * @param envProxy   the environment proxy for accessing state position
      */
-    public Monitor(String expression, EnvProxy envProxy) {
+    public RhythmixExecutionData(String expression, EnvProxy envProxy) {
         this.expression = expression;
         this.envProxy = envProxy;
         this.stateFlowMetadata = initializeStateFlowMetadata(expression);
@@ -177,37 +177,28 @@ public class Monitor {
             executionRecords.removeFirst(); // Remove oldest record
         }
         executionRecords.addLast(record);
-
-        // Update statistics
         totalEventsProcessed++;
         if (result) {
             successfulMatches++;
         } else {
             failedMatches++;
         }
+        // Update statistics
         totalExecutionTimeNanos += duration;
     }
 
     /**
-     * Gets the current state position from the executor's environment.
+     * Gets the current execution record.
      *
-     * @return the current state position, or 0 if not found
+     * @return the current execution record, or null if none
      */
-    private int getCurrentStatePosition() {
-        try {
-            Object position = envProxy.rawGet(MONITOR_STATE_POSITION_KEY);
-            if (position instanceof Integer) {
-                return (Integer) position;
-            } else if (position instanceof Long) {
-                return ((Long) position).intValue();
-            } else if (position instanceof Number) {
-                return ((Number) position).intValue();
-            }
-        } catch (Exception e) {
-            log.warn("Failed to get current state position from environment", e);
+    public ExecutionRecord getCurrentExecutionRecord() {
+        if (executionRecords.isEmpty()) {
+            return null;
         }
-        return 0;
+        return executionRecords.getLast();
     }
+
 
     /**
      * Gets all monitoring data.

@@ -1,6 +1,6 @@
 package io.github.mfinnnne.rhythmix.translate;
 
-import io.github.mfinnnne.rhythmix.config.Config;
+import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +26,7 @@ public class EnvProxy{
      * @param value a {@link java.lang.Object} object.
      */
     public void put(String key, Object value) {
-        this.env.put(key +Config.SPLIT_SYMBOL+ Config.VAR_COUNTER.get(), value);
+        this.env.put(key + RhythmixConfig.SPLIT_SYMBOL+ RhythmixConfig.VAR_COUNTER.get(), value);
     }
 
     /**
@@ -57,7 +57,7 @@ public class EnvProxy{
      * @return a {@link java.lang.Object} object.
      */
     public Object get(String key) {
-        return this.env.get(key + Config.VAR_COUNTER.get());
+        return this.env.get(key + RhythmixConfig.VAR_COUNTER.get());
     }
 
     /**

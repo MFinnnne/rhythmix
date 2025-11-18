@@ -1,7 +1,7 @@
 package io.github.mfinnnne.rhythmix.pebble.node;
 
 import io.github.mfinnnne.rhythmix.pebble.TemplateEngine;
-import io.github.mfinnnne.rhythmix.config.Config;
+import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import io.pebbletemplates.pebble.extension.NodeVisitor;
 import io.pebbletemplates.pebble.node.AbstractRenderableNode;
 import io.pebbletemplates.pebble.template.EvaluationContextImpl;
@@ -51,12 +51,12 @@ public class DebugNode extends AbstractRenderableNode {
                         code.replace(code.length() - 3, code.length() - 2, "");
                         code.append("'").append(value).append("'");
                     } else {
-                        code.append("'").append(value).append(Config.SPLIT_SYMBOL).append(Config.VAR_COUNTER.get()).append("'");
+                        code.append("'").append(value).append(RhythmixConfig.SPLIT_SYMBOL).append(RhythmixConfig.VAR_COUNTER.get()).append("'");
                     }
                 } else {
                     if (code.charAt(code.length() - 3) != '!') {
                         code.append("(").append(args.get(i));
-                        code.append(Config.SPLIT_SYMBOL).append(Config.VAR_COUNTER.get());
+                        code.append(RhythmixConfig.SPLIT_SYMBOL).append(RhythmixConfig.VAR_COUNTER.get());
                     } else {
                         code.replace(code.length() - 3, code.length() - 2, "");
                         code.append("(").append(args.get(i));
