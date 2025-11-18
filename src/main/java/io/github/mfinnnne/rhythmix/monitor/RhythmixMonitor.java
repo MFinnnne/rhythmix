@@ -1,6 +1,5 @@
 package io.github.mfinnnne.rhythmix.monitor;
 
-import io.github.mfinnnne.rhythmix.execute.ExecutorWrapper;
 import io.github.mfinnnne.rhythmix.execute.RhythmixExpressionEntity;
 import io.github.mfinnnne.rhythmix.util.RhythmixEventData;
 

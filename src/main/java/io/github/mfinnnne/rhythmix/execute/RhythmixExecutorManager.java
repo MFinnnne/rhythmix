@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Manages the lifecycle of RhythmixExecutor instances.
@@ -70,9 +71,13 @@ public class RhythmixExecutorManager {
      * Cache of compiled executors, keyed by expression entity ID.
      * Uses ConcurrentHashMap for thread-safe operations.
      */
-    private final Map<String, ExecutorWrapper> executorCache;
+    private final Map<String, RhythmixExecutor> executorCache;
 
-    private final Map<String, List<ExecutorWrapper>> executorRouteMap;
+    /**
+     * Route map for filter-based executor lookup.
+     * Maps filter IDs to lists of executors.
+     */
+    private final Map<String, List<RhythmixExecutor>> executorRouteMap;
 
     /**
      * Private constructor to enforce singleton pattern.
@@ -122,22 +127,23 @@ public class RhythmixExecutorManager {
             // Compile the expression
             RhythmixExecutor executor = RhythmixCompiler.compile(entity.getExpression());
 
-            // Create wrapper with metadata
-            ExecutorWrapper wrapper = ExecutorWrapper.builder()
-                    .id(entity.getId())
-                    .executor(executor)
-                    .entity(entity)
-                    .enabled(entity.isEnable())
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now())
-                    .build();
+            // Set metadata on executor
+            executor.setId(entity.getId());
+            executor.setEntity(entity);
+            executor.setEnabled(entity.isEnable());
+            executor.setCreatedAt(LocalDateTime.now());
+            executor.setUpdatedAt(LocalDateTime.now());
 
             // Store in cache
-            executorCache.put(entity.getId(), wrapper);
+            executorCache.put(entity.getId(), executor);
             entity.getFilterIds().forEach((filterId) -> {
-                executorRouteMap.computeIfAbsent(filterId, k -> new ArrayList<>()).add(wrapper);
-                executorRouteMap.computeIfPresent(filterId, (k, v) -> {
-                    v.add(wrapper);
+                executorRouteMap.compute(filterId, (k, v) -> {
+                    if (v == null) {
+                        v = new ArrayList<>();
+                        v.add(executor);
+                        return v;
+                    }
+                    v.add(executor);
                     return v;
                 });
             });
@@ -175,29 +181,23 @@ public class RhythmixExecutorManager {
             // Compile the updated expression
             RhythmixExecutor executor = RhythmixCompiler.compile(entity.getExpression());
 
-            // Get existing wrapper or create new one
-            ExecutorWrapper existingWrapper = executorCache.get(entity.getId());
-            LocalDateTime createdAt = existingWrapper != null ? existingWrapper.getCreatedAt() : LocalDateTime.now();
+            // Get existing executor to preserve createdAt timestamp
+            RhythmixExecutor existingExecutor = executorCache.get(entity.getId());
+            LocalDateTime createdAt = existingExecutor != null ? existingExecutor.getCreatedAt() : LocalDateTime.now();
 
-            // Create updated wrapper
-            ExecutorWrapper wrapper = ExecutorWrapper.builder()
-                    .executor(executor)
-                    .entity(entity)
-                    .enabled(entity.isEnable())
-                    .createdAt(createdAt)
-                    .updatedAt(LocalDateTime.now())
-                    .build();
+            // Set metadata on executor
+            executor.setId(entity.getId());
+            executor.setEntity(entity);
+            executor.setEnabled(entity.isEnable());
+            executor.setCreatedAt(createdAt);
+            executor.setUpdatedAt(LocalDateTime.now());
 
             // Replace in cache
-            executorCache.put(entity.getId(), wrapper);
+            executorCache.put(entity.getId(), executor);
             entity.getFilterIds().forEach((filterId) -> {
                 executorRouteMap.computeIfPresent(filterId, (k, v) -> {
-                    v.forEach((executorWrapper) -> {
-                        if (executorWrapper.getId().equals(entity.getId())) {
-                            v.remove(executorWrapper);
-                            v.add(wrapper);
-                        }
-                    });
+                    v.removeIf(exec -> exec.getId().equals(entity.getId()));
+                    v.add(executor);
                     return v;
                 });
             });
@@ -208,7 +208,7 @@ public class RhythmixExecutorManager {
             log.info("Successfully updated executor for expression ID: {}", entity.getId());
             return executor;
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             // Notify monitor of compilation error for non-RhythmixException
             invokeMonitorSafely(() -> getMonitor().onCompilationError(entity, e.getMessage()));
             log.error("Failed to update executor for expression ID: {}", entity.getId(), e);
@@ -229,14 +229,10 @@ public class RhythmixExecutorManager {
         log.debug("Deleting executor for expression ID: {}", entity.getId());
 
         // Remove from cache
-        ExecutorWrapper removed = executorCache.remove(entity.getId());
+        RhythmixExecutor removed = executorCache.remove(entity.getId());
         entity.getFilterIds().forEach((filterId) -> {
             executorRouteMap.computeIfPresent(filterId, (k, v) -> {
-                v.forEach((executorWrapper) -> {
-                    if (executorWrapper.getId().equals(entity.getId())) {
-                        v.remove(executorWrapper);
-                    }
-                });
+                v.removeIf(exec -> exec.getId().equals(entity.getId()));
                 return v;
             });
         });
@@ -262,10 +258,10 @@ public class RhythmixExecutorManager {
     public void enable(RhythmixExpressionEntity entity) {
         log.debug("Enabling executor for expression ID: {}", entity.getId());
 
-        ExecutorWrapper wrapper = executorCache.get(entity.getId());
-        if (wrapper != null) {
-            wrapper.setEnabled(true);
-            wrapper.setUpdatedAt(LocalDateTime.now());
+        RhythmixExecutor executor = executorCache.get(entity.getId());
+        if (executor != null) {
+            executor.setEnabled(true);
+            executor.setUpdatedAt(LocalDateTime.now());
             log.info("Successfully enabled executor for expression ID: {}", entity.getId());
         } else {
             log.warn("Attempted to enable non-existent executor for expression ID: {}", entity.getId());
@@ -285,10 +281,10 @@ public class RhythmixExecutorManager {
 
         log.debug("Disabling executor for expression ID: {}", entity.getId());
 
-        ExecutorWrapper wrapper = executorCache.get(entity.getId());
-        if (wrapper != null) {
-            wrapper.setEnabled(false);
-            wrapper.setUpdatedAt(LocalDateTime.now());
+        RhythmixExecutor executor = executorCache.get(entity.getId());
+        if (executor != null) {
+            executor.setEnabled(false);
+            executor.setUpdatedAt(LocalDateTime.now());
             log.info("Successfully disabled executor for expression ID: {}", entity.getId());
         } else {
             log.warn("Attempted to disable non-existent executor for expression ID: {}", entity.getId());
@@ -306,19 +302,18 @@ public class RhythmixExecutorManager {
             return Optional.empty();
         }
 
-        ExecutorWrapper wrapper = executorCache.get(entityId);
-        return wrapper != null ? Optional.of(wrapper.getExecutor()) : Optional.empty();
+        return Optional.ofNullable(executorCache.get(entityId));
     }
 
     /**
-     * Retrieves an executor wrapper by entity ID.
+     * Retrieves an executor by entity ID.
      * <p>
-     * The wrapper contains the executor along with its metadata (enabled status, timestamps, etc.).
+     * The executor contains metadata (enabled status, timestamps, entity reference, etc.).
      *
      * @param entityId the ID of the expression entity
-     * @return an Optional containing the executor wrapper if found, empty otherwise
+     * @return an Optional containing the executor if found, empty otherwise
      */
-    public Optional<ExecutorWrapper> getExecutorWrapper(String entityId) {
+    public Optional<RhythmixExecutor> getExecutorWrapper(String entityId) {
         if (entityId == null) {
             return Optional.empty();
         }
@@ -344,7 +339,7 @@ public class RhythmixExecutorManager {
      */
     public boolean isEnabled(String entityId) {
         return getExecutorWrapper(entityId)
-                .map(ExecutorWrapper::isEnabled)
+                .map(RhythmixExecutor::isEnabled)
                 .orElse(false);
     }
 
@@ -398,27 +393,31 @@ public class RhythmixExecutorManager {
         }
     }
 
+    public List<RhythmixExecutor> getExecutorByFilterId(String filterId) {
+        return executorRouteMap.get(filterId);
+    }
+
     private void execute(RhythmixEventData event) {
         executorRouteMap.forEach((k, v) -> {
-            v.forEach((executorWrapper) -> {
-                if (executorWrapper.isEnabled()) {
+            v.forEach((executor) -> {
+                if (executor.isEnabled()) {
 
                     try {
-                        invokeMonitorSafely(() -> getMonitor().onBeforeExecution(executorWrapper.getEntity(), event));
-                        boolean execute = executorWrapper.getExecutor().execute(event);
-                        final ExecutionRecord executionRecord = executorWrapper.getExecutor().getRhythmixExecutionData().getCurrentExecutionRecord();
+                        invokeMonitorSafely(() -> getMonitor().onBeforeExecution(executor.getEntity(), event));
+                        boolean execute = executor.execute(event);
+                        final ExecutionRecord executionRecord = executor.getRhythmixExecutionData().getCurrentExecutionRecord();
                         if (!Objects.equals(executionRecord.getStatePositionAfterExecution(), executionRecord.getCurrentStatePosition())) {
-                            invokeMonitorSafely(() -> getMonitor().onStatePositionChanged(executorWrapper.getEntity(),
+                            invokeMonitorSafely(() -> getMonitor().onStatePositionChanged(executor.getEntity(),
                                     executionRecord.getCurrentStatePosition(), executionRecord.getStatePositionAfterExecution(),
-                                    executorWrapper.getExecutor().getRhythmixExecutionData()));
+                                    executor.getRhythmixExecutionData()));
                         }
                         if (execute) {
-                            invokeMonitorSafely(() -> getMonitor().onExecutionSuccess(executorWrapper.getEntity(), event));
+                            invokeMonitorSafely(() -> getMonitor().onExecutionSuccess(executor.getEntity(), event));
                         }
-                        invokeMonitorSafely(() -> getMonitor().onAfterExecution(executorWrapper.getEntity(), event));
+                        invokeMonitorSafely(() -> getMonitor().onAfterExecution(executor.getEntity(), event));
                     } catch (Exception e) {
-                        invokeMonitorSafely(() -> getMonitor().onExecutionError(executorWrapper.getEntity(),
-                                executorWrapper.getExecutor().getRhythmixExecutionData(), e));
+                        invokeMonitorSafely(() -> getMonitor().onExecutionError(executor.getEntity(),
+                                executor.getRhythmixExecutionData(), e));
                     }
                 }
             });

@@ -1,6 +1,5 @@
 package io.github.mfinnnne.rhythmix.execute;
 
-import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
 import io.github.mfinnnne.rhythmix.lib.AviatorConfig;
 import io.github.mfinnnne.rhythmix.monitor.*;
 import io.github.mfinnnne.rhythmix.translate.EnvProxy;
@@ -8,6 +7,7 @@ import io.github.mfinnnne.rhythmix.util.AviatorFunctionUtil;
 import com.googlecode.aviator.Expression;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,7 +37,6 @@ public class RhythmixExecutor {
     @Getter
     private String code;
 
-
     @Getter
     @Setter
     private EnvProxy envProxy;
@@ -51,10 +50,50 @@ public class RhythmixExecutor {
     @Getter
     private RhythmixExecutionData rhythmixExecutionData;
 
+    // ==================== Metadata Fields (from ExecutorWrapper) ====================
+
+    /**
+     * The unique identifier for this executor (matches the expression entity ID).
+     */
+    @Getter
+    @Setter
+    private String id;
+
+    /**
+     * The original expression entity that was used to create this executor.
+     * Used for monitor callbacks and tracking.
+     */
+    @Getter
+    @Setter
+    private RhythmixExpressionEntity entity;
+
+    /**
+     * Whether this executor is currently enabled for execution.
+     * Disabled executors are kept in the cache but should not be executed.
+     */
+    @Getter
+    @Setter
+    private boolean enabled;
+
+    /**
+     * Timestamp when this executor was created.
+     */
+    @Getter
+    @Setter
+    private LocalDateTime createdAt;
+
+    /**
+     * Timestamp when this executor was last updated.
+     */
+    @Getter
+    @Setter
+    private LocalDateTime updatedAt;
+
     /**
      * Default constructor.
      */
     public RhythmixExecutor() {
+        this.enabled = true; // Default to enabled
     }
 
     /**
@@ -281,5 +320,15 @@ public class RhythmixExecutor {
             return rhythmixExecutionData.getStateFlowMetadata();
         }
         return null;
+    }
+
+    /**
+     * Checks if this executor can be executed.
+     * An executor can be executed only if it is enabled.
+     *
+     * @return true if the executor is enabled, false otherwise
+     */
+    public boolean canExecute() {
+        return enabled;
     }
 }
