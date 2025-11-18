@@ -10,13 +10,13 @@ import java.util.Arrays;
 /**
  * Represents a multi-source event expression in the AST.
  * <p>
- * Example: {@code {#temp:<30# && #humidity:>80#}}
+ * Example: {@code {#temp:&lt;30# &amp;&amp; #humidity:&gt;80#}}
  * <p>
- * This statement combines conditions from multiple event sources using logical operators (&&, ||).
+ * This statement combines conditions from multiple event sources using logical operators (&amp;&amp;, ||).
  * The structure is a binary tree where:
  * <ul>
  *   <li>Leaf nodes are {@link EventSourceCondition} instances</li>
- *   <li>Internal nodes are binary expressions (&&, ||) combining conditions</li>
+ *   <li>Internal nodes are binary expressions (&amp;&amp;, ||) combining conditions</li>
  * </ul>
  *
  * @author MFine
@@ -51,11 +51,11 @@ public class MultiSourceEventStmt extends Stmt {
     /**
      * Detects whether the upcoming tokens represent a multi-source event expression.
      * <p>
-     * A multi-source event expression starts with {@code {#} pattern.
+     * A multi-source event expression starts with <code>{#</code> pattern.
      * This method uses lookahead to check without consuming tokens.
      *
      * @param it the token iterator
-     * @return {@code true} if the pattern matches {@code {#}; {@code false} otherwise
+     * @return {@code true} if the pattern matches <code>{#</code>; {@code false} otherwise
      */
     public static boolean isMultiSourceEvent(PeekTokenIterator it) {
         try {

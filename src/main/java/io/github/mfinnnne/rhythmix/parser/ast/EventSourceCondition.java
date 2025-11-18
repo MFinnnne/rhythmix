@@ -7,13 +7,13 @@ import io.github.mfinnnne.rhythmix.util.PeekTokenIterator;
 /**
  * Represents a single event source condition in a multi-source event expression.
  * <p>
- * Example: In {@code #temp:<30#}, this node represents the entire condition
- * with "temp" as the event source alias and "<30" as the condition expression.
+ * Example: In {@code #temp:&lt;30#}, this node represents the entire condition
+ * with "temp" as the event source alias and "&lt;30" as the condition expression.
  * <p>
  * Structure:
  * <ul>
  *   <li>Event source alias: The identifier for the event source (e.g., "temp", "humidity")</li>
- *   <li>Condition expression: The child node containing the actual condition (e.g., "<30", "[20,30]")</li>
+ *   <li>Condition expression: The child node containing the actual condition (e.g., "&lt;30", "[20,30]")</li>
  * </ul>
  *
  * @author MFine

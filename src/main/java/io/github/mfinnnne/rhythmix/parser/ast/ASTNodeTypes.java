@@ -40,7 +40,7 @@ public enum ASTNodeTypes {
 
     /**
      * A multi-source event expression, combining conditions from multiple event sources.
-     * Example: {#temp:<30# && #humidity:>80#}
+     * Example: {#temp:&lt;30# &amp;&amp; #humidity:&gt;80#}
      */
     MULTI_SOURCE_EVENT_EXPR,
 

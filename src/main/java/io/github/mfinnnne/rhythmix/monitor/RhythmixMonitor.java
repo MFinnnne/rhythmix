@@ -130,7 +130,7 @@ public interface RhythmixMonitor {
      * Called when the state position changes during expression execution.
      * <p>
      * This callback is invoked when the executor transitions from one state unit to
-     * another in a multi-state expression (e.g., "{a}->{b}->{c}"). It provides
+     * another in a multi-state expression (e.g., "{a}-&gt;{b}-&gt;{c}"). It provides
      * visibility into the state machine progression and can be used for debugging
      * complex state flows or tracking partial matches.
      *
@@ -171,6 +171,7 @@ public interface RhythmixMonitor {
      * Unlike compilation errors, these occur at runtime and may be transient or
      * data-dependent.
      *
+     * @param entity        the expression entity that failed during execution
      * @param executionData the execution context when the error occurred
      * @param error         the error that was thrown during execution
      */

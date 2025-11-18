@@ -26,17 +26,17 @@ import static io.github.mfinnnne.rhythmix.pebble.TemplateEngine.ENGINE;
  *   <li>Resets states after a successful match</li>
  * </ul>
  * <p>
- * Example input: {@code {#temp:<30# && #humidity:>80#}}
+ * Example input: {@code {#temp:&lt;30# &amp;&amp; #humidity:&gt;80#}}
  * <p>
  * Generated code structure:
  * <pre>
  * if (event.name == "temp") {
- *     tempState = event.value < 30;
+ *     tempState = event.value &lt; 30;
  * } else if (event.name == "humidity") {
- *     humidityState = event.value > 80;
+ *     humidityState = event.value &gt; 80;
  * }
- * 
- * if (tempState && humidityState) {
+ *
+ * if (tempState &amp;&amp; humidityState) {
  *     tempState = false;
  *     humidityState = false;
  *     return true;
