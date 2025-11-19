@@ -1,6 +1,7 @@
 package io.github.mfinnnne.rhythmix.config;
 
 import io.github.mfinnnne.rhythmix.lib.Register;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,10 @@ import java.util.Map;
  */
 public class ChainFunctionRhythmixConfigTest {
 
+    @BeforeAll
+    static void beforeAll() {
+        Register.importFunction();
+    }
 
     @Test
     @DisplayName("Test singleton instance creation")
