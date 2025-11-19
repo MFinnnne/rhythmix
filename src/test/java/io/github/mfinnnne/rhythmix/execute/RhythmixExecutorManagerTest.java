@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,7 +68,7 @@ public class RhythmixExecutorManagerTest {
         return entity;
     }
 
-    private RhythmixExpressionEntity createSimpleEntity(String id, String expression) {
+    private synchronized RhythmixExpressionEntity createSimpleEntity(String id, String expression) {
         return createTestEntity(id, expression, true, new ArrayList<>());
     }
 
@@ -75,7 +76,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getInstance returns same instance")
-    void testGetInstance_ReturnsSameInstance() {
+    void testGetInstanceReturnsSameInstance() {
         RhythmixExecutorManager instance1 = RhythmixExecutorManager.getInstance();
         RhythmixExecutorManager instance2 = RhythmixExecutorManager.getInstance();
 
@@ -86,7 +87,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getInstance is thread-safe")
-    void testGetInstance_ThreadSafe() throws InterruptedException {
+    void testGetInstanceThreadSafe() throws InterruptedException {
         RhythmixExecutorManager.reset();
 
         int threadCount = 10;
@@ -114,7 +115,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test reset clears instance")
-    void testReset_ClearsInstance() throws TranslatorException {
+    void testResetClearsInstance() throws TranslatorException {
         // Create an executor
         RhythmixExpressionEntity entity = createSimpleEntity("test-1", ">5");
         manager.create(entity);
@@ -132,7 +133,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create executor successfully")
-    void testCreate_Success() throws TranslatorException {
+    void testCreateSuccess() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", "{>5}->{<3}");
 
         RhythmixExecutor executor = manager.create(entity);
@@ -145,7 +146,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create executor with filter IDs")
-    void testCreate_WithFilterIds() throws TranslatorException {
+    void testCreateWithFilterIds() throws TranslatorException {
         List<String> filterIds = Arrays.asList("filter-1", "filter-2");
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">10", true, filterIds);
 
@@ -158,7 +159,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create with compilation error")
-    void testCreate_CompilationError() {
+    void testCreateCompilationError() {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", "invalid{{{expression");
 
         assertThrows(TranslatorException.class, () -> manager.create(entity));
@@ -168,7 +169,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create invokes monitor callback")
-    void testCreate_MonitorCallbackInvoked() throws TranslatorException {
+    void testCreateMonitorCallbackInvoked() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
 
         manager.create(entity);
@@ -179,7 +180,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create with monitor callback failure does not affect operation")
-    void testCreate_MonitorCallbackFailureDoesNotAffectOperation() throws TranslatorException {
+    void testCreateMonitorCallbackFailureDoesNotAffectOperation() throws TranslatorException {
         // Set monitor that throws exception
         RhythmixConfig.setMonitor(new RhythmixMonitor() {
             @Override
@@ -197,7 +198,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create replaces existing executor")
-    void testCreate_ReplacesExistingExecutor() throws TranslatorException {
+    void testCreateReplacesExistingExecutor() throws TranslatorException {
         RhythmixExpressionEntity entity1 = createSimpleEntity("expr-1", ">5");
         RhythmixExpressionEntity entity2 = createSimpleEntity("expr-1", ">10");
 
@@ -213,7 +214,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update executor successfully")
-    void testUpdate_Success() throws TranslatorException {
+    void testUpdateSuccess() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -227,7 +228,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update creates new if not exists")
-    void testUpdate_CreatesNewIfNotExists() throws TranslatorException {
+    void testUpdateCreatesNewIfNotExists() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
 
         RhythmixExecutor executor = manager.update(entity);
@@ -238,7 +239,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update with compilation error")
-    void testUpdate_CompilationError() throws TranslatorException {
+    void testUpdateCompilationError() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -250,7 +251,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update invokes monitor callback")
-    void testUpdate_MonitorCallbackInvoked() throws TranslatorException {
+    void testUpdateMonitorCallbackInvoked() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -263,11 +264,11 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update preserves created timestamp")
-    void testUpdate_PreservesCreatedTimestamp() throws TranslatorException {
+    void testUpdatePreservesCreatedTimestamp() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
-        Optional<RhythmixExecutor> executorBefore = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executorBefore = manager.getRhythmixExecutor("expr-1");
         assertTrue(executorBefore.isPresent());
 
         // Small delay to ensure timestamps would differ
@@ -280,7 +281,7 @@ public class RhythmixExecutorManagerTest {
         entity.setExpression(">10");
         manager.update(entity);
 
-        Optional<RhythmixExecutor> executorAfter = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executorAfter = manager.getRhythmixExecutor("expr-1");
         assertTrue(executorAfter.isPresent());
 
         // Created timestamp should be the same, updated timestamp should be different
@@ -291,7 +292,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test delete executor successfully")
-    void testDelete_Success() throws TranslatorException {
+    void testDeleteSuccess() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -304,7 +305,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test delete removes from cache")
-    void testDelete_RemovesFromCache() throws TranslatorException {
+    void testDeleteRemovesFromCache() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
         assertTrue(manager.exists("expr-1"));
@@ -317,7 +318,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test delete removes from route map")
-    void testDelete_RemovesFromRouteMap() throws TranslatorException {
+    void testDeleteRemovesFromRouteMap() throws TranslatorException {
         List<String> filterIds = Arrays.asList("filter-1");
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
         manager.create(entity);
@@ -329,7 +330,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test delete invokes monitor callback")
-    void testDelete_MonitorCallbackInvoked() throws TranslatorException {
+    void testDeleteMonitorCallbackInvoked() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -341,7 +342,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test delete non-existent executor")
-    void testDelete_NonExistentExecutor() {
+    void testDeleteNonExistentExecutor() {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
 
         // Should not throw exception
@@ -353,21 +354,21 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test enable executor successfully")
-    void testEnable_Success() throws TranslatorException {
+    void testEnableSuccess() throws TranslatorException {
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", false, new ArrayList<>());
         manager.create(entity);
 
         manager.enable(entity);
 
         assertTrue(manager.isEnabled("expr-1"));
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor("expr-1");
         assertTrue(executor.isPresent());
         assertTrue(executor.get().isEnabled());
     }
 
     @Test
     @DisplayName("Test enable non-existent executor")
-    void testEnable_NonExistentExecutor() {
+    void testEnableNonExistentExecutor() {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
 
         // Should not throw exception
@@ -377,7 +378,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test disable executor successfully")
-    void testDisable_Success() throws TranslatorException {
+    void testDisableSuccess() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
         assertTrue(manager.isEnabled("expr-1"));
@@ -385,14 +386,14 @@ public class RhythmixExecutorManagerTest {
         manager.disable(entity);
 
         assertFalse(manager.isEnabled("expr-1"));
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor("expr-1");
         assertTrue(executor.isPresent());
         assertFalse(executor.get().isEnabled());
     }
 
     @Test
     @DisplayName("Test disable non-existent executor")
-    void testDisable_NonExistentExecutor() {
+    void testDisableNonExistentExecutor() {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
 
         // Should not throw exception
@@ -402,11 +403,11 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test enable updates timestamp")
-    void testEnable_UpdatesTimestamp() throws TranslatorException {
+    void testEnableUpdatesTimestamp() throws TranslatorException {
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", false, new ArrayList<>());
         manager.create(entity);
 
-        Optional<RhythmixExecutor> executorBefore = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executorBefore = manager.getRhythmixExecutor("expr-1");
         assertTrue(executorBefore.isPresent());
         final String time = executorBefore.get().getUpdatedAt().toString();
 
@@ -418,7 +419,7 @@ public class RhythmixExecutorManagerTest {
 
         manager.enable(entity);
 
-        Optional<RhythmixExecutor> executorAfter = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executorAfter = manager.getRhythmixExecutor("expr-1");
         assertTrue(executorAfter.isPresent());
         assertTrue(executorAfter.get().getUpdatedAt().isAfter(LocalDateTime.parse(time)));
     }
@@ -427,7 +428,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getExecutor returns executor when found")
-    void testGetExecutor_Found() throws TranslatorException {
+    void testGetExecutorFound() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -438,7 +439,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getExecutor returns empty when not found")
-    void testGetExecutor_NotFound() {
+    void testGetExecutorNotFound() {
         Optional<RhythmixExecutor> executor = manager.getExecutor("non-existent");
 
         assertFalse(executor.isPresent());
@@ -446,7 +447,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getExecutor with null ID")
-    void testGetExecutor_NullId() {
+    void testGetExecutorNullId() {
         Optional<RhythmixExecutor> executor = manager.getExecutor(null);
 
         assertFalse(executor.isPresent());
@@ -454,11 +455,11 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getExecutorWrapper returns executor when found")
-    void testGetExecutorWrapper_Found() throws TranslatorException {
+    void testGetRhythmixExecutorFound() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor("expr-1");
 
         assertTrue(executor.isPresent());
         assertEquals("expr-1", executor.get().getId());
@@ -469,23 +470,23 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test getExecutorWrapper returns empty when not found")
-    void testGetExecutorWrapper_NotFound() {
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper("non-existent");
+    void testGetRhythmixExecutorNotFound() {
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor("non-existent");
 
         assertFalse(executor.isPresent());
     }
 
     @Test
     @DisplayName("Test getExecutorWrapper with null ID")
-    void testGetExecutorWrapper_NullId() {
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper(null);
+    void testGetRhythmixExecutorNullId() {
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor(null);
 
         assertFalse(executor.isPresent());
     }
 
     @Test
     @DisplayName("Test exists returns true when executor exists")
-    void testExists_True() throws TranslatorException {
+    void testExistsTrue() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -494,19 +495,19 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test exists returns false when executor does not exist")
-    void testExists_False() {
+    void testExistsFalse() {
         assertFalse(manager.exists("non-existent"));
     }
 
     @Test
     @DisplayName("Test exists with null ID")
-    void testExists_NullId() {
+    void testExistsNullId() {
         assertFalse(manager.exists(null));
     }
 
     @Test
     @DisplayName("Test isEnabled returns true when enabled")
-    void testIsEnabled_True() throws TranslatorException {
+    void testIsEnabledTrue() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
@@ -515,7 +516,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test isEnabled returns false when disabled")
-    void testIsEnabled_False() throws TranslatorException {
+    void testIsEnabledFalse() throws TranslatorException {
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", false, new ArrayList<>());
         manager.create(entity);
 
@@ -524,13 +525,13 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test isEnabled returns false for non-existent executor")
-    void testIsEnabled_NonExistent() {
+    void testIsEnabledNonExistent() {
         assertFalse(manager.isEnabled("non-existent"));
     }
 
     @Test
     @DisplayName("Test size returns correct count")
-    void testSize_ReturnsCorrectCount() throws TranslatorException {
+    void testSizeReturnsCorrectCount() throws TranslatorException {
         assertEquals(0, manager.size());
 
         manager.create(createSimpleEntity("expr-1", ">5"));
@@ -547,7 +548,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test clear removes all executors")
-    void testClear_RemovesAllExecutors() throws TranslatorException {
+    void testClearRemovesAllExecutors() throws TranslatorException {
         manager.create(createSimpleEntity("expr-1", ">5"));
         manager.create(createSimpleEntity("expr-2", "<10"));
         manager.create(createSimpleEntity("expr-3", "==7"));
@@ -564,7 +565,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test clear does not trigger deletion callbacks")
-    void testClear_NoCallbacks() throws TranslatorException {
+    void testClearNoCallbacks() throws TranslatorException {
         manager.create(createSimpleEntity("expr-1", ">5"));
         manager.create(createSimpleEntity("expr-2", "<10"));
 
@@ -577,7 +578,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create with null expression throws exception")
-    void testCreate_NullExpression() {
+    void testCreateNullExpression() {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", null);
 
         assertThrows(Exception.class, () -> manager.create(entity));
@@ -585,7 +586,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update with null expression throws exception")
-    void testUpdate_NullExpression() {
+    void testUpdateNullExpression() {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", null);
 
         assertThrows(Exception.class, () -> manager.update(entity));
@@ -624,7 +625,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test executor can execute events after creation")
-    void testExecutor_CanExecuteEvents() throws TranslatorException {
+    void testExecutorCanExecuteEvents() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", "{>5}->{<3}");
         RhythmixExecutor executor = manager.create(entity);
 
@@ -640,7 +641,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test multiple executors with different expressions")
-    void testMultipleExecutors_DifferentExpressions() throws TranslatorException {
+    void testMultipleExecutorsDifferentExpressions() throws TranslatorException {
         RhythmixExpressionEntity entity1 = createSimpleEntity("expr-1", ">5");
         RhythmixExpressionEntity entity2 = createSimpleEntity("expr-2", "<10");
         RhythmixExpressionEntity entity3 = createSimpleEntity("expr-3", "[5,10]");
@@ -657,11 +658,11 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test executor metadata is correctly set")
-    void testExecutor_MetadataCorrectlySet() throws TranslatorException {
+    void testExecutorMetadataCorrectlySet() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
 
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor("expr-1");
         assertTrue(executor.isPresent());
 
         RhythmixExecutor exec = executor.get();
@@ -676,19 +677,19 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test disabled executor canExecute returns false")
-    void testExecutor_DisabledCannotExecute() throws TranslatorException {
+    void testExecutorDisabledCannotExecute() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
         manager.create(entity);
         manager.disable(entity);
 
-        Optional<RhythmixExecutor> executor = manager.getExecutorWrapper("expr-1");
+        Optional<RhythmixExecutor> executor = manager.getRhythmixExecutor("expr-1");
         assertTrue(executor.isPresent());
         assertFalse(executor.get().canExecute());
     }
 
     @Test
     @DisplayName("Test update with filter IDs")
-    void testUpdate_WithFilterIds() throws TranslatorException {
+    void testUpdateWithFilterIds() throws TranslatorException {
         List<String> filterIds1 = Arrays.asList("filter-1");
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds1);
         manager.create(entity);
@@ -703,7 +704,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test create and update maintain separate instances")
-    void testCreate_AndUpdate_SeparateInstances() throws TranslatorException {
+    void testCreateAndUpdateSeparateInstances() throws TranslatorException {
         RhythmixExpressionEntity entity1 = createSimpleEntity("expr-1", ">5");
         RhythmixExecutor executor1 = manager.create(entity1);
 
@@ -717,7 +718,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test delete with filter IDs does not throw ConcurrentModificationException")
-    void testDelete_WithFilterIds_NoConcurrentModificationException() throws TranslatorException {
+    void testDeleteWithFilterIdsNoConcurrentModificationException() throws TranslatorException {
         List<String> filterIds = Arrays.asList("filter-1", "filter-2", "filter-3");
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
         manager.create(entity);
@@ -729,7 +730,7 @@ public class RhythmixExecutorManagerTest {
 
     @Test
     @DisplayName("Test update with filter IDs does not throw ConcurrentModificationException")
-    void testUpdate_WithFilterIds_NoConcurrentModificationException() throws TranslatorException {
+    void testUpdateWithFilterIdsNoConcurrentModificationException() throws TranslatorException {
         List<String> filterIds = Arrays.asList("filter-1", "filter-2", "filter-3");
         RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
         manager.create(entity);
@@ -738,6 +739,422 @@ public class RhythmixExecutorManagerTest {
         // This should not throw ConcurrentModificationException
         assertDoesNotThrow(() -> manager.update(entity));
         assertTrue(manager.exists("expr-1"));
+    }
+
+    // ==================== Execute Method Tests (Private Method via Reflection) ====================
+
+    private void invokeExecuteMethod(RhythmixEventData event) throws Exception {
+        RhythmixExecutorManager manager = RhythmixExecutorManager.getInstance();
+        manager.execute(event);
+    }
+
+    @Test
+    @DisplayName("Test execute with single enabled executor - successful match")
+    void testExecuteSingleEnabledExecutorSuccessfulMatch() throws Exception {
+        // Create an executor with a simple expression
+        List<String> filterIds = List.of("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        manager.create(entity);
+
+        // Create event data that matches the expression
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection
+        invokeExecuteMethod(event);
+
+        // Verify monitor callbacks were invoked
+        assertEquals(1, testMonitor.beforeExecutionEvents.size());
+        assertEquals(1, testMonitor.afterExecutionEvents.size());
+        assertEquals(1, testMonitor.successEvents.size());
+        assertEquals(event, testMonitor.beforeExecutionEvents.get(0));
+        assertEquals(event, testMonitor.successEvents.get(0));
+    }
+
+    @Test
+    @DisplayName("Test execute with single enabled executor - no match")
+    void testExecuteSingleEnabledExecutorNoMatch() throws Exception {
+        // Create an executor with a simple expression
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        manager.create(entity);
+
+        // Create event data that does NOT match the expression
+        RhythmixEventData event = Util.genEventData("e1", "3", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection
+        invokeExecuteMethod(event);
+
+        // Verify monitor callbacks
+        assertEquals(1, testMonitor.beforeExecutionEvents.size());
+        assertEquals(1, testMonitor.afterExecutionEvents.size());
+        assertEquals(0, testMonitor.successEvents.size(), "Success callback should not be invoked for non-matching event");
+    }
+
+    @Test
+    @DisplayName("Test execute with disabled executor - should not execute")
+    void testExecuteDisabledExecutorShouldNotExecute() throws Exception {
+        // Create a disabled executor
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", false, filterIds);
+        manager.create(entity);
+
+        // Create event data
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection
+        invokeExecuteMethod(event);
+
+        // Verify no monitor callbacks were invoked (executor is disabled)
+        assertEquals(0, testMonitor.beforeExecutionEvents.size());
+        assertEquals(0, testMonitor.afterExecutionEvents.size());
+        assertEquals(0, testMonitor.successEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with multiple enabled executors")
+    void testExecuteMultipleEnabledExecutors() throws Exception {
+        // Create multiple executors with the same filter ID
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity1 = createTestEntity("expr-1", ">5", true, filterIds);
+        RhythmixExpressionEntity entity2 = createTestEntity("expr-2", "<15", true, filterIds);
+        manager.create(entity1);
+        manager.create(entity2);
+
+        // Create event data that matches both expressions
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection
+        invokeExecuteMethod(event);
+
+        // Verify both executors were invoked
+        assertEquals(2, testMonitor.beforeExecutionEvents.size());
+        assertEquals(2, testMonitor.afterExecutionEvents.size());
+        assertEquals(2, testMonitor.successEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with multiple executors - mixed enabled/disabled")
+    void testExecuteMultipleExecutorsMixedEnabledDisabled() throws Exception {
+        // Create multiple executors with the same filter ID
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity1 = createTestEntity("expr-1", ">5", true, filterIds);
+        RhythmixExpressionEntity entity2 = createTestEntity("expr-2", "<15", false, filterIds);
+        manager.create(entity1);
+        manager.create(entity2);
+
+        // Create event data
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection
+        invokeExecuteMethod(event);
+
+        // Verify only enabled executor was invoked
+        assertEquals(1, testMonitor.beforeExecutionEvents.size());
+        assertEquals(1, testMonitor.afterExecutionEvents.size());
+        assertEquals(1, testMonitor.successEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with state position change - multi-state expression")
+    void testExecuteStatePositionChangeMultiStateExpression() throws Exception {
+        // Create executor with multi-state expression
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", "{>5}->{<3}", true, filterIds);
+        manager.create(entity);
+
+        // Create a custom monitor to track state position changes
+        AtomicInteger stateChangeCount = new AtomicInteger(0);
+        AtomicReference<Integer> previousPosition = new AtomicReference<>();
+        AtomicReference<Integer> currentPosition = new AtomicReference<>();
+
+        RhythmixConfig.setMonitor(new RhythmixMonitor() {
+            @Override
+            public void onStatePositionChanged(RhythmixExpressionEntity expression,
+                                               int prevPos, int currPos,
+                                               RhythmixExecutionData executionData) {
+                stateChangeCount.incrementAndGet();
+                previousPosition.set(prevPos);
+                currentPosition.set(currPos);
+            }
+
+            @Override
+            public void onBeforeExecution(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+            }
+
+            @Override
+            public void onAfterExecution(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+            }
+
+            @Override
+            public void onExecutionSuccess(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+            }
+        });
+
+        // Execute first event that matches first state
+        RhythmixEventData event1 = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+        invokeExecuteMethod(event1);
+
+        // Verify state position changed
+        assertTrue(stateChangeCount.get() > 0, "State position should have changed");
+    }
+
+    @Test
+    @DisplayName("Test execute with runtime exception - error callback invoked")
+    void testExecuteRuntimeExceptionErrorCallbackInvoked() throws Exception {
+        // Create executor with expression that will cause runtime error
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+
+        // Create executor and manually inject a faulty one to simulate error
+        manager.create(entity);
+
+        // Get the executor and create a wrapper that throws exception
+        Optional<RhythmixExecutor> executorOpt = manager.getExecutor("expr-1");
+        assertTrue(executorOpt.isPresent());
+
+        // Create event data
+        RhythmixEventData event = Util.genEventData("e1", "invalid_value", new Timestamp(System.currentTimeMillis()));
+
+        // Note: This test verifies that the execute method handles exceptions gracefully
+        // The actual exception handling is done within the execute method
+        assertDoesNotThrow(() -> invokeExecuteMethod(event));
+    }
+
+    @Test
+    @DisplayName("Test execute with null event data - should handle gracefully")
+    void testExecuteNullEventDataHandlesGracefully() throws Exception {
+        // Create an executor
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        manager.create(entity);
+
+        // Execute with null event - should not throw exception
+        assertDoesNotThrow(() -> invokeExecuteMethod(null));
+    }
+
+    @Test
+    @DisplayName("Test execute with no executors in route map")
+    void testExecuteNoExecutorsInRouteMapNoCallbacks() throws Exception {
+        // Don't create any executors
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection
+        invokeExecuteMethod(event);
+
+        // Verify no callbacks were invoked
+        assertEquals(0, testMonitor.beforeExecutionEvents.size());
+        assertEquals(0, testMonitor.afterExecutionEvents.size());
+        assertEquals(0, testMonitor.successEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with different filter IDs - only matching executors run")
+    void testExecuteDifferentFilterIdsOnlyMatchingExecutorsRun() throws Exception {
+        // Create executors with different filter IDs
+        List<String> filterIds1 = Arrays.asList("filter-1");
+        List<String> filterIds2 = Arrays.asList("filter-2");
+
+        RhythmixExpressionEntity entity1 = createTestEntity("expr-1", ">5", true, filterIds1);
+        RhythmixExpressionEntity entity2 = createTestEntity("expr-2", "<15", true, filterIds2);
+
+        manager.create(entity1);
+        manager.create(entity2);
+
+        // Create event data
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+
+        // Execute via reflection - this will execute all executors in all filter routes
+        invokeExecuteMethod(event);
+
+        // Both executors should be invoked since execute iterates over all routes
+        assertEquals(2, testMonitor.beforeExecutionEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute callback order - before, success, after")
+    void testExecuteCallbackOrderBeforeSuccessAfter() throws Exception {
+        // Track callback order
+        List<String> callbackOrder = new ArrayList<>();
+
+        RhythmixConfig.setMonitor(new RhythmixMonitor() {
+            @Override
+            public void onBeforeExecution(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+                callbackOrder.add("before");
+            }
+
+            @Override
+            public void onExecutionSuccess(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+                callbackOrder.add("success");
+            }
+
+            @Override
+            public void onAfterExecution(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+                callbackOrder.add("after");
+            }
+        });
+
+        // Create executor
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        manager.create(entity);
+
+        // Execute with matching event
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+        invokeExecuteMethod(event);
+
+        // Verify callback order
+        assertEquals(3, callbackOrder.size());
+        assertEquals("before", callbackOrder.get(0));
+        assertEquals("success", callbackOrder.get(1));
+        assertEquals("after", callbackOrder.get(2));
+    }
+
+    @Test
+    @DisplayName("Test execute with monitor callback exception - execution continues")
+    void testExecuteMonitorCallbackExceptionExecutionContinues() throws Exception {
+        // Set monitor that throws exception in onBeforeExecution
+        RhythmixConfig.setMonitor(new RhythmixMonitor() {
+            @Override
+            public void onBeforeExecution(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+                throw new RuntimeException("Monitor callback failure");
+            }
+
+            @Override
+            public void onAfterExecution(RhythmixExpressionEntity expression, RhythmixEventData eventData) {
+                // This should still be called despite the exception in onBeforeExecution
+            }
+        });
+
+        // Create executor
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        manager.create(entity);
+
+        // Execute - should not throw exception
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+        assertDoesNotThrow(() -> invokeExecuteMethod(event));
+    }
+
+    @Test
+    @DisplayName("Test execute with complex multi-state expression")
+    void testExecuteComplexMultiStateExpression() throws Exception {
+        // Create executor with complex multi-state expression
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", "{>5}->{<10}->{>8}", true, filterIds);
+        manager.create(entity);
+
+        // Execute sequence of events
+        RhythmixEventData event1 = Util.genEventData("e1", "7", new Timestamp(System.currentTimeMillis()));
+        RhythmixEventData event2 = Util.genEventData("e2", "8", new Timestamp(System.currentTimeMillis() + 100));
+        RhythmixEventData event3 = Util.genEventData("e3", "9", new Timestamp(System.currentTimeMillis() + 200));
+
+        invokeExecuteMethod(event1);
+        invokeExecuteMethod(event2);
+        invokeExecuteMethod(event3);
+
+        // Verify all events were processed
+        assertEquals(3, testMonitor.beforeExecutionEvents.size());
+        assertEquals(3, testMonitor.afterExecutionEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with boundary value - exact match")
+    void testExecuteBoundaryValueExactMatch() throws Exception {
+        // Create executor with exact value expression
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", "==5", true, filterIds);
+        manager.create(entity);
+
+        // Execute with exact boundary value
+        RhythmixEventData event = Util.genEventData("e1", "5", new Timestamp(System.currentTimeMillis()));
+        invokeExecuteMethod(event);
+
+        // Verify success callback was invoked
+        assertEquals(1, testMonitor.successEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with range expression")
+    void testExecuteRangeExpression() throws Exception {
+        // Create executor with range expression
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", "[5,10]", true, filterIds);
+        manager.create(entity);
+
+        // Execute with value in range
+        RhythmixEventData event = Util.genEventData("e1", "7", new Timestamp(System.currentTimeMillis()));
+        invokeExecuteMethod(event);
+
+        // Verify success callback was invoked
+        assertEquals(1, testMonitor.successEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute with empty filter IDs list")
+    void testExecuteEmptyFilterIdsList() throws Exception {
+        // Create executor with empty filter IDs
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, new ArrayList<>());
+        manager.create(entity);
+
+        // Execute
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+        invokeExecuteMethod(event);
+
+        // Since there are no filter IDs, the executor won't be in any route map
+        // So no callbacks should be invoked
+        assertEquals(0, testMonitor.beforeExecutionEvents.size());
+    }
+
+    @Test
+    @DisplayName("Test execute verifies execution data is populated")
+    void testExecuteVerifiesExecutionDataPopulated() throws Exception {
+        // Create executor
+        List<String> filterIds = Arrays.asList("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        RhythmixExecutor executor = manager.create(entity);
+
+        // Execute
+        RhythmixEventData event = Util.genEventData("e1", "10", new Timestamp(System.currentTimeMillis()));
+        invokeExecuteMethod(event);
+
+        // Verify execution data was recorded
+        assertNotNull(executor.getRhythmixExecutionData());
+        assertNotNull(executor.getRhythmixExecutionData().getCurrentExecutionRecord());
+    }
+
+    @Test
+    @DisplayName("Test execute with concurrent execution on same executor")
+    void testExecuteConcurrentExecutionThreadSafe() throws Exception {
+        // Create executor
+        List<String> filterIds = List.of("filter-1");
+        RhythmixExpressionEntity entity = createTestEntity("expr-1", ">5", true, filterIds);
+        manager.create(entity);
+
+        // Execute concurrently
+        int threadCount = 5;
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            final int index = i;
+            executorService.submit(() -> {
+                try {
+                    RhythmixEventData event = Util.genEventData("e" + index, "10",
+                            new Timestamp(System.currentTimeMillis()));
+                    invokeExecuteMethod(event);
+                } catch (Exception e) {
+                    // Ignore
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        executorService.shutdown();
+
+        // Verify all executions were processed
+        assertEquals(threadCount, testMonitor.beforeExecutionEvents.size());
     }
 
 

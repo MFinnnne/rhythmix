@@ -1,7 +1,6 @@
 package io.github.mfinnnne.rhythmix.execute;
 
 import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
-import io.github.mfinnnne.rhythmix.exception.RhythmixException;
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
 import io.github.mfinnnne.rhythmix.monitor.ExecutionRecord;
 import io.github.mfinnnne.rhythmix.monitor.RhythmixMonitor;
@@ -11,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Manages the lifecycle of RhythmixExecutor instances.
@@ -119,7 +117,7 @@ public class RhythmixExecutorManager {
      * @throws TranslatorException if compilation fails
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public RhythmixExecutor create(RhythmixExpressionEntity entity) throws TranslatorException {
+    public synchronized RhythmixExecutor create(RhythmixExpressionEntity entity) throws TranslatorException {
 
         try {
             log.debug("Creating executor for expression ID: {}", entity.getId());
@@ -174,7 +172,7 @@ public class RhythmixExecutorManager {
      * @throws TranslatorException if compilation fails
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public RhythmixExecutor update(RhythmixExpressionEntity entity) throws TranslatorException {
+    public synchronized RhythmixExecutor update(RhythmixExpressionEntity entity) throws TranslatorException {
         try {
             log.debug("Updating executor for expression ID: {}", entity.getId());
 
@@ -225,7 +223,7 @@ public class RhythmixExecutorManager {
      * @param entity the expression entity to delete
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public void delete(RhythmixExpressionEntity entity) {
+    public synchronized void delete(RhythmixExpressionEntity entity) {
         log.debug("Deleting executor for expression ID: {}", entity.getId());
 
         // Remove from cache
@@ -255,7 +253,7 @@ public class RhythmixExecutorManager {
      * @param entity the expression entity to enable
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public void enable(RhythmixExpressionEntity entity) {
+    public synchronized void enable(RhythmixExpressionEntity entity) {
         log.debug("Enabling executor for expression ID: {}", entity.getId());
 
         RhythmixExecutor executor = executorCache.get(entity.getId());
@@ -277,7 +275,7 @@ public class RhythmixExecutorManager {
      * @param entity the expression entity to disable
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public void disable(RhythmixExpressionEntity entity) {
+    public synchronized void disable(RhythmixExpressionEntity entity) {
 
         log.debug("Disabling executor for expression ID: {}", entity.getId());
 
@@ -313,7 +311,7 @@ public class RhythmixExecutorManager {
      * @param entityId the ID of the expression entity
      * @return an Optional containing the executor if found, empty otherwise
      */
-    public Optional<RhythmixExecutor> getExecutorWrapper(String entityId) {
+    public Optional<RhythmixExecutor> getRhythmixExecutor(String entityId) {
         if (entityId == null) {
             return Optional.empty();
         }
@@ -338,7 +336,7 @@ public class RhythmixExecutorManager {
      * @return true if the executor exists and is enabled, false otherwise
      */
     public boolean isEnabled(String entityId) {
-        return getExecutorWrapper(entityId)
+        return getRhythmixExecutor(entityId)
                 .map(RhythmixExecutor::isEnabled)
                 .orElse(false);
     }
@@ -393,31 +391,37 @@ public class RhythmixExecutorManager {
         }
     }
 
-    public List<RhythmixExecutor> getExecutorByFilterId(String filterId) {
-        return executorRouteMap.get(filterId);
-    }
+    /**
+     * Executes all enabled executors against the given event data.
+     * <p>
+     * This method iterates over all executors and executes them against the event data.
+     * It handles monitor callbacks and error handling.
+     *
+     * @param event the event data to execute against
+     */
+    public void execute(RhythmixEventData event) {
 
-    private void execute(RhythmixEventData event) {
         executorRouteMap.forEach((k, v) -> {
             v.forEach((executor) -> {
-                if (executor.isEnabled()) {
-
-                    try {
-                        invokeMonitorSafely(() -> getMonitor().onBeforeExecution(executor.getEntity(), event));
-                        boolean execute = executor.execute(event);
-                        final ExecutionRecord executionRecord = executor.getRhythmixExecutionData().getCurrentExecutionRecord();
-                        if (!Objects.equals(executionRecord.getStatePositionAfterExecution(), executionRecord.getCurrentStatePosition())) {
-                            invokeMonitorSafely(() -> getMonitor().onStatePositionChanged(executor.getEntity(),
-                                    executionRecord.getCurrentStatePosition(), executionRecord.getStatePositionAfterExecution(),
-                                    executor.getRhythmixExecutionData()));
+                synchronized (executor) {
+                    if (executor.isEnabled()) {
+                        try {
+                            invokeMonitorSafely(() -> getMonitor().onBeforeExecution(executor.getEntity(), event));
+                            boolean execute = executor.execute(event);
+                            final ExecutionRecord executionRecord = executor.getRhythmixExecutionData().getCurrentExecutionRecord();
+                            if (!Objects.equals(executionRecord.getStatePositionAfterExecution(), executionRecord.getCurrentStatePosition())) {
+                                invokeMonitorSafely(() -> getMonitor().onStatePositionChanged(executor.getEntity(),
+                                        executionRecord.getCurrentStatePosition(), executionRecord.getStatePositionAfterExecution(),
+                                        executor.getRhythmixExecutionData()));
+                            }
+                            if (execute) {
+                                invokeMonitorSafely(() -> getMonitor().onExecutionSuccess(executor.getEntity(), event));
+                            }
+                            invokeMonitorSafely(() -> getMonitor().onAfterExecution(executor.getEntity(), event));
+                        } catch (Exception e) {
+                            invokeMonitorSafely(() -> getMonitor().onExecutionError(executor.getEntity(),
+                                    executor.getRhythmixExecutionData(), e));
                         }
-                        if (execute) {
-                            invokeMonitorSafely(() -> getMonitor().onExecutionSuccess(executor.getEntity(), event));
-                        }
-                        invokeMonitorSafely(() -> getMonitor().onAfterExecution(executor.getEntity(), event));
-                    } catch (Exception e) {
-                        invokeMonitorSafely(() -> getMonitor().onExecutionError(executor.getEntity(),
-                                executor.getRhythmixExecutionData(), e));
                     }
                 }
             });
