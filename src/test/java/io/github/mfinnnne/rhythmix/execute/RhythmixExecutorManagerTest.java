@@ -1,6 +1,7 @@
 package io.github.mfinnnne.rhythmix.execute;
 
 import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
+import io.github.mfinnnne.rhythmix.exception.RhythmixExecutorManagerException;
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
 import io.github.mfinnnne.rhythmix.monitor.RhythmixDefaultMonitor;
 import io.github.mfinnnne.rhythmix.monitor.RhythmixExecutionData;
@@ -226,15 +227,34 @@ public class RhythmixExecutorManagerTest {
         assertEquals(1, testMonitor.updatedEntities.size());
     }
 
+
+    @Test
+    @DisplayName("Test update executor routing")
+    void testUpdateRouting() throws TranslatorException {
+        RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
+        entity.setEnable(true);
+        entity.setFilterIds(Arrays.asList("filter-1", "filter-2"));
+        manager.create(entity);
+
+        final List<RhythmixExecutor> executors = manager.getRoutingTargetByFilterId("filter-1");
+
+        Assertions.assertThrows(RhythmixExecutorManagerException.class, () -> manager.getRoutingTargetByFilterId("filter-3"));
+        entity.setFilterIds(Arrays.asList("filter-2", "filter-3"));
+        RhythmixExecutor updatedExecutor = manager.update(entity);
+
+        final List<RhythmixExecutor> executors1 = manager.getRoutingTargetByFilterId("filter-1");
+        Assertions.assertTrue(executors1.isEmpty());
+        assertNotNull(updatedExecutor);
+        assertTrue(manager.exists("expr-1"));
+        assertEquals(1, testMonitor.updatedEntities.size());
+    }
+
     @Test
     @DisplayName("Test update creates new if not exists")
     void testUpdateCreatesNewIfNotExists() throws TranslatorException {
         RhythmixExpressionEntity entity = createSimpleEntity("expr-1", ">5");
 
-        RhythmixExecutor executor = manager.update(entity);
-
-        assertNotNull(executor);
-        assertTrue(manager.exists("expr-1"));
+        Assertions.assertThrows(RhythmixExecutorManagerException.class, () -> manager.update(entity));
     }
 
     @Test
@@ -246,7 +266,7 @@ public class RhythmixExecutorManagerTest {
         entity.setExpression("invalid{{{expression");
 
         assertThrows(TranslatorException.class, () -> manager.update(entity));
-        assertTrue(testMonitor.compilationErrors.size() > 0);
+        assertFalse(testMonitor.compilationErrors.isEmpty());
     }
 
     @Test
@@ -287,6 +307,7 @@ public class RhythmixExecutorManagerTest {
         // Created timestamp should be the same, updated timestamp should be different
         assertEquals(executorBefore.get().getCreatedAt(), executorAfter.get().getCreatedAt());
     }
+
 
     // ==================== Delete Operation Tests ====================
 

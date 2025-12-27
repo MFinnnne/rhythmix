@@ -1,10 +1,13 @@
 package io.github.mfinnnne.rhythmix.execute;
 
+import cn.hutool.core.util.ObjectUtil;
 import io.github.mfinnnne.rhythmix.config.RhythmixConfig;
+import io.github.mfinnnne.rhythmix.exception.RhythmixExecutorManagerException;
 import io.github.mfinnnne.rhythmix.exception.TranslatorException;
 import io.github.mfinnnne.rhythmix.monitor.ExecutionRecord;
 import io.github.mfinnnne.rhythmix.monitor.RhythmixMonitor;
 import io.github.mfinnnne.rhythmix.util.RhythmixEventData;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -112,13 +115,13 @@ public class RhythmixExecutorManager {
      * <p>
      * If an executor with the same ID already exists, it will be replaced.
      *
-     * @param entity the expression entity containing the expression to compile
+     * @param rhythmixExpressionEntity the expression entity containing the expression to compile
      * @return the created RhythmixExecutor instance
      * @throws TranslatorException if compilation fails
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public synchronized RhythmixExecutor create(RhythmixExpressionEntity entity) throws TranslatorException {
-
+    public synchronized RhythmixExecutor create(RhythmixExpressionEntity rhythmixExpressionEntity) throws TranslatorException {
+        final RhythmixExpressionEntity entity = ObjectUtil.cloneByStream(rhythmixExpressionEntity);
         try {
             log.debug("Creating executor for expression ID: {}", entity.getId());
 
@@ -167,50 +170,76 @@ public class RhythmixExecutorManager {
      * <p>
      * If no executor exists for the given entity ID, a new one will be created.
      *
-     * @param entity the expression entity with updated expression
+     * @param rhythmixExpressionEntity the expression entity with updated expression
      * @return the updated RhythmixExecutor instance
      * @throws TranslatorException if compilation fails
      * @throws IllegalArgumentException if entity or entity ID is null
      */
-    public synchronized RhythmixExecutor update(RhythmixExpressionEntity entity) throws TranslatorException {
+    public synchronized RhythmixExecutor update(RhythmixExpressionEntity rhythmixExpressionEntity) throws TranslatorException,RhythmixExecutorManagerException {
+        final RhythmixExpressionEntity entity = ObjectUtil.cloneByStream(rhythmixExpressionEntity);
         try {
             log.debug("Updating executor for expression ID: {}", entity.getId());
 
             // Compile the updated expression
-            RhythmixExecutor executor = RhythmixCompiler.compile(entity.getExpression());
-
-            // Get existing executor to preserve createdAt timestamp
-            RhythmixExecutor existingExecutor = executorCache.get(entity.getId());
-            LocalDateTime createdAt = existingExecutor != null ? existingExecutor.getCreatedAt() : LocalDateTime.now();
+            RhythmixExecutor executor = executorCache.get(entity.getId());
+            if (executor == null) {
+                throw new RhythmixExecutorManagerException("No executor for expression ID: " + entity.getId());
+            }
+            if (!Objects.equals(entity.getExpression(), executor.getExpression())) {
+                final RhythmixExpressionEntity oldEntity = executor.getEntity();
+                final LocalDateTime createdAt = executor.getCreatedAt();
+                executor = RhythmixCompiler.compile(entity.getExpression());
+                executor.setEntity(oldEntity);
+                executor.setCreatedAt(createdAt);
+            }
 
             // Set metadata on executor
+
+
+            // Replace it in cache
+            executorCache.put(entity.getId(), executor);
+            RhythmixExecutor finalExecutor = executor;
+
+            //delete the routing if old filter id don't exist
+            // the new filter id don't exist in the new list of filter id
+            executor.getEntity().getFilterIds().forEach((filterId) -> {
+                if (!entity.getFilterIds().contains(filterId)) {
+                    executorRouteMap.computeIfPresent(filterId, (k, v) -> {
+                        v.removeIf(exec -> exec.getId().equals(finalExecutor.getId()));
+                        return v;
+                    });
+                }
+            });
+
+            entity.getFilterIds().forEach((filterId) -> {
+                // create the routing if the new filter id don't exist
+                if (!finalExecutor.getEntity().getFilterIds().contains(filterId)) {
+                    if (executorRouteMap.containsKey(filterId)) {
+                        executorRouteMap.get(filterId).add(finalExecutor);
+                    } else {
+                        executorRouteMap.put(filterId, new ArrayList<>());
+                        executorRouteMap.get(filterId).add(finalExecutor);
+                    }
+                }
+            });
             executor.setId(entity.getId());
             executor.setEntity(entity);
             executor.setEnabled(entity.isEnable());
-            executor.setCreatedAt(createdAt);
             executor.setUpdatedAt(LocalDateTime.now());
-
-            // Replace in cache
-            executorCache.put(entity.getId(), executor);
-            entity.getFilterIds().forEach((filterId) -> {
-                executorRouteMap.computeIfPresent(filterId, (k, v) -> {
-                    v.removeIf(exec -> exec.getId().equals(entity.getId()));
-                    v.add(executor);
-                    return v;
-                });
-            });
-
             // Notify monitor of successful update
             invokeMonitorSafely(() -> getMonitor().onExpressionUpdated(entity));
 
             log.info("Successfully updated executor for expression ID: {}", entity.getId());
             return executor;
 
-        } catch (Exception e) {
+        } catch (TranslatorException | RhythmixExecutorManagerException e) {
             // Notify monitor of compilation error for non-RhythmixException
             invokeMonitorSafely(() -> getMonitor().onCompilationError(entity, e.getMessage()));
             log.error("Failed to update executor for expression ID: {}", entity.getId(), e);
-            throw new TranslatorException("Compilation failed: " + e.getMessage(), e);
+            if (e instanceof  TranslatorException) {
+                throw new TranslatorException("Compilation failed: " + e.getMessage(), e);
+            }
+            throw e;
         }
     }
 
@@ -426,6 +455,13 @@ public class RhythmixExecutorManager {
                 }
             });
         });
+    }
+
+    public List<RhythmixExecutor> getRoutingTargetByFilterId(@NonNull String filterId) {
+        if (executorRouteMap.containsKey(filterId)) {
+            return executorRouteMap.get(filterId);
+        }
+        throw new RhythmixExecutorManagerException("No executor found for filterId: " + filterId);
     }
 
     /**

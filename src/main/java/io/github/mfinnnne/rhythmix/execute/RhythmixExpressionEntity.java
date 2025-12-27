@@ -2,6 +2,7 @@ package io.github.mfinnnne.rhythmix.execute;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  *  @version 1.0
  **/
 @Data
-public class RhythmixExpressionEntity {
+public class RhythmixExpressionEntity implements Serializable {
 
     /**
      * Unique identifier for the expression.
@@ -36,4 +37,7 @@ public class RhythmixExpressionEntity {
      * List of filter IDs associated with this expression.
      */
     private List<String> filterIds;
+
+
+
 }
